@@ -113,6 +113,9 @@ Código:
 - Errores explícitos: nunca un catch vacío.
 - Lo mínimo que cumpla el caso de uso y sus tests: sin dependencias, abstracciones ni opciones que
   la tarea no pida.
+- Máximo 3 parámetros por función; nada de parámetros booleanos que cambian el comportamiento.
+- Los mensajes de error dicen qué falló y con qué dato (ej.: "CAE vencido: 2026-10-01 en comprobante 0001-00001234").
+- Tests con nombre que describe el caso, estructura preparar-ejecutar-verificar, un concepto por test.
 
 Comentarios:
 - Cada archivo empieza con una línea que dice qué hace.
