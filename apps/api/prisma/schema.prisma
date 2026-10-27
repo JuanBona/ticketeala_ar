@@ -1,0 +1,437 @@
+// Database schema: replicates docs/modelo-datos.sql with English names mapped to the Spanish tables.
+// Partial unique indexes and CHECK constraints live in the hand-written part of the init migration.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===== Domains =====
+
+enum TravelRequestStatus {
+  QUOTING   @map("en_cotizacion") // D04
+  PENDING   @map("pendiente")
+  APPROVED  @map("aprobada")
+  REJECTED  @map("rechazada")
+  CANCELLED @map("cancelada")
+
+  @@map("estado_solicitud")
+}
+
+enum ExpenseReportStatus {
+  DRAFT     @map("borrador")
+  SUBMITTED @map("presentada")
+  APPROVED  @map("aprobada")
+  OBSERVED  @map("observada")
+
+  @@map("estado_rendicion")
+}
+
+enum ExpenseCategory {
+  LODGING   @map("alojamiento")
+  TRANSPORT @map("transporte")
+  MEALS     @map("comida")
+  OTHER     @map("otros")
+
+  @@map("tipo_gasto")
+}
+
+enum QuoteOrigin {
+  AGENCY   @map("agencia") // D05
+  EXTERNAL @map("externa")
+
+  @@map("origen_cotizacion")
+}
+
+enum VerificationDecision {
+  ACCEPTED @map("aceptado") // D05
+  REVIEW   @map("revision")
+  ALERT    @map("alerta")
+
+  @@map("decision_verificacion")
+}
+
+enum SignalResult {
+  OK             @map("ok") // D05
+  WARNING        @map("advertencia")
+  FAILURE        @map("falla")
+  NOT_APPLICABLE @map("no_aplica")
+
+  @@map("resultado_senal")
+}
+
+enum ReviewStatus {
+  NOT_REQUIRED @map("sin_revision") // D05
+  PENDING      @map("pendiente")
+  RESOLVED     @map("resuelta")
+
+  @@map("estado_revision")
+}
+
+enum CorrectionOrigin {
+  EMPLOYEE   @map("empleado") // D05
+  ACCOUNTING @map("contaduria")
+
+  @@map("origen_correccion")
+}
+
+// ===== Organization and security =====
+
+model EmployeeCategory {
+  id   Int    @id @default(autoincrement())
+  name String @unique @map("nombre") @db.VarChar(50)
+
+  employees       Employee[]
+  expensePolicies ExpensePolicy[]
+
+  @@map("categoria_empleado")
+}
+
+model Area {
+  id                    Int    @id @default(autoincrement())
+  name                  String @map("nombre") @db.VarChar(100)
+  managerEmployeeNumber Int?   @map("legajo_gerente") // D15
+
+  manager   Employee?  @relation("AreaManager", fields: [managerEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+  employees Employee[] @relation("AreaEmployees")
+
+  @@map("area")
+}
+
+model Employee {
+  employeeNumber           Int       @id @map("legajo")
+  fullName                 String    @map("nombre") @db.VarChar(150)
+  email                    String    @unique @db.VarChar(150)
+  categoryId               Int       @map("id_categoria")
+  areaId                   Int       @map("id_area")
+  supervisorEmployeeNumber Int?      @map("legajo_jefe") // D15
+  substituteEmployeeNumber Int?      @map("legajo_suplente") // D15
+  active                   Boolean   @default(true) @map("activo") // D14 (RN28)
+  passwordHash             String    @map("password_hash") @db.VarChar(255) // D14
+  totpSecret               String?   @map("totp_secret") @db.VarChar(64) // D14 (RN30)
+  locationConsent          Boolean   @default(false) @map("consentimiento_ubicacion") // D14 (Ley 25.326)
+  locationConsentAt        DateTime? @map("consentimiento_fecha") @db.Timestamptz // D14
+
+  category   EmployeeCategory @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  area       Area             @relation("AreaEmployees", fields: [areaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supervisor Employee?        @relation("Supervisor", fields: [supervisorEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+  substitute Employee?        @relation("Substitute", fields: [substituteEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  managedAreas              Area[]              @relation("AreaManager")
+  supervisedEmployees       Employee[]          @relation("Supervisor")
+  substitutedEmployees      Employee[]          @relation("Substitute")
+  roles                     EmployeeRole[]
+  auditLogs                 AuditLog[]
+  authoredPolicies          ExpensePolicy[]
+  travelRequests            TravelRequest[]     @relation("Requester")
+  travelRequestsToApprove   TravelRequest[]     @relation("Approver")
+  loadedQuotes              Quote[]
+  approvedParameterVersions ParameterVersion[]
+  receiptCorrections        ReceiptCorrection[]
+
+  @@map("empleado")
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String @unique @map("nombre") @db.VarChar(50) // D07
+
+  employees EmployeeRole[]
+
+  @@map("rol")
+}
+
+model EmployeeRole {
+  employeeNumber Int @map("legajo_empleado")
+  roleId         Int @map("id_rol")
+
+  employee Employee @relation(fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([employeeNumber, roleId])
+  @@map("empleado_rol")
+}
+
+model AuditLog {
+  id             BigInt   @id @default(autoincrement()) // D13 (RNF11)
+  employeeNumber Int?     @map("legajo")
+  occurredAt     DateTime @default(now()) @map("fecha") @db.Timestamptz
+  entity         String   @map("entidad") @db.VarChar(50)
+  entityId       String   @map("id_entidad") @db.VarChar(50)
+  action         String   @map("accion") @db.VarChar(30)
+  previousValue  Json?    @map("valor_anterior")
+  newValue       Json?    @map("valor_nuevo")
+
+  employee Employee? @relation(fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("registro_auditoria")
+}
+
+// ===== Travel and policies =====
+
+model Destination {
+  id        Int      @id @default(autoincrement())
+  city      String   @map("ciudad") @db.VarChar(100)
+  country   String   @map("pais") @db.VarChar(100)
+  latitude  Decimal? @map("latitud") @db.Decimal(10, 8) // S10
+  longitude Decimal? @map("longitud") @db.Decimal(11, 8)
+
+  expensePolicies ExpensePolicy[]
+  travelRequests  TravelRequest[]
+
+  @@map("destino")
+}
+
+model ExpensePolicy {
+  id                   Int       @id @default(autoincrement())
+  categoryId           Int       @map("id_categoria")
+  destinationId        Int       @map("id_destino")
+  currency             String    @default("ARS") @map("moneda") @db.Char(3) // D02
+  amountCap            Decimal   @map("tope_monto") @db.Decimal(12, 2)
+  minimumAdvanceDays   Int       @default(0) @map("anticipacion_minima_dias")
+  dailyAllowance       Decimal   @default(0) @map("viatico_diario") @db.Decimal(12, 2) // D02
+  version              Int // D01
+  validFrom            DateTime  @default(now()) @map("vigente_desde") @db.Timestamptz // D01
+  validUntil           DateTime? @map("vigente_hasta") @db.Timestamptz // D01
+  authorEmployeeNumber Int       @map("legajo_autor") // D01
+
+  category    EmployeeCategory @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  destination Destination      @relation(fields: [destinationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  author      Employee         @relation(fields: [authorEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  travelRequests TravelRequest[]
+
+  @@map("politica_gasto")
+}
+
+model TravelRequest {
+  id                     Int                 @id @default(autoincrement())
+  employeeNumber         Int                 @map("legajo_empleado")
+  approverEmployeeNumber Int?                @map("legajo_aprobador") // assigned when the request becomes PENDING
+  destinationId          Int                 @map("id_destino")
+  policyId               Int                 @map("id_politica") // policy version in force at creation
+  status                 TravelRequestStatus @default(QUOTING) @map("estado")
+  requestedAt            DateTime            @default(now()) @map("fecha_solicitud") @db.Timestamptz
+  startDate              DateTime            @map("fecha_inicio") @db.Date
+  endDate                DateTime            @map("fecha_fin") @db.Date
+  reason                 String?             @map("motivo") @db.VarChar(255)
+  rejectionReason        String?             @map("motivo_rechazo") @db.VarChar(500)
+
+  employee    Employee      @relation("Requester", fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+  approver    Employee?     @relation("Approver", fields: [approverEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+  destination Destination   @relation(fields: [destinationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  policy      ExpensePolicy @relation(fields: [policyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  quotes          Quote[]
+  travelAllowance TravelAllowance?
+  expenseReport   ExpenseReport?
+
+  @@map("solicitud_viaje")
+}
+
+model Supplier {
+  cuit      String @id @db.VarChar(13)
+  legalName String @map("razon_social") @db.VarChar(150)
+
+  quotes   Quote[]
+  expenses Expense[]
+
+  @@map("proveedor")
+}
+
+model Quote {
+  id                     Int         @id @default(autoincrement())
+  travelRequestId        Int         @map("id_solicitud")
+  origin                 QuoteOrigin @map("origen")
+  supplierCuit           String?     @map("cuit_proveedor") @db.VarChar(13)
+  source                 String?     @map("fuente") @db.VarChar(150) // UC-03 step 7
+  description            String      @map("descripcion") @db.VarChar(255)
+  amount                 Decimal     @map("monto") @db.Decimal(12, 2)
+  loadedAt               DateTime    @default(now()) @map("fecha_carga") @db.Timestamptz
+  validUntil             DateTime?   @map("vigencia_hasta") @db.Date
+  selected               Boolean     @default(false) @map("seleccionada")
+  loadedByEmployeeNumber Int         @map("legajo_carga")
+
+  travelRequest TravelRequest @relation(fields: [travelRequestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier      Supplier?     @relation(fields: [supplierCuit], references: [cuit], onDelete: NoAction, onUpdate: NoAction)
+  loadedBy      Employee      @relation(fields: [loadedByEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("cotizacion")
+}
+
+model TravelAllowance {
+  id                   Int      @id @default(autoincrement())
+  travelRequestId      Int      @unique @map("id_solicitud")
+  estimatedAmount      Decimal  @default(0) @map("monto_estimado") @db.Decimal(12, 2) // D03
+  advancedAmount       Decimal  @default(0) @map("monto_adelantado") @db.Decimal(12, 2)
+  reportedAmount       Decimal  @default(0) @map("monto_rendido") @db.Decimal(12, 2) // frozen at reconciliation
+  balance              Decimal? @map("saldo") @db.Decimal(12, 2)
+  reconciliationStatus String?  @map("estado_conciliacion") @db.VarChar(30)
+
+  travelRequest TravelRequest @relation(fields: [travelRequestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("viatico")
+}
+
+// ===== Expense reports and expenses =====
+
+model ExpenseReport {
+  id              Int                 @id @default(autoincrement())
+  travelRequestId Int                 @unique @map("id_solicitud")
+  submittedOn     DateTime?           @map("fecha_presentacion") @db.Date
+  status          ExpenseReportStatus @default(DRAFT) @map("estado")
+  total           Decimal             @default(0) @db.Decimal(12, 2) // frozen at approval
+  remark          String?             @map("observacion") @db.VarChar(500)
+
+  travelRequest TravelRequest @relation(fields: [travelRequestId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  expenses      Expense[]
+
+  @@map("rendicion")
+}
+
+model Expense {
+  id              Int              @id @default(autoincrement())
+  expenseReportId Int              @map("id_rendicion")
+  supplierCuit    String?          @map("cuit_proveedor") @db.VarChar(13) // D06: null for foreign suppliers
+  foreignTaxId    String?          @map("id_fiscal_extranjero") @db.VarChar(40) // D06
+  receiptType     String?          @map("tipo_comprobante") @db.VarChar(10) // D06
+  pointOfSale     Int?             @map("punto_venta") // D06
+  receiptNumber   BigInt?          @map("numero_comprobante") // D06
+  issuedOn        DateTime         @map("fecha") @db.Date
+  amount          Decimal          @map("monto") @db.Decimal(12, 2)
+  netAmount       Decimal?         @map("neto") @db.Decimal(12, 2) // D06 (S06)
+  vatAmount       Decimal?         @map("iva") @db.Decimal(12, 2) // D06 (S06)
+  currency        String           @default("ARS") @map("moneda") @db.Char(3) // D06
+  exchangeRate    Decimal?         @map("tipo_cambio") @db.Decimal(12, 4) // D06
+  category        ExpenseCategory? @map("tipo")
+  cae             String?          @db.VarChar(20)
+  caeExpiresOn    DateTime?        @map("cae_vencimiento") @db.Date // D06 (S05)
+  latitude        Decimal?         @map("latitud") @db.Decimal(10, 8)
+  longitude       Decimal?         @map("longitud") @db.Decimal(11, 8)
+  capturedAt      DateTime?        @map("fecha_captura") @db.Timestamptz
+  receiptUrl      String?          @map("comprobante_url") @db.VarChar(255)
+  dhash           String?          @db.Char(16) // D06 (S08)
+  active          Boolean          @default(true) @map("activo") // RN28
+
+  expenseReport ExpenseReport        @relation(fields: [expenseReportId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  supplier      Supplier?            @relation(fields: [supplierCuit], references: [cuit], onDelete: NoAction, onUpdate: NoAction)
+  verification  ReceiptVerification?
+  corrections   ReceiptCorrection[]
+
+  @@map("gasto")
+}
+
+// ===== Verification engine =====
+
+model ParameterVersion {
+  number                   Int      @id @map("numero")
+  effectiveFrom            DateTime @default(now()) @map("fecha_vigencia") @db.Timestamptz
+  reason                   String   @map("motivo") @db.VarChar(255)
+  approvedByEmployeeNumber Int      @map("legajo_aprobo")
+
+  approvedBy    Employee              @relation(fields: [approvedByEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+  signals       SignalParameter[]
+  verifications ReceiptVerification[]
+  evaluations   EngineEvaluation[]
+
+  @@map("version_parametros")
+}
+
+model SignalParameter {
+  id          Int      @id @default(autoincrement())
+  version     Int
+  code        String   @map("codigo") @db.Char(3) // S01..S12
+  description String   @map("descripcion") @db.VarChar(150)
+  weight      Int      @map("peso") @db.SmallInt
+  threshold   Decimal? @map("umbral") @db.Decimal(10, 2)
+  blocking    Boolean  @map("bloqueante")
+  enabled     Boolean  @map("activa")
+
+  parameterVersion ParameterVersion     @relation(fields: [version], references: [number], onDelete: NoAction, onUpdate: NoAction)
+  signalResults    VerificationSignal[]
+
+  @@unique([version, code])
+  @@map("parametro_senal")
+}
+
+model ReceiptVerification {
+  id               Int                  @id @default(autoincrement())
+  expenseId        Int                  @unique @map("id_gasto")
+  parameterVersion Int                  @map("version_parametros")
+  verifiedAt       DateTime             @default(now()) @map("fecha") @db.Timestamptz
+  imageQuality     Decimal              @map("calidad_imagen") @db.Decimal(8, 2) // Laplacian variance
+  score            Int                  @map("puntaje") @db.SmallInt
+  decision         VerificationDecision
+  reviewStatus     ReviewStatus         @default(NOT_REQUIRED) @map("estado_revision")
+  ocrResponse      Json?                @map("respuesta_ocr")
+  qrData           Json?                @map("datos_qr")
+
+  expense    Expense              @relation(fields: [expenseId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parameters ParameterVersion     @relation(fields: [parameterVersion], references: [number], onDelete: NoAction, onUpdate: NoAction)
+  signals    VerificationSignal[]
+
+  @@map("verificacion_comprobante")
+}
+
+model VerificationSignal {
+  id             Int          @id @default(autoincrement())
+  verificationId Int          @map("id_verificacion")
+  parameterId    Int          @map("id_parametro")
+  result         SignalResult @map("resultado")
+  observedValue  String?      @map("valor_observado") @db.VarChar(100)
+  penalty        Int          @default(0) @map("penalizacion") @db.SmallInt
+  detail         String?      @map("detalle") @db.VarChar(255)
+
+  verification ReceiptVerification @relation(fields: [verificationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parameter    SignalParameter     @relation(fields: [parameterId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("senal_verificacion")
+}
+
+model ReceiptCorrection {
+  id             Int              @id @default(autoincrement())
+  expenseId      Int              @map("id_gasto")
+  field          String           @map("campo") @db.VarChar(30)
+  suggestedValue String?          @map("valor_sugerido") @db.VarChar(100)
+  finalValue     String           @map("valor_final") @db.VarChar(100)
+  origin         CorrectionOrigin @map("origen")
+  employeeNumber Int              @map("legajo")
+  correctedAt    DateTime         @default(now()) @map("fecha") @db.Timestamptz
+
+  expense  Expense  @relation(fields: [expenseId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  employee Employee @relation(fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("correccion_comprobante")
+}
+
+model EngineEvaluation {
+  id                Int      @id @default(autoincrement())
+  evaluatedAt       DateTime @default(now()) @map("fecha") @db.Timestamptz
+  parameterVersion  Int      @map("version_parametros")
+  receiptCount      Int      @map("cantidad_comprobantes")
+  tamperedCount     Int      @map("cantidad_manipulados")
+  detectionRate     Decimal  @map("tasa_deteccion") @db.Decimal(5, 4)
+  falsePositiveRate Decimal  @map("tasa_falsos_positivos") @db.Decimal(5, 4)
+
+  parameters   ParameterVersion @relation(fields: [parameterVersion], references: [number], onDelete: NoAction, onUpdate: NoAction)
+  fieldResults FieldResult[]
+
+  @@map("evaluacion_motor")
+}
+
+model FieldResult {
+  evaluationId    Int     @map("id_evaluacion")
+  field           String  @map("campo") @db.VarChar(30)
+  ocrOnlyAccuracy Decimal @map("exactitud_ocr_solo") @db.Decimal(5, 4)
+  engineAccuracy  Decimal @map("exactitud_motor") @db.Decimal(5, 4)
+
+  evaluation EngineEvaluation @relation(fields: [evaluationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([evaluationId, field])
+  @@map("resultado_campo")
+}
