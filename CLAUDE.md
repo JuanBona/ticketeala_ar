@@ -36,7 +36,7 @@ services/verifier   Python 3.12 · FastAPI · OpenCV · pyzbar · imagehash · p
 apps/api            Node.js 22 · TypeScript · NestJS · Prisma · PostgreSQL 17
 apps/web            React · TypeScript · Vite   (Contaduría, aprobadores, gerencia, asesor, admin)
 apps/mobile         React Native · Expo · TypeScript   (empleado viajero y aprobador)
-infra/              docker-compose: PostgreSQL 17, Redis (cola), MinIO (imágenes)
+infra/              docker-compose: PostgreSQL 17, Redis (cola), SeaweedFS S3 (imágenes, D17)
 data/eval           set de evaluación del motor
 docs/  design/
 ```

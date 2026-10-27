@@ -5,7 +5,7 @@ Si una decisión contradice al PDF, **gana esta lista**. Cada decisión aceptada
 llevarla al documento antes de la entrega.
 
 Estado: **Propuesta** (falta acordar entre los tres) · **Aceptada** · **En el documento**.
-D01–D16 aceptadas por el equipo el 27/10/2026. Falta pasarlas al documento antes de la entrega final.
+D01–D17 aceptadas por el equipo el 27/10/2026. Falta pasarlas al documento antes de la entrega final.
 
 ## Afectan al código
 
@@ -19,7 +19,7 @@ D01–D16 aceptadas por el equipo el 27/10/2026. Falta pasarlas al documento ant
 | D06 | `GASTO` suma `tipo_comprobante`, `punto_venta`, `numero_comprobante` (clave fiscal de S07), `neto` e `iva` (S06), `cae_vencimiento` (S05), `dhash` (S08), `moneda`, `tipo_cambio` e `id_fiscal_extranjero`; `cuit_proveedor` pasa a admitir nulo para comprobantes del exterior. | S05 a S08 y el contraste con el QR necesitan esos datos persistidos; los viajes internacionales no tienen CUIT. | 12.2, 12.5 | Aceptada |
 | D07 | Roles: empleado, aprobador, agencia (el Asesor de AMR Turismo; UC-03 lo llama "rol Agencia"), contaduria, gerencia, administrador y auditor como rol de **solo lectura** (las pantallas lo usan). | El dominio de `ROL` lista cuatro, pero los casos de uso usan Agencia, Contaduría y Gerencia. | 12.2, 12.3 | Aceptada |
 | D08 | La bandeja de UC-05 trabaja sobre `VERIFICACION_COMPROBANTE` (decisión `alerta`) y `SENAL_VERIFICACION`. `ALERTA_ANOMALIA` se elimina (decidido el 27/10; se descartó conservarla como bandeja). | Duplica lo que ya registra la verificación, y su nota ("solo reglas deterministas") describe el modelo viejo. | 12.2, UC-05 | Aceptada |
-| D09 | Cola de trabajos: Redis Streams. Almacenamiento de imágenes: MinIO (compatible con S3). | 12.4 pide una cola con reintentos y un storage para las imágenes, sin elegir tecnología. | 12.4 | Aceptada |
+| D09 | Cola de trabajos: Redis Streams. Almacenamiento de imágenes: MinIO (compatible con S3); **reemplazado por D17**. | 12.4 pide una cola con reintentos y un storage para las imágenes, sin elegir tecnología. | 12.4 | Aceptada |
 | D10 | Tableros propios (React), no Power BI. | Evita la licencia y la integración; el prototipo ya los tiene diseñados. UC-08 lo deja como cuestión abierta. | 5.2, 5.4, UC-08 | Aceptada |
 | D11 | Viático por **noche** hasta que la Mutual confirme. | Cuestión abierta: entre 24 y 27 hay 3 noches y 4 días. | UC-01 | Aceptada |
 | D12 | Autenticación propia con JWT corto + refresh y TOTP para los roles de RN30 (el "OAuth2" de 12.4 se implementa como flujo de contraseña con tokens; sin proveedor externo). | No hay un proveedor de identidad de la Mutual definido. | 12.4 | Aceptada |
@@ -27,6 +27,7 @@ D01–D16 aceptadas por el equipo el 27/10/2026. Falta pasarlas al documento ant
 | D14 | `EMPLEADO` suma `activo` (baja lógica, RN28), `password_hash`, `totp_secret` y `consentimiento_ubicacion` con su fecha. | Necesarios para autenticación, segundo factor y Ley 25.326. | 12.2 | Aceptada |
 | D15 | Jerarquía para elegir aprobador: `EMPLEADO.legajo_jefe` y `AREA.legajo_gerente`. Suplente: `EMPLEADO.legajo_suplente` hasta que la Mutual defina si es por persona o por puesto. | UC-01 deriva al aprobador "según la regla jerárquica", pero el modelo no guarda la jerarquía. | 12.2, UC-01 | Aceptada |
 | D16 | Campos de soporte: `DESTINO.latitud/longitud` (S10), `COTIZACION.fuente` (UC-03 paso 7), `SOLICITUD_VIAJE.motivo_rechazo`, `RENDICION.observacion`, `GASTO.fecha_captura` (UC-02 paso 2), `VERIFICACION_COMPROBANTE.respuesta_ocr` y `datos_qr` (trazabilidad del motor). `SOLICITUD_VIAJE.legajo_aprobador` admite nulo hasta pasar a `pendiente`. | Los casos de uso usan estos datos y el diccionario no los tiene. | 12.2, 12.3, 12.5 | Aceptada |
+| D17 | Almacenamiento de imágenes: SeaweedFS (compatible con S3) en lugar de MinIO. La API lo usa con un cliente S3 estándar, así que cambiar de proveedor no toca el código. | MinIO dejó de publicar su imagen en Docker Hub (el repositorio `minio/minio` ya no existe) y no tiene versiones gratuitas con parches de seguridad. SeaweedFS es un proyecto activo con imagen oficial. | 12.4 | Aceptada |
 
 ## Solo del documento (no bloquean el código)
 

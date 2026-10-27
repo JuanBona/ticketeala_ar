@@ -32,7 +32,7 @@ Architecture
            \                /
             apps/api (NestJS) ── PostgreSQL 17
                  │    │
-                 │    └── MinIO (receipt images)
+                 │    └── SeaweedFS, S3 (receipt images)
                  │
            Redis Streams (job queue)
                  │
@@ -46,7 +46,7 @@ services/verifier	Python 3.12 · FastAPI · OpenCV · pyzbar · imagehash · pan
 apps/api	Node.js 22 · TypeScript · NestJS · Prisma · PostgreSQL 17
 apps/web	React · TypeScript · Vite
 apps/mobile	React Native · Expo · TypeScript
-infra/	Docker Compose: PostgreSQL, Redis, MinIO
+infra/	Docker Compose: PostgreSQL, Redis, SeaweedFS (S3)
 Repository layout
 apps/
   api/             REST API (modular monolith)
