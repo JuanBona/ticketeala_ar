@@ -12,6 +12,8 @@ CREATE TYPE decision_verificacion AS ENUM ('aceptado', 'revision', 'alerta');   
 CREATE TYPE resultado_senal       AS ENUM ('ok', 'advertencia', 'falla', 'no_aplica');     -- D05
 CREATE TYPE estado_revision       AS ENUM ('sin_revision', 'pendiente', 'resuelta');       -- D05
 CREATE TYPE origen_correccion     AS ENUM ('empleado', 'contaduria');                      -- D05
+CREATE TYPE estado_verificacion_gasto AS ENUM ('pendiente', 'verificado', 'imagen_rechazada', 'duplicado_rechazado', 'error'); -- D25
+CREATE TYPE unidad_tope           AS ENUM ('por_comprobante', 'por_noche', 'por_dia');    -- D26
 
 -- ===== Organización y seguridad =====
 CREATE TABLE categoria_empleado (
@@ -88,11 +90,21 @@ CREATE TABLE politica_gasto (
 CREATE UNIQUE INDEX ux_politica_vigente                               -- D01
   ON politica_gasto (id_categoria, id_destino) WHERE vigente_hasta IS NULL;
 
+CREATE TABLE tope_gasto_politica (                                  -- D26 (S11); inmutable como su política
+  id          serial PRIMARY KEY,
+  id_politica integer NOT NULL REFERENCES politica_gasto(id),
+  tipo        tipo_gasto NOT NULL,
+  monto       numeric(12,2) NOT NULL,
+  unidad      unidad_tope NOT NULL,
+  UNIQUE (id_politica, tipo)
+);
+
 CREATE TABLE solicitud_viaje (
   id               serial PRIMARY KEY,
   legajo_empleado  integer NOT NULL REFERENCES empleado(legajo),
   legajo_aprobador integer REFERENCES empleado(legajo),   -- se asigna al pasar a 'pendiente'
   id_destino       integer NOT NULL REFERENCES destino(id),
+  id_origen        integer REFERENCES destino(id),           -- D19, D26 (opcional)
   id_politica      integer NOT NULL REFERENCES politica_gasto(id),   -- versión vigente al crear
   estado           estado_solicitud NOT NULL DEFAULT 'en_cotizacion',
   fecha_solicitud  timestamptz NOT NULL DEFAULT now(),
@@ -166,7 +178,9 @@ CREATE TABLE gasto (
   fecha_captura        timestamptz,
   comprobante_url      varchar(255),
   dhash                char(16),                                -- D06 (S08, 64 bits en hex)
-  activo               boolean NOT NULL DEFAULT true            -- baja lógica (RN28)
+  estado_verificacion  estado_verificacion_gasto NOT NULL DEFAULT 'pendiente', -- D25
+  intentos_imagen      smallint NOT NULL DEFAULT 0,             -- D25 (N de D21)
+  activo               boolean NOT NULL DEFAULT true            -- baja lógica (RN28); false en duplicado_rechazado (D25)
 );
 -- S07: misma clave fiscal no rendida dos veces
 CREATE UNIQUE INDEX ux_gasto_clave_fiscal
@@ -178,7 +192,14 @@ CREATE TABLE version_parametros (
   numero         integer PRIMARY KEY,
   fecha_vigencia timestamptz NOT NULL DEFAULT now(),
   motivo         varchar(255) NOT NULL,
-  legajo_aprobo  integer NOT NULL REFERENCES empleado(legajo)
+  legajo_aprobo  integer NOT NULL REFERENCES empleado(legajo),
+  umbral_aceptacion        smallint NOT NULL,                 -- D24 (D20, inicial 80)
+  umbral_alerta            smallint NOT NULL,                 -- D24 (D20, inicial 50)
+  intentos_maximos_imagen  smallint NOT NULL,                 -- D24 (N de D21, inicial 3)
+  reintentos_maximos_cola  smallint NOT NULL,                 -- D24 (D23, inicial 3)
+  CHECK (umbral_alerta >= 0 AND umbral_aceptacion <= 100),    -- D24
+  CHECK (umbral_aceptacion > umbral_alerta),                  -- RN22
+  CHECK (intentos_maximos_imagen >= 1 AND reintentos_maximos_cola >= 1) -- D24
 );
 
 CREATE TABLE parametro_senal (
@@ -188,6 +209,8 @@ CREATE TABLE parametro_senal (
   descripcion varchar(150) NOT NULL,
   peso        smallint NOT NULL,
   umbral      numeric(10,2),
+  umbral_advertencia numeric(10,2),           -- D24 (S10: 50 km)
+  factor      numeric(6,2),                   -- D24 (S10: k de D19; S12: × IQR)
   bloqueante  boolean NOT NULL,
   activa      boolean NOT NULL,
   UNIQUE (version, codigo)
