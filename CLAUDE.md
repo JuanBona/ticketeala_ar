@@ -1,0 +1,98 @@
+# AMR Viajes
+
+Proyecto Final ISI · UTN FRRo · 2026. Equipo: Felipe Fernández, Juan Cruz Bonanno, Manuel Coccoz.
+Tutor: Mario Bressano.
+
+Sistema de gestión de viajes corporativos con **verificación de comprobantes** para la Mutual AMR.
+El núcleo técnico es un **motor de verificación diseñado por el equipo**: el OCR externo es una
+etapa más. La cátedra evalúa que esa inteligencia esté diseñada e integrada como software propio.
+
+## Fuentes de verdad (en este orden)
+
+1. `docs/fuente/etapa3.pdf` — documento de Etapa 3 (texto buscable en `docs/fuente/etapa3.txt`).
+   Casos de uso en la sección 12.3, motor en 12.5, arquitectura en 12.4.
+2. `docs/decisiones.md` — decisiones del equipo que corrigen o completan el documento.
+   **Si contradice al PDF, gana `decisiones.md`.**
+3. `docs/modelo-datos.sql`, `docs/motor-verificacion.md`, `docs/casos-de-uso.md`, `docs/pantallas.md`.
+4. `design/` — capturas y HTML de referencia de las pantallas.
+
+Antes de implementar un caso de uso, leé su sección en el PDF (camino básico, alternativos,
+reglas de negocio) y respetá sus reglas. Si algo no está definido, preguntá; no inventes reglas.
+
+## Alcance de este repositorio: el prototipo académico
+
+El contrato del documento prevé 15 meses. Lo que se programa acá es el **prototipo que se entrega
+el 18 de diciembre de 2026**, con el alcance de `docs/casos-de-uso.md` (columna "Prototipo").
+No agregues funciones fuera de ese alcance. Excluido siempre: emisión de pasajes (GDS), pagos o
+transferencias, modelos de aprendizaje automático propios, consulta en línea a ARCA.
+
+Fechas: 19–21/10 consulta con la cátedra (prueba de concepto del motor con métricas) ·
+26/10 tercera entrega del documento · 18/12 entrega del prototipo.
+
+## Estructura
+
+```
+services/verifier   Python 3.12 · FastAPI · OpenCV · pyzbar · imagehash · pandas · pytest
+apps/api            Node.js 22 · TypeScript · NestJS · Prisma · PostgreSQL 17
+apps/web            React · TypeScript · Vite   (Contaduría, aprobadores, gerencia, asesor, admin)
+apps/mobile         React Native · Expo · TypeScript   (empleado viajero y aprobador)
+infra/              docker-compose: PostgreSQL 17, Redis (cola), MinIO (imágenes)
+data/eval           set de evaluación del motor
+docs/  design/
+```
+
+Cada carpeta puede tener su propio `CLAUDE.md` con reglas específicas; se carga al trabajar ahí.
+
+## Arquitectura (12.4)
+
+- La API es un monolito modular: solicitudes, cotizaciones, rendiciones y viáticos, políticas y
+  parámetros, auditoría, reportes, administración. Cada módulo es dueño de sus tablas.
+- Al cargar un comprobante, la API guarda la imagen y publica un trabajo en la cola (Redis Streams).
+  El verificador lo consume, ejecuta el pipeline y devuelve señales, puntaje y decisión.
+  La API persiste el resultado. El verificador **no escribe en la base**: solo devuelve resultados.
+- Contratos entre partes: `docs/contratos/api.openapi.yaml` (API ↔ web y móvil) y
+  `docs/contratos/verifier.schema.json` (API ↔ verificador). **Cambiar un contrato requiere PR
+  propio y aviso al equipo.**
+
+## Reglas de negocio transversales
+
+- Políticas de gasto y parámetros del motor son **versiones inmutables**: un cambio cierra la vigente
+  e inserta otra. Nunca UPDATE sobre valores de una versión. Cada solicitud guarda la política con la
+  que nació y cada verificación, la versión de parámetros que usó.
+- Rendición aprobada y conciliación confirmada congelan sus totales.
+- No se borran registros con historial (baja lógica).
+- El sistema registra adelantos y exporta asientos; **nunca** ejecuta transferencias.
+- Montos `numeric(12,2)`, con moneda ISO 4217.
+
+## Seguridad (requisito obligatorio de la cátedra)
+
+- Autenticación con JWT de corta duración y refresh token; contraseñas con argon2.
+- Segundo factor (TOTP) obligatorio para Aprobador, Contaduría y Administrador (RN30).
+- Autorización por rol en cada endpoint; nunca confiar en el cliente.
+- Registro de auditoría de aprobaciones, correcciones y cambios de parámetros (valor anterior y nuevo).
+- Imágenes de comprobantes en almacenamiento privado; URLs firmadas de corta duración.
+- Secretos solo en variables de entorno (`.env` nunca se commitea).
+- Ubicación: solo con consentimiento y solo al capturar un comprobante (Ley 25.326).
+
+## Datos
+
+- Todo dato inventado se marca como **sintético** (columna `origen`, nombre de archivo o README).
+  La Mutual AMR es real: nunca presentes datos inventados como suyos.
+- No subas fotos de comprobantes con datos personales de terceros sin anonimizar.
+
+## Interfaz
+
+- Estilo elegido: **[COMPLETAR: alto-contraste | neumorfismo]**. Si está sin completar, preguntá
+  antes de escribir componentes visuales.
+- Reproducí tokens, jerarquía y estados de `design/html/<estilo>/`; no copies el HTML tal cual.
+- Accesibilidad: controles reales, etiquetas en inputs, contraste AA, estados que no dependan solo
+  del color, objetivos táctiles de 44 px.
+
+## Forma de trabajo
+
+- Código, nombres y commits en inglés; textos de interfaz en español rioplatense.
+- Una rama por tarea (`feat/uc02-s08-dhash`, `fix/...`), PR a `main` con revisión de otro integrante.
+- Antes de cambiar código fuera de tu carpeta, avisá: cada integrante es dueño de una parte
+  (ver `docs/plan-trabajo.md`).
+- Trabajá en pasos chicos: plan primero, después código y tests, después PR.
+- Cada regla de negocio y cada señal del motor tiene tests. No hay PR sin tests en verde.

@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AMR Viajes — Reportes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e0e5ec}
+a{color:#5b4ae0}a:hover{color:#4a3bc4}
+.nm-card{background:#e0e5ec;border-radius:24px;box-shadow:8px 8px 16px #b8bcc2,-8px -8px 16px #ffffff}
+.nm-well{background:#e0e5ec;border-radius:16px;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff}
+.nm-btn{background:#e0e5ec;color:#333333;border:0;border-radius:12px;box-shadow:6px 6px 12px #b8bcc2,-6px -6px 12px #ffffff;transition:box-shadow .3s ease-in-out,color .3s ease-in-out;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none}
+.nm-btn:hover{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff;color:#333333}
+.nm-btn:active,.nm-btn[aria-pressed="true"],.nm-btn[aria-selected="true"]{box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff;color:#5b4ae0}
+.nm-primary,.nm-primary:hover{background:#6d5dfc;color:#ffffff}
+.nm-primary:active{box-shadow:inset 4px 4px 8px #5446d4,inset -4px -4px 8px #8a7cff;color:#ffffff}
+.nm-nav{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:12px;color:#4b5563;text-decoration:none;font-weight:600;transition:box-shadow .3s ease-in-out,color .3s ease-in-out}
+.nm-nav:hover{color:#333333}
+.nm-nav[aria-current="page"]{color:#5b4ae0;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff}
+.nm-input{background:#e0e5ec;border:0;border-radius:12px;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff;transition:box-shadow .3s ease-in-out;color:#333333;font-family:inherit}
+.nm-input:focus{outline:none;box-shadow:inset 2px 2px 4px #b8bcc2,inset -2px -2px 4px #ffffff,0 0 0 2px #6d5dfc}
+.nm-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;color:#333333;background:#e0e5ec;box-shadow:3px 3px 6px #b8bcc2,-3px -3px 6px #ffffff;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.mono{font-family:'IBM Plex Mono',monospace}
+.bar-btn{flex:1 1 0;min-width:0;height:100%;padding:0;border:0;background:transparent;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;border-radius:10px 10px 0 0}
+:focus-visible{outline:2px solid #6d5dfc;outline-offset:3px}
+@media (max-width:640px){.nm-card{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff}.nm-btn{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; align-items: flex-start; background: #e0e5ec; color: #333333; font-family: 'Nunito', system-ui, sans-serif; font-size: 15px; line-height: 1.5">
+
+<aside class="nm-card" style="flex: 1 1 232px; box-sizing: border-box; margin: 20px; padding: 24px 16px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 6px">
+<div class="nm-card" style="width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: #5b4ae0">AMR</div>
+<div style="display: flex; flex-direction: column"><span style="font-weight: 800; font-size: 18px">Viajes</span><span style="font-size: 12px; color: #4b5563">Mutual AMR</span></div>
+</div>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 6px">
+<a class="nm-nav" href="Main.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="2"></rect><rect x="14" y="3" width="7" height="5" rx="2"></rect><rect x="14" y="12" width="7" height="9" rx="2"></rect><rect x="3" y="16" width="7" height="5" rx="2"></rect></svg>Panel</a>
+<a class="nm-nav" href="Contaduria-Rendicion.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h10v18l-2.5-1.5L12 21l-2.5-1.5L7 21z"></path><path d="M10 8h4M10 12h4"></path></svg>Rendiciones</a>
+<a class="nm-nav" href="Conciliacion.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3"></path></svg>Conciliación</a>
+<a class="nm-nav" href="Reportes.dc.html" aria-current="page" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h16"></path><path d="M7 16v-5M12 16V6M17 16v-8"></path></svg>Reportes</a>
+<a class="nm-nav" href="Politicas.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Políticas de gasto</a>
+<a class="nm-nav" href="Maestros.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2"></path></svg>Maestros</a>
+</nav>
+<div class="nm-well" style="display: flex; align-items: center; gap: 12px; padding: 12px">
+<div class="nm-card" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; box-shadow: 4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff">RF</div>
+<div style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 700; font-size: 14px">Rosa Ferrari</span><span style="font-size: 12px; color: #4b5563">Gerencia de Turismo · Aprobadora</span></div>
+</div>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px clamp(16px, 3vw, 44px) 56px">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; color: #4b5563">Análisis del gasto en viajes</span>
+<h1 style="margin: 0; font-weight: 800; font-size: clamp(34px, 4.4vw, 58px); line-height: 1.02; letter-spacing: -0.03em">Reportes.</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center">
+<sc-if value="{{exported}}" hint-placeholder-val="{{ false }}">
+<span role="status" class="nm-well" style="font-size: 14px; padding: 10px 16px">Listo · <span class="mono">rendiciones-2026-10.xlsx</span></span>
+</sc-if>
+<button type="button" class="nm-btn nm-primary" onClick="{{doExport}}" style="min-height: 50px; padding: 0 22px; font-size: 15px; display: inline-flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Exportar rendiciones a planilla</button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center">
+<div role="tablist" aria-label="Reporte" style="display: flex; flex-wrap: wrap; gap: 12px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" role="tab" class="nm-btn" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="min-height: 44px; padding: 0 18px; font-size: 14px">{{t.label}}</button>
+</sc-for>
+</div>
+<label for="area" style="font-size: 14px; font-weight: 700; color: #4b5563; margin-left: auto">Área</label>
+<select id="area" class="nm-input" style="min-height: 44px; padding: 0 14px; font-size: 14px"><option>Todas</option><option>Turismo</option><option>Comercial</option><option>Calidad y servicios</option></select>
+</div>
+
+<sc-if value="{{isEvol}}" hint-placeholder-val="{{ true }}">
+<section class="nm-card" style="padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Evolución mensual del gasto</h2>
+<p style="margin: 0; color: #4b5563; max-width: 560px">El gasto cayó un 32% entre julio y agosto y recién repunta en octubre. Enero a octubre suma $ 94,2 M.</p>
+</div>
+<div aria-live="polite" class="nm-well" style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 12px 18px; min-width: 180px">
+<span style="font-size: 13px; font-weight: 700; color: #5b4ae0">{{hvLabel}}</span>
+<span class="mono" style="font-size: 26px; letter-spacing: -0.03em">{{hvValue}}</span>
+</div>
+</div>
+<div class="nm-well" style="padding: 20px 16px 0">
+<div style="height: 260px; display: flex; align-items: flex-end; gap: clamp(4px, 1vw, 12px)">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+<button type="button" class="bar-btn" onMouseEnter="{{m.hover}}" onFocus="{{m.hover}}" aria-label="{{m.aria}}"><span style="{{m.bar}}"></span></button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; gap: clamp(4px, 1vw, 12px); padding: 0 16px; margin-top: -10px">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+<span class="mono" style="flex: 1 1 0; min-width: 0; text-align: center; font-size: 11px; color: #4b5563; overflow: hidden">{{m.short}}</span>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #4b5563">Millones de ARS por mes, de noviembre 2025 a octubre 2026. Pasá el cursor o recorré las barras con Tab.</span>
+</section>
+</sc-if>
+
+<sc-if value="{{isEmp}}" hint-placeholder-val="{{ false }}">
+<section class="nm-card" style="padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Gasto por empleado · 2026</h2>
+<p style="margin: 0; color: #4b5563; max-width: 620px">Los 18 empleados de Turismo concentran el 56% del gasto del año: $ 52,7 M de $ 94,2 M. Seis de los ocho que más gastan son de Turismo.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<sc-for list="{{emps}}" as="e" hint-placeholder-count="8">
+<div style="display: grid; grid-template-columns: minmax(120px, 200px) minmax(0, 1fr) 64px; gap: 16px; align-items: center">
+<span style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 700; font-size: 14px">{{e.n}}</span><span style="font-size: 12px; color: #4b5563">{{e.a}}</span></span>
+<span class="nm-well" style="height: 22px; border-radius: 999px; padding: 3px; box-sizing: border-box; display: flex"><span title="{{e.tip}}" style="{{e.bar}}"></span></span>
+<span class="mono" style="font-size: 14px; text-align: right">{{e.v}}</span>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #4b5563">Millones de ARS, enero a octubre 2026 · los 8 de mayor gasto · Turismo en violeta</span>
+</section>
+</sc-if>
+
+<sc-if value="{{isDesv}}" hint-placeholder-val="{{ false }}">
+<section class="nm-card" style="padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Desvíos respecto de la política · octubre</h2>
+<p style="margin: 0; color: #4b5563; max-width: 620px">7 desvíos; 4 se aprobaron por excepción. Dos de los siete son a Iguazú: conviene revisar ese tope.</p>
+</div>
+<div style="overflow-x: auto"><div style="min-width: 700px; display: flex; flex-direction: column">
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1.3fr) minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 1.4fr); gap: 12px; padding: 0 4px 10px; font-size: 13px; font-weight: 700; color: #4b5563"><span>Fecha</span><span>Empleado</span><span>Destino</span><span>Desvío</span><span>Resolución</span></div>
+<sc-for list="{{desv}}" as="d" hint-placeholder-count="7">
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1.3fr) minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 1.4fr); gap: 12px; align-items: center; min-height: 54px; padding: 6px 4px; border-top: 1px solid #cbd1da">
+<span class="mono" style="font-size: 13px">{{d.f}}</span>
+<span style="font-weight: 700; font-size: 14px">{{d.e}}</span>
+<span style="font-size: 14px">{{d.dst}}</span>
+<span style="font-size: 14px">{{d.dv}}</span>
+<span><span class="nm-chip"><span class="dot" style="{{d.dotStyle}}"></span>{{d.r}}</span></span>
+</div>
+</sc-for>
+</div></div>
+</section>
+</sc-if>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+var MONTHS = [['Nov', 'Noviembre 2025', 9.1], ['Dic', 'Diciembre 2025', 7.4], ['Ene', 'Enero 2026', 8.9], ['Feb', 'Febrero 2026', 9.6], ['Mar', 'Marzo 2026', 11.4], ['Abr', 'Abril 2026', 10.2], ['May', 'Mayo 2026', 11.8], ['Jun', 'Junio 2026', 10.7], ['Jul', 'Julio 2026', 9.67], ['Ago', 'Agosto 2026', 6.6], ['Sep', 'Septiembre 2026', 6.85], ['Oct', 'Octubre 2026', 8.43]];
+var EMPS = [['Lucía Medina', 'Turismo', 6.8], ['Ramiro Gil', 'Turismo', 6.1], ['Rosa Ferrari', 'Turismo', 5.4], ['Martín Paz', 'Comercial', 4.9], ['Paula Ríos', 'Turismo', 4.6], ['Federico Luna', 'Turismo', 4.2], ['Carla Sosa', 'Calidad y servicios', 3.1], ['Nicolás Vera', 'Turismo', 2.8]];
+var DESV = [
+  ['22/10', 'Rosa Ferrari', 'Iguazú', 'Tope excedido 6%', 'ok'], ['19/10', 'Sergio Vidal', 'Córdoba', 'Tope excedido 15%', 'ok'],
+  ['15/10', 'Federico Luna', 'Mendoza', 'Anticipación: 3 de 7 días', 'no'], ['11/10', 'Paula Ríos', 'Buenos Aires', 'Tope excedido 9%', 'ok'],
+  ['08/10', 'Carla Sosa', 'Córdoba', 'Alojamiento excede 12%', 'obs'], ['06/10', 'Martín Paz', 'Santiago de Chile', 'Anticipación: 6 de 15 días', 'ok'],
+  ['03/10', 'Ramiro Gil', 'Iguazú', 'Tope excedido 22%', 'pend']
+];
+var RES = { ok: ['Aprobado por excepción', '#4ecdc4'], no: ['Rechazado', '#6f7989'], obs: ['Observado', '#ff6b6b'], pend: ['Pendiente', '#ffe66d'] };
+function m1(v) { return '$ ' + v.toFixed(1).replace('.', ',') + ' M'; }
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'evol', hv: 11, exported: false }; }
+  renderVals() {
+    var self = this, S = this.state, emax = EMPS[0][2];
+    return {
+      tabs: [['evol', 'Evolución mensual'], ['emp', 'Por empleado'], ['desv', 'Desvíos de política']].map(function (t) {
+        return { label: t[1], sel: t[0] === S.tab ? 'true' : 'false', pick: function () { self.setState({ tab: t[0] }); } };
+      }),
+      isEvol: S.tab === 'evol', isEmp: S.tab === 'emp', isDesv: S.tab === 'desv',
+      hvLabel: MONTHS[S.hv][1], hvValue: m1(MONTHS[S.hv][2]),
+      months: MONTHS.map(function (m, i) {
+        var on = i === S.hv;
+        return { short: m[0], aria: m[1] + ': ' + m1(m[2]),
+          hover: function () { if (self.state.hv !== i) self.setState({ hv: i }); },
+          bar: 'display: block; height: ' + (m[2] / 12 * 100).toFixed(1) + '%; border-radius: 10px 10px 0 0; transition: background .3s ease-in-out; background: ' + (on ? '#6d5dfc' : '#6f7989') };
+      }),
+      emps: EMPS.map(function (e) {
+        return { n: e[0], a: e[1], v: e[2].toFixed(1).replace('.', ','), tip: e[0] + ': ' + m1(e[2]),
+          bar: 'display: block; height: 100%; border-radius: 999px; width: ' + (e[2] / emax * 100).toFixed(1) + '%; background: ' + (e[1] === 'Turismo' ? '#6d5dfc' : '#6f7989') };
+      }),
+      desv: DESV.map(function (d) { var r = RES[d[4]]; return { f: d[0], e: d[1], dst: d[2], dv: d[3], r: r[0], dotStyle: 'background: ' + r[1] }; }),
+      exported: S.exported,
+      doExport: function () { self.setState({ exported: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

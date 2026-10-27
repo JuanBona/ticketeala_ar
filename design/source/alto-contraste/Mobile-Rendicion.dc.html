@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Rendición de gastos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0F1210}a:hover{color:#3A3F37}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; background: #E9EBE4; color: #0F1210; font-family: 'Geist', system-ui, sans-serif; font-size: 15px; display: flex; flex-direction: column; gap: 14px; padding: 24px 20px 20px; overflow: hidden">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Mobile-Inicio.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 14px; border: 1.5px solid #0F1210; display: flex; align-items: center; justify-content: center; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></a>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 999px; border: 1.5px solid #0F1210; letter-spacing: 0.08em">BORRADOR</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #50554D">R-0418 · 24–27 OCT</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 36px; line-height: 0.95; letter-spacing: -0.045em">Buenos Aires</h1>
+</div>
+
+<div style="background: #0F1210; color: #F2F3EF; border-radius: 26px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 30px 50px -28px rgba(15,18,16,.6)">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 8px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: #C9CDC2">Saldo a devolver</span><span style="font-size: 12px; color: #A9AEA3">adelanto − rendido</span></div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 32px; letter-spacing: -0.04em; color: #C8F05A">{{saldo}}</span>
+</div>
+<div style="height: 10px; border-radius: 999px; background: #262B26; overflow: hidden"><div style="{{barStyle}}"></div></div>
+<div style="display: flex; justify-content: space-between; gap: 8px; font-size: 13px">
+<span style="color: #C9CDC2">Rendido <span style="font-family: 'Geist Mono', monospace; color: #F2F3EF">{{rendido}}</span></span>
+<span style="color: #C9CDC2">Adelanto <span style="font-family: 'Geist Mono', monospace; color: #F2F3EF">$ 600.000</span></span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; background: #F7F8F4; border-radius: 22px; padding: 2px 6px 2px 16px; box-shadow: 0 1px 0 rgba(15,18,16,.06), 0 14px 30px -18px rgba(15,18,16,.25)">
+<sc-for list="{{items}}" as="g" hint-placeholder-count="5">
+<div style="{{g.rowStyle}}">
+<div style="display: flex; flex-direction: column; flex: 1; min-width: 0"><span style="font-weight: 600; font-size: 14px">{{g.desc}} <sc-if value="{{g.alert}}" hint-placeholder-val="{{ false }}"><span style="font-family: 'Geist Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 6px; background: #FF6A3D; vertical-align: 2px">SIN CAE</span></sc-if></span><span style="font-size: 12px; color: #50554D">{{g.tipo}} · {{g.fecha}}</span></div>
+<span style="font-family: 'Geist Mono', monospace; font-size: 14px">{{g.montoTxt}}</span>
+<button type="button" onClick="{{g.del}}" aria-label="{{g.aria}}" style="flex: none; width: 44px; height: 44px; border: 0; border-radius: 12px; background: transparent; color: #50554D; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"></path></svg></button>
+</div>
+</sc-for>
+</div>
+
+<a href="Mobile-OCR.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 18px; border: 1.5px dashed #0F1210; text-decoration: none; font-weight: 600; font-size: 15px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Escanear comprobante</a>
+
+<button type="button" style="margin-top: auto; min-height: 56px; border-radius: 18px; background: #C8F05A; color: #0F1210; border: 1.5px solid #0F1210; font-size: 16px; font-weight: 600; box-shadow: 4px 4px 0 #0F1210">Presentar rendición</button>
+
+<sc-if value="{{hasUndo}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position: absolute; left: 20px; right: 20px; bottom: 92px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 16px; background: #0F1210; color: #F2F3EF; box-shadow: 0 20px 40px -16px rgba(15,18,16,.6)">
+<span style="flex: 1; font-size: 14px">{{undoText}}</span>
+<button type="button" onClick="{{undo}}" style="min-height: 44px; padding: 0 14px; border-radius: 12px; border: 0; background: #C8F05A; color: #0F1210; font-weight: 600; font-size: 14px">Deshacer</button>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+var G = [
+  { id: 'g1', desc: 'Hotel · 3 noches', tipo: 'Alojamiento', fecha: '24/10', monto: 342000 },
+  { id: 'g2', desc: 'Traslado aeropuerto', tipo: 'Transporte', fecha: '24/10', monto: 28500 },
+  { id: 'g3', desc: 'Almuerzo', tipo: 'Comida', fecha: '25/10', monto: 48320, alert: true },
+  { id: 'g4', desc: 'Cena con operadores', tipo: 'Comida', fecha: '25/10', monto: 61520 },
+  { id: 'g5', desc: 'Movilidad urbana', tipo: 'Transporte', fecha: '24–27/10', monto: 32000 }
+];
+var ADEL = 600000;
+function f(n) { return '$ ' + n.toLocaleString('es-AR'); }
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { gone: {}, last: null }; }
+  renderVals() {
+    var self = this, S = this.state;
+    var live = G.filter(function (g) { return !S.gone[g.id]; });
+    var total = live.reduce(function (s, g) { return s + g.monto; }, 0);
+    var saldo = ADEL - total;
+    var lastG = S.last ? G.filter(function (g) { return g.id === S.last; })[0] : null;
+    return {
+      items: live.map(function (g, i) {
+        return Object.assign({}, g, {
+          montoTxt: f(g.monto), aria: 'Eliminar gasto ' + g.desc,
+          rowStyle: 'display: flex; align-items: center; gap: 8px; min-height: 54px; ' + (i < live.length - 1 ? 'border-bottom: 1px solid #DDE0D7' : ''),
+          del: function () { var n = Object.assign({}, self.state.gone); n[g.id] = true; self.setState({ gone: n, last: g.id }); }
+        });
+      }),
+      rendido: f(total), saldo: f(Math.abs(saldo)),
+      barStyle: 'height: 100%; border-radius: 999px; background: #C8F05A; width: ' + Math.min(100, Math.round(total / ADEL * 100)) + '%',
+      hasUndo: !!lastG,
+      undoText: lastG ? 'Eliminaste ' + lastG.desc.toLowerCase() + ' · totales recalculados' : '',
+      undo: function () { var n = Object.assign({}, self.state.gone); delete n[self.state.last]; self.setState({ gone: n, last: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

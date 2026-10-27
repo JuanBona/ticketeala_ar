@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AMR Viajes — Reportes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E9EBE4}
+a{color:#0F1210}a:hover{color:#3A3F37}
+button,select{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid #0F1210;outline-offset:2px}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #E9EBE4; color: #0F1210; font-family: 'Geist', system-ui, sans-serif; font-size: 15px; line-height: 1.45">
+
+<aside style="flex: 1 1 232px; box-sizing: border-box; background: #0F1210; color: #F2F3EF; padding: 28px 20px; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="width: 44px; height: 44px; border-radius: 14px; background: #C8F05A; color: #0F1210; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 15px">AMR</div>
+<div style="display: flex; flex-direction: column"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.02em">Viajes</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #A9AEA3; letter-spacing: 0.08em">MUTUAL AMR</span></div>
+</div>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 6px">
+<a href="Main.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Panel</a>
+<a href="Contaduria-Rendicion.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h10v18l-2.5-1.5L12 21l-2.5-1.5L7 21z"></path><path d="M10 8h4M10 12h4"></path></svg>Rendiciones</a>
+<a href="Conciliacion.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3"></path></svg>Conciliación</a>
+<a href="Reportes.dc.html" aria-current="page" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; background: #F2F3EF; color: #0F1210; text-decoration: none; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h16"></path><path d="M7 16v-5M12 16V6M17 16v-8"></path></svg>Reportes</a>
+<a href="Politicas.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Políticas de gasto</a>
+<a href="Maestros.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2"></path></svg>Maestros</a>
+</nav>
+<div style="margin-top: auto; display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: #1C201C">
+<div style="width: 40px; height: 40px; border-radius: 50%; background: #F2F3EF; color: #0F1210; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px">RF</div>
+<div style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 600; font-size: 14px">Rosa Ferrari</span><span style="font-size: 12px; color: #A9AEA3">Gerencia de Turismo · Aprobadora</span></div>
+</div>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 36px clamp(16px, 3vw, 48px) 56px">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #50554D">ANÁLISIS DEL GASTO EN VIAJES</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 64px); line-height: 0.95; letter-spacing: -0.045em">Reportes.</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+<sc-if value="{{exported}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="font-size: 14px; padding: 10px 14px; border-radius: 14px; background: #F7F8F4; border: 1.5px solid #0F1210">Listo · <span style="font-family: 'Geist Mono', monospace">rendiciones-2026-10.xlsx</span></span>
+</sc-if>
+<button type="button" onClick="{{doExport}}" style="min-height: 52px; padding: 0 22px; border-radius: 999px; background: #C8F05A; color: #0F1210; border: 1.5px solid #0F1210; box-shadow: 4px 4px 0 #0F1210; font-weight: 600; display: inline-flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Exportar rendiciones a planilla</button>
+</div>
+</header>
+
+<div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+<div role="tablist" aria-label="Reporte" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; background: #F7F8F4; border: 1.5px solid #0F1210">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+<label for="area" style="font-size: 13px; color: #3A3F37; margin-left: auto">Área</label>
+<select id="area" style="min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #0F1210; background: #F7F8F4; font-size: 14px; color: #0F1210"><option>Todas</option><option>Turismo</option><option>Comercial</option><option>Calidad y servicios</option></select>
+</div>
+
+<sc-if value="{{isEvol}}" hint-placeholder-val="{{ true }}">
+<section style="background: #F7F8F4; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 0 rgba(15,18,16,.06), 0 20px 40px -24px rgba(15,18,16,.28)">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.03em">Evolución mensual del gasto</h2>
+<p style="margin: 0; color: #3A3F37; max-width: 560px">El gasto cayó un 32% entre julio y agosto y recién repunta en octubre. Enero a octubre suma $ 94,2 M.</p>
+</div>
+<div aria-live="polite" style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding: 12px 16px; border-radius: 16px; background: #0F1210; color: #F2F3EF; min-width: 180px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #C8F05A">{{hvLabel}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 26px; letter-spacing: -0.03em">{{hvValue}}</span>
+</div>
+</div>
+<div style="position: relative; height: 280px; display: flex; align-items: flex-end; gap: clamp(4px, 1vw, 12px); border-bottom: 1.5px solid #0F1210; background-image: linear-gradient(#DDE0D7 1px, transparent 1px); background-size: 100% 70px; background-position: 0 -1px">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+<button type="button" onMouseEnter="{{m.hover}}" onFocus="{{m.hover}}" aria-label="{{m.aria}}" style="flex: 1 1 0; min-width: 0; height: 100%; padding: 0; border: 0; background: transparent; display: flex; flex-direction: column; justify-content: flex-end">
+<span style="{{m.bar}}"></span>
+</button>
+</sc-for>
+</div>
+<div style="display: flex; gap: clamp(4px, 1vw, 12px); margin-top: -10px">
+<sc-for list="{{months}}" as="m" hint-placeholder-count="12">
+<span style="flex: 1 1 0; min-width: 0; text-align: center; font-family: 'Geist Mono', monospace; font-size: 11px; color: #3A3F37; overflow: hidden">{{m.short}}</span>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #50554D">Millones de ARS por mes · noviembre 2025 a octubre 2026 · pasá el cursor o recorré las barras con Tab</span>
+</section>
+</sc-if>
+
+<sc-if value="{{isEmp}}" hint-placeholder-val="{{ false }}">
+<section style="background: #F7F8F4; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 18px; box-shadow: 0 1px 0 rgba(15,18,16,.06), 0 20px 40px -24px rgba(15,18,16,.28)">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.03em">Gasto por empleado · 2026</h2>
+<p style="margin: 0; color: #3A3F37; max-width: 620px">Los 18 empleados de Turismo concentran el 56% del gasto del año: $ 52,7 M de $ 94,2 M. Seis de los ocho que más gastan son de Turismo.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{emps}}" as="e" hint-placeholder-count="8">
+<div style="display: grid; grid-template-columns: minmax(120px, 200px) minmax(0, 1fr) 72px; gap: 14px; align-items: center">
+<span style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 600; font-size: 14px">{{e.n}}</span><span style="font-size: 12px; color: #50554D">{{e.a}}</span></span>
+<span style="height: 22px; display: flex"><span title="{{e.tip}}" style="{{e.bar}}"></span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 14px; text-align: right">{{e.v}}</span>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #50554D">Millones de ARS · enero a octubre 2026 · los 8 de mayor gasto</span>
+</section>
+</sc-if>
+
+<sc-if value="{{isDesv}}" hint-placeholder-val="{{ false }}">
+<section style="background: #F7F8F4; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 1px 0 rgba(15,18,16,.06), 0 20px 40px -24px rgba(15,18,16,.28)">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.03em">Desvíos respecto de la política · octubre</h2>
+<p style="margin: 0; color: #3A3F37; max-width: 620px">7 desvíos; 4 se aprobaron por excepción. Dos de los siete son a Iguazú: conviene revisar ese tope.</p>
+</div>
+<div style="overflow-x: auto"><div style="min-width: 700px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1.3fr) minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 1.3fr); gap: 12px; padding: 0 14px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #50554D"><span>FECHA</span><span>EMPLEADO</span><span>DESTINO</span><span>DESVÍO</span><span>RESOLUCIÓN</span></div>
+<sc-for list="{{desv}}" as="d" hint-placeholder-count="7">
+<div style="display: grid; grid-template-columns: 64px minmax(0, 1.3fr) minmax(0, 1.1fr) minmax(0, 1.6fr) minmax(0, 1.3fr); gap: 12px; align-items: center; min-height: 52px; padding: 8px 14px; border-radius: 14px; background: #ECEEE8">
+<span style="font-family: 'Geist Mono', monospace; font-size: 13px">{{d.f}}</span>
+<span style="font-weight: 600; font-size: 14px">{{d.e}}</span>
+<span style="font-size: 14px">{{d.dst}}</span>
+<span style="font-size: 14px">{{d.dv}}</span>
+<span><span style="{{d.chipStyle}}">{{d.r}}</span></span>
+</div>
+</sc-for>
+</div></div>
+</section>
+</sc-if>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+var MONTHS = [['Nov', 'Noviembre 2025', 9.1], ['Dic', 'Diciembre 2025', 7.4], ['Ene', 'Enero 2026', 8.9], ['Feb', 'Febrero 2026', 9.6], ['Mar', 'Marzo 2026', 11.4], ['Abr', 'Abril 2026', 10.2], ['May', 'Mayo 2026', 11.8], ['Jun', 'Junio 2026', 10.7], ['Jul', 'Julio 2026', 9.67], ['Ago', 'Agosto 2026', 6.6], ['Sep', 'Septiembre 2026', 6.85], ['Oct', 'Octubre 2026', 8.43]];
+var EMPS = [['Lucía Medina', 'Turismo', 6.8], ['Ramiro Gil', 'Turismo', 6.1], ['Rosa Ferrari', 'Turismo', 5.4], ['Martín Paz', 'Comercial', 4.9], ['Paula Ríos', 'Turismo', 4.6], ['Federico Luna', 'Turismo', 4.2], ['Carla Sosa', 'Calidad y servicios', 3.1], ['Nicolás Vera', 'Turismo', 2.8]];
+var DESV = [
+  ['22/10', 'Rosa Ferrari', 'Iguazú', 'Tope excedido 6%', 'ok'], ['19/10', 'Sergio Vidal', 'Córdoba', 'Tope excedido 15%', 'ok'],
+  ['15/10', 'Federico Luna', 'Mendoza', 'Anticipación: 3 de 7 días', 'no'], ['11/10', 'Paula Ríos', 'Buenos Aires', 'Tope excedido 9%', 'ok'],
+  ['08/10', 'Carla Sosa', 'Córdoba', 'Alojamiento excede 12%', 'obs'], ['06/10', 'Martín Paz', 'Santiago de Chile', 'Anticipación: 6 de 15 días', 'ok'],
+  ['03/10', 'Ramiro Gil', 'Iguazú', 'Tope excedido 22%', 'pend']
+];
+function m1(v) { return '$ ' + v.toFixed(1).replace('.', ',') + ' M'; }
+var CHIP = "font-family: 'Geist Mono', monospace; font-size: 11px; padding: 3px 8px; border-radius: 8px; border: 1px solid #0F1210; white-space: nowrap; ";
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'evol', hv: 11, exported: false }; }
+  renderVals() {
+    var self = this, S = this.state;
+    var max = 12;
+    var T = [['evol', 'Evolución mensual'], ['emp', 'Por empleado'], ['desv', 'Desvíos de política']];
+    var emax = EMPS[0][2];
+    var RES = { ok: ['Aprobado por excepción', 'background: #F7F8F4; color: #0F1210'], no: ['Rechazado', 'background: #0F1210; color: #F2F3EF'], obs: ['Observado', 'background: #FF6A3D; color: #0F1210'], pend: ['Pendiente', 'background: transparent; color: #0F1210; border-style: dashed'] };
+    return {
+      tabs: T.map(function (t) {
+        var on = t[0] === S.tab;
+        return { label: t[1], sel: on ? 'true' : 'false', pick: function () { self.setState({ tab: t[0] }); },
+          style: 'min-height: 40px; padding: 0 16px; border-radius: 999px; border: 0; font-size: 14px; font-weight: 600; ' + (on ? 'background: #0F1210; color: #F2F3EF' : 'background: transparent; color: #0F1210') };
+      }),
+      isEvol: S.tab === 'evol', isEmp: S.tab === 'emp', isDesv: S.tab === 'desv',
+      hvLabel: MONTHS[S.hv][1].toUpperCase(), hvValue: m1(MONTHS[S.hv][2]),
+      months: MONTHS.map(function (m, i) {
+        var on = i === S.hv;
+        return { short: m[0], aria: m[1] + ': ' + m1(m[2]),
+          hover: function () { if (self.state.hv !== i) self.setState({ hv: i }); },
+          bar: 'display: block; height: ' + (m[2] / max * 100).toFixed(1) + '%; border-radius: 4px 4px 0 0; border: 1.5px solid #0F1210; border-bottom: 0; background: ' + (on ? '#C8F05A' : '#0F1210') };
+      }),
+      emps: EMPS.map(function (e) {
+        return { n: e[0], a: e[1], v: e[2].toFixed(1).replace('.', ','), tip: e[0] + ': ' + m1(e[2]),
+          bar: 'display: block; height: 100%; width: ' + (e[2] / emax * 100).toFixed(1) + '%; border-radius: 0 4px 4px 0; background: #0F1210' };
+      }),
+      desv: DESV.map(function (d) { var r = RES[d[4]]; return { f: d[0], e: d[1], dst: d[2], dv: d[3], r: r[0], chipStyle: CHIP + r[1] }; }),
+      exported: S.exported,
+      doExport: function () { self.setState({ exported: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AMR Viajes — Panel de gerencia</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e0e5ec}
+a{color:#5b4ae0}a:hover{color:#4a3bc4}
+.nm-card{background:#e0e5ec;border-radius:24px;box-shadow:8px 8px 16px #b8bcc2,-8px -8px 16px #ffffff}
+.nm-well{background:#e0e5ec;border-radius:16px;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff}
+.nm-btn{background:#e0e5ec;color:#333333;border:0;border-radius:12px;box-shadow:6px 6px 12px #b8bcc2,-6px -6px 12px #ffffff;transition:box-shadow .3s ease-in-out,color .3s ease-in-out;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none}
+.nm-btn:hover{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff;color:#333333}
+.nm-btn:active,.nm-btn[aria-pressed="true"],.nm-btn[aria-selected="true"]{box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff;color:#5b4ae0}
+.nm-primary,.nm-primary:hover{background:#6d5dfc;color:#ffffff}
+.nm-primary:active{box-shadow:inset 4px 4px 8px #5446d4,inset -4px -4px 8px #8a7cff;color:#ffffff}
+.nm-nav{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:12px;color:#4b5563;text-decoration:none;font-weight:600;transition:box-shadow .3s ease-in-out,color .3s ease-in-out}
+.nm-nav:hover{color:#333333}
+.nm-nav[aria-current="page"]{color:#5b4ae0;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff}
+.nm-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;color:#333333;background:#e0e5ec;box-shadow:3px 3px 6px #b8bcc2,-3px -3px 6px #ffffff;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.mono{font-family:'IBM Plex Mono',monospace}
+:focus-visible{outline:2px solid #6d5dfc;outline-offset:3px}
+@media (max-width:640px){.nm-card{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff}.nm-btn{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; align-items: flex-start; background: #e0e5ec; color: #333333; font-family: 'Nunito', system-ui, sans-serif; font-size: 15px; line-height: 1.5">
+
+<aside class="nm-card" style="flex: 1 1 232px; box-sizing: border-box; margin: 20px; padding: 24px 16px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 6px">
+<div class="nm-card" style="width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: #5b4ae0">AMR</div>
+<div style="display: flex; flex-direction: column"><span style="font-weight: 800; font-size: 18px">Viajes</span><span style="font-size: 12px; color: #4b5563">Mutual AMR</span></div>
+</div>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 6px">
+<a class="nm-nav" href="Main.dc.html" aria-current="page" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="2"></rect><rect x="14" y="3" width="7" height="5" rx="2"></rect><rect x="14" y="12" width="7" height="9" rx="2"></rect><rect x="3" y="16" width="7" height="5" rx="2"></rect></svg>Panel<span class="nm-chip mono" style="margin-left: auto; padding: 2px 8px">4</span></a>
+<a class="nm-nav" href="Contaduria-Rendicion.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h10v18l-2.5-1.5L12 21l-2.5-1.5L7 21z"></path><path d="M10 8h4M10 12h4"></path></svg>Rendiciones</a>
+<a class="nm-nav" href="Conciliacion.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3"></path></svg>Conciliación</a>
+<a class="nm-nav" href="Reportes.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h16"></path><path d="M7 16v-5M12 16V6M17 16v-8"></path></svg>Reportes</a>
+<a class="nm-nav" href="Politicas.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Políticas de gasto</a>
+<a class="nm-nav" href="Maestros.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2"></path></svg>Maestros</a>
+</nav>
+<div class="nm-well" style="display: flex; align-items: center; gap: 12px; padding: 12px">
+<div class="nm-card" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; box-shadow: 4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff">RF</div>
+<div style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 700; font-size: 14px">Rosa Ferrari</span><span style="font-size: 12px; color: #4b5563">Gerencia de Turismo · Aprobadora</span></div>
+</div>
+</aside>
+
+<main id="panel" style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px clamp(16px, 3vw, 44px) 56px">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; color: #4b5563">Miércoles 7 de octubre · {{periodLabel}}</span>
+<h1 style="margin: 0; font-weight: 800; font-size: clamp(34px, 4.4vw, 58px); line-height: 1.02; letter-spacing: -0.03em">Gasto en viajes,<br>en tiempo real.</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
+<div role="group" aria-label="Período" style="display: flex; gap: 10px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+<button type="button" class="nm-btn" onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="min-height: 44px; padding: 0 16px; font-size: 14px">{{t.label}}</button>
+</sc-for>
+</div>
+<a class="nm-btn nm-primary" href="Mobile-Solicitud.dc.html" style="display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; font-size: 15px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nueva solicitud</a>
+</div>
+</header>
+
+<section aria-label="Indicadores" style="display: flex; flex-wrap: wrap; gap: 28px">
+<div class="nm-card" style="flex: 2 1 420px; min-width: 0; box-sizing: border-box; padding: 32px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+<span style="font-weight: 700; color: #4b5563">Gasto consolidado · todas las áreas</span>
+<span class="nm-chip mono">ARS</span>
+</div>
+<div class="mono" style="font-weight: 500; font-size: clamp(40px, 5.6vw, 72px); line-height: 1; letter-spacing: -0.04em">{{total}}</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #4b5563; flex-wrap: wrap"><span>Presupuesto consumido</span><span class="mono">{{budgetTxt}}</span></div>
+<div class="nm-well" style="height: 16px; border-radius: 999px; padding: 3px; box-sizing: border-box"><div style="height: 100%; width: {{budgetPct}}; background: #6d5dfc; border-radius: 999px"></div></div>
+</div>
+</div>
+<div style="flex: 1 1 280px; min-width: 0; display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 20px">
+<div class="nm-card" style="padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+<span style="font-weight: 600; color: #4b5563">Rendiciones pendientes</span>
+<span class="mono" style="font-size: 30px">{{pend}}</span>
+</div>
+<div class="nm-card" style="padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+<span style="font-weight: 600; color: #4b5563">Tiempo prom. de rendición</span>
+<span class="mono" style="font-size: 30px">{{dias}}<span style="font-size: 14px; color: #4b5563"> días</span></span>
+</div>
+<div class="nm-card" style="padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+<span style="display: flex; flex-direction: column; gap: 6px"><span style="font-weight: 600; color: #4b5563">Desvíos de política</span><span class="nm-chip" style="align-self: flex-start"><span class="dot" style="background: #ff6b6b"></span>Requieren revisión</span></span>
+<span class="mono" style="font-size: 30px">{{desv}}</span>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; gap: 28px">
+<div class="nm-card" style="flex: 3 1 520px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Gasto por área</h2>
+<span style="font-size: 13px; color: #4b5563">Millones de ARS · Turismo resaltado</span>
+</div>
+<div class="nm-well" style="padding: 20px 16px 0; display: flex; flex-direction: column">
+<div style="display: flex; align-items: flex-end; gap: clamp(8px, 1.6vw, 20px); height: 230px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="6">
+<div style="flex: 1 1 0; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px">
+<span class="mono" style="font-size: 12px; text-align: center">{{b.amt}}</span>
+<div title="{{b.tip}}" style="height: {{b.h}}; background: {{b.fill}}; border-radius: 10px 10px 0 0"></div>
+</div>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; gap: clamp(8px, 1.6vw, 20px); padding: 0 16px; margin-top: -8px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="6">
+<span style="flex: 1 1 0; min-width: 0; text-align: center; font-size: 12px; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{b.area}}</span>
+</sc-for>
+</div>
+</div>
+
+<div id="auditoria" class="nm-card" style="flex: 2 1 340px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Alertas de auditoría</h2>
+<span style="font-size: 13px; color: #4b5563">Reglas deterministas</span>
+</div>
+<div style="display: flex; flex-direction: column">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid #cbd1da"><span class="nm-chip" style="align-self: flex-start"><span class="dot" style="background: #ff6b6b"></span>Sin CAE</span><span style="font-weight: 700; font-size: 14px">Almuerzo · $ 48.320</span><span style="font-size: 13px; color: #4b5563">L. Medina · Rendición R-0418</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid #cbd1da"><span class="nm-chip" style="align-self: flex-start"><span class="dot" style="background: #ff6b6b"></span>Duplicado</span><span style="font-weight: 700; font-size: 14px">Mismo CUIT, fecha e importe</span><span style="font-size: 13px; color: #4b5563">R. Gil · 2 comprobantes</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0; border-bottom: 1px solid #cbd1da"><span class="nm-chip" style="align-self: flex-start"><span class="dot" style="background: #ffe66d"></span>Supera tope</span><span style="font-weight: 700; font-size: 14px">Alojamiento +12% s/ política</span><span style="font-size: 13px; color: #4b5563">C. Sosa · Senior × Córdoba</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0"><span class="nm-chip" style="align-self: flex-start"><span class="dot" style="background: #ffe66d"></span>Fuera de horario</span><span style="font-weight: 700; font-size: 14px">Comida registrada 03:40 h</span><span style="font-size: 13px; color: #4b5563">M. Paz · Rendición R-0411</span></div>
+</div>
+<a href="Contaduria-Rendicion.dc.html" style="margin-top: auto; font-weight: 700; font-size: 14px">Ver todas las alertas →</a>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; gap: 28px">
+<div id="bandeja" class="nm-card" style="flex: 3 1 520px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Bandeja de aprobación</h2>
+<span style="font-size: 13px; color: #4b5563">{{pendingCount}} pendientes</span>
+</div>
+<div style="display: flex; flex-direction: column">
+<sc-for list="{{approvals}}" as="a" hint-placeholder-count="4">
+<div style="{{a.rowStyle}}">
+<div class="nm-well" style="flex: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px">{{a.ini}}</div>
+<div style="flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-weight: 700">{{a.name}} <span style="font-weight: 400; color: #4b5563">· {{a.area}}</span></span>
+<span style="font-size: 13px; color: #4b5563">{{a.dest}} · {{a.dates}}</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px">
+<span class="mono" style="font-size: 16px">{{a.amount}}</span>
+<span class="nm-chip"><span class="dot" style="{{a.dotStyle}}"></span>{{a.chip}}</span>
+</div>
+<div style="flex: 0 0 auto; display: flex; gap: 10px">
+<sc-if value="{{a.pending}}" hint-placeholder-val="{{ true }}">
+<button type="button" class="nm-btn" onClick="{{a.reject}}" aria-label="Rechazar solicitud" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+<button type="button" class="nm-btn nm-primary" onClick="{{a.approve}}" style="min-height: 44px; padding: 0 18px; font-size: 14px">Aprobar</button>
+</sc-if>
+<sc-if value="{{a.decided}}" hint-placeholder-val="{{ false }}">
+<span class="nm-well" style="display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; font-weight: 700; font-size: 14px; border-radius: 12px"><span class="dot" style="{{a.resDot}}"></span>{{a.result}}</span>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div class="nm-card" style="flex: 2 1 340px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Conciliación de viáticos</h2>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="font-weight: 700">R-0418 · Buenos Aires</span><span class="mono">−$ 87.660</span></div>
+<div class="nm-well" style="height: 12px; border-radius: 999px; padding: 2px; box-sizing: border-box"><div style="height: 100%; width: 85%; background: #6d5dfc; border-radius: 999px"></div></div>
+<span style="font-size: 13px; color: #4b5563">Rendido $ 512.340 de $ 600.000 · a devolver</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="font-weight: 700">R-0411 · Santiago de Chile</span><span class="mono" style="color: #b33a3a">+$ 41.200</span></div>
+<div class="nm-well" style="height: 12px; border-radius: 999px; padding: 2px; box-sizing: border-box"><div style="height: 100%; width: 100%; background: #ff6b6b; border-radius: 999px"></div></div>
+<span style="font-size: 13px; color: #4b5563">Superó el adelanto · a pagar al empleado</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span style="font-weight: 700">R-0407 · Córdoba</span><span class="mono">$ 0</span></div>
+<div class="nm-well" style="height: 12px; border-radius: 999px; padding: 2px; box-sizing: border-box"><div style="height: 100%; width: 100%; background: #4ecdc4; border-radius: 999px"></div></div>
+<span style="font-size: 13px; color: #4b5563">Aprobada por Contaduría · total congelado</span>
+</div>
+<a href="Conciliacion.dc.html" style="margin-top: auto; font-weight: 700; font-size: 14px">Exportar asientos contables →</a>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1560}}'>
+var DATA = {
+  mes: { label: 'Octubre 2026', total: '$ 8.426.300', pct: 62, budget: '62% de $ 13,5 M', pend: '14', dias: '4,2', desv: '7',
+    bars: [['Turismo', 4.1], ['Comercial', 1.2], ['Admin.', 0.9], ['Calidad', 0.8], ['Tecnología', 0.7], ['Finanzas', 0.7]] },
+  tri: { label: 'Agosto a octubre 2026', total: '$ 21.880.000', pct: 54, budget: '54% de $ 40,5 M', pend: '31', dias: '5,1', desv: '18',
+    bars: [['Turismo', 11.3], ['Comercial', 3.4], ['Admin.', 2.2], ['Calidad', 1.9], ['Tecnología', 1.6], ['Finanzas', 1.5]] },
+  anio: { label: 'Año 2026', total: '$ 94.150.000', pct: 78, budget: '78% de $ 121 M', pend: '31', dias: '6,3', desv: '64',
+    bars: [['Turismo', 52.7], ['Comercial', 13.1], ['Admin.', 9.4], ['Calidad', 7.5], ['Tecnología', 6.2], ['Finanzas', 5.3]] }
+};
+var APPROVALS = [
+  { id: 's1', ini: 'LM', name: 'Lucía Medina', area: 'Turismo', dest: 'Buenos Aires · Feria de turismo', dates: '24–27 oct', amount: '$ 612.000', policy: 'ok' },
+  { id: 's2', ini: 'RG', name: 'Ramiro Gil', area: 'Turismo', dest: 'Iguazú · Workshop hotelero', dates: '02–04 nov', amount: '$ 948.500', policy: 'over', note: 'Excede tope +22%' },
+  { id: 's3', ini: 'CS', name: 'Carla Sosa', area: 'Calidad', dest: 'Córdoba · Capacitación', dates: '12–13 nov', amount: '$ 287.000', policy: 'ok' },
+  { id: 's4', ini: 'MP', name: 'Martín Paz', area: 'Comercial', dest: 'Santiago de Chile · Proveedores', dates: '19–22 nov', amount: 'USD 1.240', policy: 'over', note: 'Anticipación < 10 días' }
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { period: 'mes', dec: {} }; }
+  renderVals() {
+    var self = this, p = this.state.period, D = DATA[p];
+    var max = Math.max.apply(null, D.bars.map(function (b) { return b[1]; }));
+    var dec = this.state.dec, pendingCount = 0;
+    var approvals = APPROVALS.map(function (a, i) {
+      var d = dec[a.id];
+      if (!d) pendingCount++;
+      var setD = function (v) { var n = Object.assign({}, self.state.dec); n[a.id] = v; self.setState({ dec: n }); };
+      return Object.assign({}, a, {
+        chip: a.policy === 'ok' ? 'Dentro de política' : a.note,
+        dotStyle: 'background: ' + (a.policy === 'ok' ? '#4ecdc4' : '#ff6b6b'),
+        rowStyle: 'display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; padding: 16px 4px;' + (i < APPROVALS.length - 1 ? ' border-bottom: 1px solid #cbd1da' : ''),
+        pending: !d, decided: !!d,
+        result: d === 'ok' ? 'Aprobada' : 'Rechazada',
+        resDot: 'background: ' + (d === 'ok' ? '#4ecdc4' : '#6f7989'),
+        approve: function () { setD('ok'); }, reject: function () { setD('no'); }
+      });
+    });
+    return {
+      periodLabel: D.label, total: D.total, budgetPct: D.pct + '%', budgetTxt: D.budget,
+      pend: D.pend, dias: D.dias, desv: D.desv,
+      bars: D.bars.map(function (b, i) {
+        return { area: b[0], amt: String(b[1]).replace('.', ','), tip: b[0] + ': $ ' + String(b[1]).replace('.', ',') + ' M', h: Math.round(b[1] / max * 82) + '%', fill: i === 0 ? '#6d5dfc' : '#6f7989' };
+      }),
+      tabs: [['mes', 'Mes'], ['tri', '3 meses'], ['anio', 'Año']].map(function (t) {
+        return { label: t[1], pressed: t[0] === p ? 'true' : 'false', pick: function () { self.setState({ period: t[0] }); } };
+      }),
+      approvals: approvals, pendingCount: String(pendingCount)
+    };
+  }
+}
+</script>
+</body>
+</html>

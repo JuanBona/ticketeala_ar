@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ingresar a la app</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e0e5ec}
+a{color:#5b4ae0}a:hover{color:#4a3bc4}
+.nm-card{background:#e0e5ec;border-radius:20px;box-shadow:5px 5px 10px #b8bcc2,-5px -5px 10px #ffffff}
+.nm-well{background:#e0e5ec;border-radius:14px;box-shadow:inset 3px 3px 6px #b8bcc2,inset -3px -3px 6px #ffffff}
+.nm-btn{background:#e0e5ec;color:#333333;border:0;border-radius:12px;box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff;transition:box-shadow .3s ease-in-out,color .3s ease-in-out;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none}
+.nm-btn:hover{box-shadow:2px 2px 4px #b8bcc2,-2px -2px 4px #ffffff;color:#333333}
+.nm-btn:active{box-shadow:inset 3px 3px 6px #b8bcc2,inset -3px -3px 6px #ffffff;color:#5b4ae0}
+.nm-primary,.nm-primary:hover{background:#6d5dfc;color:#ffffff}
+.nm-primary:active{box-shadow:inset 3px 3px 6px #5446d4,inset -3px -3px 6px #8a7cff;color:#ffffff}
+.nm-input{background:#e0e5ec;border:0;border-radius:12px;box-shadow:inset 3px 3px 6px #b8bcc2,inset -3px -3px 6px #ffffff;transition:box-shadow .3s ease-in-out;color:#333333;font-family:inherit}
+.nm-input:focus{outline:none;box-shadow:inset 1px 1px 2px #b8bcc2,inset -1px -1px 2px #ffffff,0 0 0 2px #6d5dfc}
+:focus-visible{outline:2px solid #6d5dfc;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #e0e5ec; color: #333333; font-family: 'Nunito', system-ui, sans-serif; font-size: 15px; display: flex; flex-direction: column; gap: 28px; padding: 36px 24px 28px; overflow: hidden">
+
+<div class="nm-card" style="width: 64px; height: 64px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: #5b4ae0">AMR</div>
+<h1 style="margin: auto 0 0; font-weight: 800; font-size: 46px; line-height: 1; letter-spacing: -0.035em">Viajes y rendiciones, <span style="color: #5b4ae0">sin papel.</span></h1>
+
+<form class="nm-card" style="padding: 24px 20px; display: flex; flex-direction: column; gap: 16px; border-radius: 24px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="m-mail" style="font-weight: 700; font-size: 14px; color: #4b5563">Correo institucional</label>
+<input id="m-mail" class="nm-input" type="email" autocomplete="username" value="lucia.medina@" style="min-height: 52px; padding: 0 16px; font-size: 16px">
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="m-pass" style="font-weight: 700; font-size: 14px; color: #4b5563">Contraseña</label>
+<input id="m-pass" class="nm-input" type="password" autocomplete="current-password" value="••••••••••" style="min-height: 52px; padding: 0 16px; font-size: 16px">
+</div>
+<a class="nm-btn nm-primary" href="Mobile-Consentimiento.dc.html" style="margin-top: 4px; min-height: 54px; display: flex; align-items: center; justify-content: center; font-size: 16px">Ingresar</a>
+<p style="margin: 0; font-size: 13px; color: #4b5563; text-align: center">Te vamos a pedir un código de verificación por correo.</p>
+</form>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

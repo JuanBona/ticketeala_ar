@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AMR Viajes — Conciliación y asientos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E9EBE4}
+a{color:#0F1210}a:hover{color:#3A3F37}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid #0F1210;outline-offset:2px}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #E9EBE4; color: #0F1210; font-family: 'Geist', system-ui, sans-serif; font-size: 15px; line-height: 1.45">
+
+<aside style="flex: 1 1 232px; box-sizing: border-box; background: #0F1210; color: #F2F3EF; padding: 28px 20px; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="width: 44px; height: 44px; border-radius: 14px; background: #C8F05A; color: #0F1210; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 15px">AMR</div>
+<div style="display: flex; flex-direction: column"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.02em">Viajes</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #A9AEA3; letter-spacing: 0.08em">MUTUAL AMR</span></div>
+</div>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 6px">
+<a href="Main.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"></rect><rect x="14" y="3" width="7" height="5" rx="1.5"></rect><rect x="14" y="12" width="7" height="9" rx="1.5"></rect><rect x="3" y="16" width="7" height="5" rx="1.5"></rect></svg>Panel</a>
+<a href="Contaduria-Rendicion.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h10v18l-2.5-1.5L12 21l-2.5-1.5L7 21z"></path><path d="M10 8h4M10 12h4"></path></svg>Rendiciones</a>
+<a href="Conciliacion.dc.html" aria-current="page" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; background: #F2F3EF; color: #0F1210; text-decoration: none; font-weight: 600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3"></path></svg>Conciliación</a>
+<a href="Reportes.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h16"></path><path d="M7 16v-5M12 16V6M17 16v-8"></path></svg>Reportes</a>
+<a href="Politicas.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Políticas de gasto</a>
+<a href="Maestros.dc.html" style="flex: 1 1 140px; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 14px; border-radius: 12px; color: #E3E6DD; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2"></path></svg>Maestros</a>
+</nav>
+<div style="margin-top: auto; display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; background: #1C201C">
+<div style="width: 40px; height: 40px; border-radius: 50%; background: #F2F3EF; color: #0F1210; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px">MR</div>
+<div style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 600; font-size: 14px">Marta Rossi</span><span style="font-size: 12px; color: #A9AEA3">Contaduría · Administradora</span></div>
+</div>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 36px clamp(16px, 3vw, 48px) 56px">
+<div style="max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #50554D">OCTUBRE 2026 · SOLO RENDICIONES APROBADAS</span>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(36px, 4.6vw, 64px); line-height: 0.95; letter-spacing: -0.045em">Conciliación y asientos.</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+<sc-if value="{{exported}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="font-size: 14px; padding: 10px 14px; border-radius: 14px; background: #F7F8F4; border: 1.5px solid #0F1210">3 asientos exportados · <span style="font-family: 'Geist Mono', monospace">asientos-2026-10.csv</span></span>
+</sc-if>
+<button type="button" onClick="{{doExport}}" style="min-height: 52px; padding: 0 22px; border-radius: 999px; background: #C8F05A; color: #0F1210; border: 1.5px solid #0F1210; box-shadow: 4px 4px 0 #0F1210; font-weight: 600; display: inline-flex; align-items: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Exportar asientos</button>
+</div>
+</header>
+
+<section aria-labelledby="adel-h" style="background: #F7F8F4; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 14px; border: 1.5px solid #0F1210; box-shadow: 4px 4px 0 #0F1210">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 id="adel-h" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.03em">Adelantos por registrar</h2>
+<span style="font-size: 13px; color: #3A3F37">Solicitudes aprobadas sin adelanto. El monto parte del viático estimado.</span>
+</div>
+<sc-for list="{{adv}}" as="v" hint-placeholder-count="2">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 16px; border-radius: 18px; background: #ECEEE8">
+<div style="flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column"><span style="font-weight: 600">{{v.name}}</span><span style="font-size: 13px; color: #3A3F37">{{v.dest}} · estimado {{v.est}}</span></div>
+<sc-if value="{{v.open}}" hint-placeholder-val="{{ true }}">
+<label for="{{v.inId}}" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Monto a adelantar a {{v.name}}</label>
+<input id="{{v.inId}}" inputmode="numeric" value="{{v.amount}}" onChange="{{v.onAmount}}" style="flex: 0 1 140px; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 12px; border: 1.5px solid #0F1210; background: #FFFFFF; font-family: 'Geist Mono', monospace; font-size: 15px; color: #0F1210">
+<label for="{{v.selId}}" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Medio de entrega</label>
+<select id="{{v.selId}}" style="flex: 0 1 170px; min-height: 44px; padding: 0 10px; border-radius: 12px; border: 1.5px solid #0F1210; background: #FFFFFF; font-size: 14px; color: #0F1210"><option>Efectivo</option><option>Tarjeta corporativa</option><option>Transferencia</option></select>
+<button type="button" onClick="{{v.register}}" style="min-height: 44px; padding: 0 16px; border-radius: 12px; border: 0; background: #0F1210; color: #F2F3EF; font-weight: 600; font-size: 14px">Registrar adelanto</button>
+</sc-if>
+<sc-if value="{{v.done}}" hint-placeholder-val="{{ false }}">
+<span role="status" style="font-size: 14px; padding: 8px 12px; border-radius: 12px; background: #C8F05A; border: 1px solid #0F1210">Registrado · <span style="font-family: 'Geist Mono', monospace">{{v.amountTxt}}</span></span>
+</sc-if>
+</div>
+</sc-for>
+<span style="font-size: 12px; color: #50554D">Registrar no mueve fondos: la entrega la ejecuta la Gerencia Financiera (función excluida del sistema).</span>
+</section>
+
+<section aria-label="Totales del período" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px">
+<div style="padding: 18px 20px; border-radius: 22px; background: #F7F8F4; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 0 rgba(15,18,16,.06), 0 14px 30px -18px rgba(15,18,16,.25)"><span style="font-size: 13px; color: #3A3F37">Adelantado</span><span style="font-family: 'Geist Mono', monospace; font-size: 26px; letter-spacing: -0.03em">$ 2.170.000</span></div>
+<div style="padding: 18px 20px; border-radius: 22px; background: #F7F8F4; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 1px 0 rgba(15,18,16,.06), 0 14px 30px -18px rgba(15,18,16,.25)"><span style="font-size: 13px; color: #3A3F37">Rendido</span><span style="font-family: 'Geist Mono', monospace; font-size: 26px; letter-spacing: -0.03em">$ 2.179.700</span></div>
+<div style="padding: 18px 20px; border-radius: 22px; background: #C8F05A; border: 1.5px solid #0F1210; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px">A devolver por empleados</span><span style="font-family: 'Geist Mono', monospace; font-size: 26px; letter-spacing: -0.03em">$ 31.500</span></div>
+<div style="padding: 18px 20px; border-radius: 22px; background: #FF6A3D; border: 1.5px solid #0F1210; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px">A pagar a empleados</span><span style="font-family: 'Geist Mono', monospace; font-size: 26px; letter-spacing: -0.03em">$ 41.200</span></div>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<section style="flex: 3 1 560px; min-width: 0; box-sizing: border-box; background: #F7F8F4; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 0 rgba(15,18,16,.06), 0 20px 40px -24px rgba(15,18,16,.28)">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.03em">Liquidación de viáticos</h2>
+<div style="overflow-x: auto">
+<div style="min-width: 620px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: grid; grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr)) minmax(0, 1.1fr); gap: 10px; padding: 0 14px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #50554D">
+<span>RENDICIÓN</span><span style="text-align: right">ADELANTO</span><span style="text-align: right">RENDIDO</span><span style="text-align: right">SALDO</span><span>ESTADO</span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+<button type="button" onClick="{{r.pick}}" disabled="{{r.disabled}}" aria-pressed="{{r.pressed}}" style="{{r.style}}">
+<span style="display: flex; flex-direction: column; min-width: 0; text-align: left"><span style="font-weight: 600; font-size: 14px">{{r.id}} · {{r.name}}</span><span style="font-size: 12px; opacity: .75">{{r.dest}}</span></span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 14px; text-align: right">{{r.adel}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 14px; text-align: right">{{r.rend}}</span>
+<span style="font-family: 'Geist Mono', monospace; font-size: 14px; text-align: right">{{r.saldo}}</span>
+<span style="font-size: 12px; text-align: left">{{r.estado}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+<p style="margin: 0; font-size: 13px; color: #3A3F37">Montos en pesos; los gastos en moneda extranjera usan el tipo de cambio registrado en cada comprobante.</p>
+</section>
+
+<aside aria-label="Asiento contable" style="flex: 2 1 380px; min-width: 0; box-sizing: border-box; background: #0F1210; color: #F2F3EF; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 30px 60px -30px rgba(15,18,16,.55)">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 10px">
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.03em">Asiento {{selId}}</h2>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #A9AEA3">VISTA PREVIA</span>
+</div>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px; gap: 8px; font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: #A9AEA3; padding-bottom: 8px; border-bottom: 1px solid #2B302B">
+<span>CUENTA</span><span style="text-align: right">DEBE</span><span style="text-align: right">HABER</span>
+</div>
+<sc-for list="{{lines}}" as="l" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px; gap: 8px; align-items: baseline; font-size: 13px">
+<span style="display: flex; flex-direction: column; min-width: 0"><span>{{l.cta}}</span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #A9AEA3">[código de cuenta]</span></span>
+<span style="font-family: 'Geist Mono', monospace; text-align: right">{{l.d}}</span>
+<span style="font-family: 'Geist Mono', monospace; text-align: right">{{l.h}}</span>
+</div>
+</sc-for>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px; gap: 8px; padding-top: 10px; border-top: 1px solid #2B302B; font-family: 'Geist Mono', monospace; font-size: 13px">
+<span style="font-family: 'Geist', sans-serif; font-weight: 600">Totales</span><span style="text-align: right; color: #C8F05A">{{td}}</span><span style="text-align: right; color: #C8F05A">{{th}}</span>
+</div>
+<span style="font-size: 12px; color: #A9AEA3">Debe = Haber · se exporta como archivo de interfaz; la transferencia de fondos queda a cargo de la Gerencia Financiera.</span>
+</aside>
+</div>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1520}}'>
+function f(n) { return n ? '$ ' + n.toLocaleString('es-AR') : ''; }
+var R = [
+  { id: 'R-0411', name: 'Martín Paz', dest: 'Santiago de Chile', a: 1450000, r: 1491200, al: 820000, co: 371200, tr: 300000, ok: true },
+  { id: 'R-0402', name: 'Ramiro Gil', dest: 'Mar del Plata', a: 420000, r: 388500, al: 240000, co: 98500, tr: 50000, ok: true },
+  { id: 'R-0407', name: 'Carla Sosa', dest: 'Córdoba', a: 300000, r: 300000, al: 180000, co: 84000, tr: 36000, ok: true },
+  { id: 'R-0418', name: 'Lucía Medina', dest: 'Buenos Aires', a: 600000, r: 512340, ok: false }
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { sel: 0, exported: false, amt: { a1: '54000', a2: '120000' }, done: {} }; }
+  renderVals() {
+    var self = this, S = this.state;
+    var rows = R.map(function (x, i) {
+      var diff = x.a - x.r;
+      var on = i === S.sel;
+      return {
+        id: x.id, name: x.name, dest: x.dest, adel: f(x.a), rend: f(x.r),
+        saldo: diff === 0 ? '$ 0' : diff > 0 ? '−' + f(diff) : '+' + f(-diff),
+        estado: !x.ok ? 'En revisión' : diff > 0 ? 'A devolver' : diff < 0 ? 'A pagar' : 'Saldada',
+        disabled: !x.ok, pressed: on ? 'true' : 'false',
+        style: 'display: grid; grid-template-columns: minmax(0, 2.2fr) repeat(3, minmax(0, 1fr)) minmax(0, 1.1fr); gap: 10px; align-items: center; min-height: 60px; padding: 10px 14px; border-radius: 16px; color: #0F1210; ' + (!x.ok ? 'background: transparent; border: 1.5px dashed #A9AEA3; opacity: .7' : on ? 'background: #FFFFFF; border: 1.5px solid #0F1210; box-shadow: 3px 3px 0 #0F1210' : 'background: #ECEEE8; border: 1.5px solid transparent'),
+        pick: function () { if (x.ok) self.setState({ sel: i }); }
+      };
+    });
+    var x = R[S.sel];
+    var diff = x.a - x.r;
+    var lines = [
+      { cta: 'Gastos de viaje · Alojamiento', d: f(x.al), h: '' },
+      { cta: 'Gastos de viaje · Comida', d: f(x.co), h: '' },
+      { cta: 'Gastos de viaje · Transporte', d: f(x.tr), h: '' }
+    ];
+    if (diff > 0) lines.push({ cta: 'Créditos con el personal', d: f(diff), h: '' });
+    lines.push({ cta: 'Anticipos al personal a rendir', d: '', h: f(x.a) });
+    if (diff < 0) lines.push({ cta: 'Deudas con el personal', d: '', h: f(-diff) });
+    var tot = Math.max(x.a, x.r);
+    var ADV = [
+      { id: 'a1', name: 'Carla Sosa', dest: 'Córdoba · 12–13 nov', est: 54000 },
+      { id: 'a2', name: 'Ramiro Gil', dest: 'Iguazú · 02–04 nov', est: 120000 }
+    ];
+    var adv = ADV.map(function (v) {
+      var a = S.amt[v.id] || '';
+      return {
+        name: v.name, dest: v.dest, est: f(v.est), inId: 'm-' + v.id, selId: 's-' + v.id,
+        amount: a, amountTxt: f(Number(a || 0)),
+        open: !S.done[v.id], done: !!S.done[v.id],
+        onAmount: function (e) { var n = Object.assign({}, self.state.amt); n[v.id] = String(e.target.value).replace(/\D/g, ''); self.setState({ amt: n }); },
+        register: function () { if (!Number(a)) return; var n = Object.assign({}, self.state.done); n[v.id] = true; self.setState({ done: n }); }
+      };
+    });
+    return {
+      adv: adv,
+      rows: rows, lines: lines, selId: x.id, td: f(tot), th: f(tot),
+      exported: S.exported,
+      doExport: function () { self.setState({ exported: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

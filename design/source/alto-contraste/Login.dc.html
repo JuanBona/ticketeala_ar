@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AMR Viajes — Ingresar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E9EBE4}
+a{color:#0F1210}a:hover{color:#3A3F37}
+button{font-family:inherit;cursor:pointer}
+input{font-family:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #0F1210;outline-offset:2px}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #E9EBE4; color: #0F1210; font-family: 'Geist', system-ui, sans-serif; font-size: 15px; line-height: 1.45">
+
+<section style="flex: 1 1 460px; box-sizing: border-box; background: #0F1210; color: #F2F3EF; padding: clamp(28px, 5vw, 64px); display: flex; flex-direction: column; gap: 40px; min-height: 420px">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="width: 44px; height: 44px; border-radius: 14px; background: #C8F05A; color: #0F1210; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 15px">AMR</div>
+<span style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: -0.02em">Viajes</span>
+</div>
+<h1 style="margin: auto 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: clamp(44px, 6vw, 88px); line-height: 0.92; letter-spacing: -0.05em">Viajes y rendiciones, <span style="color: #C8F05A">sin papel.</span></h1>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; max-width: 460px">
+<li style="display: flex; gap: 16px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid #2B302B"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #C8F05A">01</span><span>Pedís el viaje y se aprueba en horas, no en días.</span></li>
+<li style="display: flex; gap: 16px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px solid #2B302B"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #C8F05A">02</span><span>Cargás cada ticket con una foto.</span></li>
+<li style="display: flex; gap: 16px; align-items: baseline"><span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: #C8F05A">03</span><span>Rendís y el saldo se calcula solo.</span></li>
+</ol>
+<span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #A9AEA3">MUTUAL AMR · ROSARIO</span>
+</section>
+
+<section style="flex: 1 1 420px; box-sizing: border-box; padding: clamp(28px, 5vw, 64px); display: flex; align-items: center; justify-content: center">
+<div style="width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 28px">
+
+<sc-if value="{{step1}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #50554D">PASO 1 DE 2</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 44px; line-height: 1; letter-spacing: -0.045em">Ingresar</h2>
+</div>
+<form style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="mail" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #3A3F37">CORREO INSTITUCIONAL</label>
+<input id="mail" type="email" autocomplete="username" placeholder="nombre.apellido@[dominio de la Mutual]" style="min-height: 54px; padding: 0 16px; border-radius: 16px; border: 1.5px solid #0F1210; background: #F7F8F4; font-size: 16px; color: #0F1210">
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="pass" style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #3A3F37">CONTRASEÑA</label>
+<input id="pass" type="password" autocomplete="current-password" style="min-height: 54px; padding: 0 16px; border-radius: 16px; border: 1.5px solid #0F1210; background: #F7F8F4; font-size: 16px; color: #0F1210">
+</div>
+<button type="button" onClick="{{toStep2}}" style="min-height: 56px; border-radius: 18px; background: #C8F05A; color: #0F1210; border: 1.5px solid #0F1210; box-shadow: 4px 4px 0 #0F1210; font-weight: 600; font-size: 16px">Continuar</button>
+</form>
+</sc-if>
+
+<sc-if value="{{step2}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.12em; color: #50554D">PASO 2 DE 2</span>
+<h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 44px; line-height: 1; letter-spacing: -0.045em">Verificá que sos vos</h2>
+<p style="margin: 6px 0 0; color: #3A3F37">Ingresá el código de 6 dígitos que enviamos a tu correo institucional. Vence en 5 minutos.</p>
+</div>
+<div role="group" aria-label="Código de verificación" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
+<input aria-label="Dígito 1" inputmode="numeric" maxlength="1" value="4" style="min-width: 0; height: 64px; text-align: center; border-radius: 14px; border: 1.5px solid #0F1210; background: #F7F8F4; font-family: 'Geist Mono', monospace; font-size: 26px; color: #0F1210">
+<input aria-label="Dígito 2" inputmode="numeric" maxlength="1" value="8" style="min-width: 0; height: 64px; text-align: center; border-radius: 14px; border: 1.5px solid #0F1210; background: #F7F8F4; font-family: 'Geist Mono', monospace; font-size: 26px; color: #0F1210">
+<input aria-label="Dígito 3" inputmode="numeric" maxlength="1" value="1" style="min-width: 0; height: 64px; text-align: center; border-radius: 14px; border: 1.5px solid #0F1210; background: #F7F8F4; font-family: 'Geist Mono', monospace; font-size: 26px; color: #0F1210">
+<input aria-label="Dígito 4" inputmode="numeric" maxlength="1" style="min-width: 0; height: 64px; text-align: center; border-radius: 14px; border: 2px solid #0F1210; background: #C8F05A; font-family: 'Geist Mono', monospace; font-size: 26px; color: #0F1210">
+<input aria-label="Dígito 5" inputmode="numeric" maxlength="1" style="min-width: 0; height: 64px; text-align: center; border-radius: 14px; border: 1.5px solid #0F1210; background: #F7F8F4; font-family: 'Geist Mono', monospace; font-size: 26px; color: #0F1210">
+<input aria-label="Dígito 6" inputmode="numeric" maxlength="1" style="min-width: 0; height: 64px; text-align: center; border-radius: 14px; border: 1.5px solid #0F1210; background: #F7F8F4; font-family: 'Geist Mono', monospace; font-size: 26px; color: #0F1210">
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<a href="Main.dc.html" style="min-height: 56px; border-radius: 18px; background: #0F1210; color: #F2F3EF; display: flex; align-items: center; justify-content: center; text-decoration: none; font-weight: 600; font-size: 16px">Verificar e ingresar</a>
+<button type="button" onClick="{{toStep1}}" style="min-height: 44px; border: 0; background: transparent; color: #0F1210; font-size: 14px; text-decoration: underline">Volver al paso anterior</button>
+</div>
+</sc-if>
+
+<p style="margin: 0; padding-top: 20px; border-top: 1px solid #CDD1C6; font-size: 13px; color: #3A3F37">Acceso exclusivo para personal de la Mutual AMR. ¿Problemas para ingresar? Contactá a la Gerencia de Tecnologías y Procesos.</p>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { step: 1 }; }
+  renderVals() {
+    var self = this;
+    return {
+      step1: this.state.step === 1,
+      step2: this.state.step === 2,
+      toStep2: function () { self.setState({ step: 2 }); },
+      toStep1: function () { self.setState({ step: 1 }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

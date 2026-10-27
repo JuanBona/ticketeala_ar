@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>AMR Viajes — Políticas de gasto</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#e0e5ec}
+a{color:#5b4ae0}a:hover{color:#4a3bc4}
+.nm-card{background:#e0e5ec;border-radius:24px;box-shadow:8px 8px 16px #b8bcc2,-8px -8px 16px #ffffff}
+.nm-well{background:#e0e5ec;border-radius:16px;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff}
+.nm-btn{background:#e0e5ec;color:#333333;border:0;border-radius:12px;box-shadow:6px 6px 12px #b8bcc2,-6px -6px 12px #ffffff;transition:box-shadow .3s ease-in-out,color .3s ease-in-out;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none}
+.nm-btn:hover{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff;color:#333333}
+.nm-btn:active,.nm-btn[aria-pressed="true"]{box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff;color:#5b4ae0}
+.nm-primary,.nm-primary:hover{background:#6d5dfc;color:#ffffff}
+.nm-primary:active{box-shadow:inset 4px 4px 8px #5446d4,inset -4px -4px 8px #8a7cff;color:#ffffff}
+.nm-empty{background:transparent;color:#4b5563;border:1px dashed #6f7989;border-radius:12px;cursor:pointer;font-family:inherit;transition:color .3s ease-in-out}
+.nm-empty:hover{color:#333333}
+.nm-empty[aria-pressed="true"]{color:#5b4ae0;border-color:#6d5dfc}
+.nm-nav{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border-radius:12px;color:#4b5563;text-decoration:none;font-weight:600;transition:box-shadow .3s ease-in-out,color .3s ease-in-out}
+.nm-nav:hover{color:#333333}
+.nm-nav[aria-current="page"]{color:#5b4ae0;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff}
+.nm-input{background:#e0e5ec;border:0;border-radius:12px;box-shadow:inset 4px 4px 8px #b8bcc2,inset -4px -4px 8px #ffffff;transition:box-shadow .3s ease-in-out;color:#333333;font-family:inherit}
+.nm-input:focus{outline:none;box-shadow:inset 2px 2px 4px #b8bcc2,inset -2px -2px 4px #ffffff,0 0 0 2px #6d5dfc}
+.nm-input::placeholder{color:#5a6270}
+.nm-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;color:#333333;background:#e0e5ec;box-shadow:3px 3px 6px #b8bcc2,-3px -3px 6px #ffffff;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.mono{font-family:'IBM Plex Mono',monospace}
+:focus-visible{outline:2px solid #6d5dfc;outline-offset:3px}
+@media (max-width:640px){.nm-card{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff}.nm-btn{box-shadow:4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; align-items: flex-start; background: #e0e5ec; color: #333333; font-family: 'Nunito', system-ui, sans-serif; font-size: 15px; line-height: 1.5">
+
+<aside class="nm-card" style="flex: 1 1 232px; box-sizing: border-box; margin: 20px; padding: 24px 16px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 6px">
+<div class="nm-card" style="width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: #5b4ae0">AMR</div>
+<div style="display: flex; flex-direction: column"><span style="font-weight: 800; font-size: 18px">Viajes</span><span style="font-size: 12px; color: #4b5563">Mutual AMR</span></div>
+</div>
+<nav aria-label="Principal" style="display: flex; flex-wrap: wrap; gap: 6px">
+<a class="nm-nav" href="Main.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="2"></rect><rect x="14" y="3" width="7" height="5" rx="2"></rect><rect x="14" y="12" width="7" height="9" rx="2"></rect><rect x="3" y="16" width="7" height="5" rx="2"></rect></svg>Panel</a>
+<a class="nm-nav" href="Contaduria-Rendicion.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 3h10v18l-2.5-1.5L12 21l-2.5-1.5L7 21z"></path><path d="M10 8h4M10 12h4"></path></svg>Rendiciones</a>
+<a class="nm-nav" href="Conciliacion.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3"></path></svg>Conciliación</a>
+<a class="nm-nav" href="Reportes.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h16"></path><path d="M7 16v-5M12 16V6M17 16v-8"></path></svg>Reportes</a>
+<a class="nm-nav" href="Politicas.dc.html" aria-current="page" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></svg>Políticas de gasto</a>
+<a class="nm-nav" href="Maestros.dc.html" style="flex: 1 1 140px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2"></path></svg>Maestros</a>
+</nav>
+<div class="nm-well" style="display: flex; align-items: center; gap: 12px; padding: 12px">
+<div class="nm-card" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; box-shadow: 4px 4px 8px #b8bcc2,-4px -4px 8px #ffffff">MR</div>
+<div style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 700; font-size: 14px">Marta Rossi</span><span style="font-size: 12px; color: #4b5563">Contaduría · Administradora</span></div>
+</div>
+</aside>
+
+<main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px clamp(16px, 3vw, 44px) 56px">
+<div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+
+<header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; color: #4b5563">Configuración · versión vigente v{{ver}}</span>
+<h1 style="margin: 0; font-weight: 800; font-size: clamp(34px, 4.4vw, 58px); line-height: 1.02; letter-spacing: -0.03em">Políticas de gasto.</h1>
+<p style="margin: 0; max-width: 560px; color: #4b5563">Una política por cada combinación de categoría y destino. Los cambios rigen para solicitudes nuevas; las ya creadas conservan la política con la que nacieron.</p>
+</div>
+<sc-if value="{{hasGaps}}" hint-placeholder-val="{{ true }}">
+<div role="status" class="nm-card" style="display: flex; align-items: center; gap: 12px; padding: 14px 18px; max-width: 360px; border-radius: 18px">
+<span class="dot" style="width: 12px; height: 12px; background: #ff6b6b"></span>
+<span style="font-size: 14px; font-weight: 600">{{gapText}}</span>
+</div>
+</sc-if>
+</header>
+
+<section style="display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start">
+<div class="nm-card" style="flex: 3 1 560px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Matriz categoría × destino</h2>
+<span style="font-size: 13px; color: #4b5563">Tope por viaje · anticipación</span>
+</div>
+<div style="overflow-x: auto; margin: -10px; padding: 10px">
+<div style="min-width: 640px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: grid; grid-template-columns: 104px repeat(4, minmax(0, 1fr)); gap: 12px; align-items: end">
+<span></span>
+<sc-for list="{{dests}}" as="d" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; padding: 0 4px"><span style="font-weight: 700; font-size: 14px">{{d.n}}</span><span class="mono" style="font-size: 11px; color: #4b5563">{{d.c}}</span></div>
+</sc-for>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 104px repeat(4, minmax(0, 1fr)); gap: 12px; align-items: stretch">
+<div style="display: flex; align-items: center; font-weight: 700; font-size: 14px">{{r.cat}}</div>
+<sc-for list="{{r.cells}}" as="c" hint-placeholder-count="4">
+<button type="button" class="{{c.cls}}" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" aria-label="{{c.aria}}" style="min-height: 72px; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; text-align: left">
+<span class="mono" style="font-size: 15px; font-weight: 500">{{c.l1}}</span>
+<span style="font-size: 12px; font-weight: 600">{{c.l2}}</span>
+</button>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<div class="nm-card" style="flex: 2 1 360px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; color: #4b5563">Editando</span>
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; line-height: 1.15; letter-spacing: -0.02em">{{selTitle}}</h2>
+</div>
+<span class="nm-chip mono">{{cur}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="tope" style="font-weight: 700; font-size: 13px; color: #4b5563">Tope por viaje ({{cur}})</label>
+<input id="tope" class="nm-input mono" inputmode="numeric" value="{{dTope}}" onChange="{{onTope}}" placeholder="0" style="min-height: 52px; padding: 0 16px; font-size: 20px">
+</div>
+<div style="display: flex; gap: 14px">
+<div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<label for="antic" style="font-weight: 700; font-size: 13px; color: #4b5563">Anticipación (días)</label>
+<input id="antic" class="nm-input mono" inputmode="numeric" value="{{dAntic}}" onChange="{{onAntic}}" placeholder="0" style="min-height: 52px; padding: 0 16px; font-size: 18px; min-width: 0">
+</div>
+<div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<label for="via" style="font-weight: 700; font-size: 13px; color: #4b5563">Viático diario</label>
+<input id="via" class="nm-input mono" inputmode="numeric" value="{{dVia}}" onChange="{{onVia}}" placeholder="0" style="min-height: 52px; padding: 0 16px; font-size: 18px; min-width: 0">
+</div>
+</div>
+<div class="nm-well" style="display: flex; flex-direction: column; gap: 12px; padding: 16px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px">
+<span style="font-weight: 700; font-size: 14px">Probar antes de publicar</span>
+<span style="font-size: 12px; color: #4b5563">17 días de anticipación</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<label for="sim" style="font-size: 13px; color: #4b5563; flex: none">Monto solicitado</label>
+<input id="sim" class="nm-input mono" inputmode="numeric" value="{{sim}}" onChange="{{onSim}}" style="flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; font-size: 15px">
+</div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<span class="nm-chip"><span class="dot" style="{{simTopeDot}}"></span>{{simTope}}</span>
+<span class="nm-chip"><span class="dot" style="{{simAnticDot}}"></span>{{simAntic}}</span>
+</div>
+</div>
+<sc-if value="{{invalid}}" hint-placeholder-val="{{ false }}">
+<span role="alert" style="font-size: 13px; font-weight: 700; color: #b33a3a">Completá tope y anticipación para publicar esta combinación.</span>
+</sc-if>
+<div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+<button type="button" class="nm-btn nm-primary" onClick="{{save}}" style="flex: 1 1 auto; min-height: 52px; padding: 0 20px; font-size: 15px">Publicar como v{{nextVer}}</button>
+<button type="button" class="nm-btn" onClick="{{reset}}" style="min-height: 52px; padding: 0 18px; font-size: 15px">Descartar</button>
+</div>
+<sc-if value="{{saved}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #4b5563"><span class="dot" style="margin-top: 5px; background: #4ecdc4"></span><span>Publicada v{{ver}}. Rige desde ahora; las solicitudes existentes mantienen su versión.</span></div>
+</sc-if>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; gap: 28px">
+<div class="nm-card" style="flex: 3 1 560px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Reglas de aprobación</h2>
+<span style="font-size: 13px; color: #4b5563">Se evalúan en orden</span>
+</div>
+<div style="display: flex; flex-direction: column">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 4px; border-bottom: 1px solid #cbd1da"><span class="mono" style="font-size: 12px; width: 24px; color: #5b4ae0">01</span><span style="flex: 1 1 220px">Destino internacional</span><span style="font-weight: 700; flex: 0 1 180px">→ Gerencia general</span></div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 4px; border-bottom: 1px solid #cbd1da"><span class="mono" style="font-size: 12px; width: 24px; color: #5b4ae0">02</span><span style="flex: 1 1 220px">Excede el tope de su política</span><span style="font-weight: 700; flex: 0 1 180px">→ Gerente del área</span></div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 4px"><span class="mono" style="font-size: 12px; width: 24px; color: #5b4ae0">03</span><span style="flex: 1 1 220px">Dentro de política</span><span style="font-weight: 700; flex: 0 1 180px">→ Jefe directo</span></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<div class="nm-well" style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 4px; padding: 16px"><span style="font-size: 13px; font-weight: 700; color: #4b5563">Escalamiento si no responde</span><span><span class="mono">[SLA a definir]</span> horas hábiles</span></div>
+<div class="nm-well" style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 4px; padding: 16px"><span style="font-size: 13px; font-weight: 700; color: #4b5563">Suplente del aprobador</span><span>[Por empleado o por puesto: a definir]</span></div>
+</div>
+</div>
+
+<div class="nm-card" style="flex: 2 1 360px; min-width: 0; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-weight: 800; font-size: 24px; letter-spacing: -0.02em">Historial de versiones</h2>
+<div style="display: flex; flex-direction: column">
+<sc-if value="{{saved}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid #cbd1da"><span class="nm-chip mono" style="height: fit-content; color: #5b4ae0">v{{ver}}</span><div style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">{{lastChange}}</span><span style="font-size: 12px; color: #4b5563">Hoy · M. Rossi · Contaduría</span></div></div>
+</sc-if>
+<div style="display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid #cbd1da"><span class="nm-chip mono" style="height: fit-content">v4</span><div style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">Senior × Córdoba: tope $ 500.000 → $ 540.000</span><span style="font-size: 12px; color: #4b5563">01/10/2026 · M. Rossi · Contaduría</span></div></div>
+<div style="display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid #cbd1da"><span class="nm-chip mono" style="height: fit-content">v3</span><div style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">Alta de destino Santiago de Chile</span><span style="font-size: 12px; color: #4b5563">12/09/2026 · J. Bianchi · RRHH</span></div></div>
+<div style="display: flex; gap: 14px; padding: 12px 0"><span class="nm-chip mono" style="height: fit-content">v2</span><div style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700">Anticipación Gerencial: 7 → 5 días</span><span style="font-size: 12px; color: #4b5563">28/08/2026 · M. Rossi · Contaduría</span></div></div>
+</div>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1480}}'>
+var CATS = ['Junior', 'Senior', 'Gerencial', 'Directivo'];
+var DESTS = [{ n: 'Buenos Aires', c: 'ARS' }, { n: 'Córdoba', c: 'ARS' }, { n: 'Iguazú', c: 'ARS' }, { n: 'Santiago de Chile', c: 'USD' }];
+var INIT = [
+  [[480000, 7, 52000], [400000, 7, 45000], [560000, 10, 50000], null],
+  [[650000, 7, 61000], [540000, 7, 54000], [780000, 10, 60000], [1100, 15, 95]],
+  [[820000, 5, 74000], [690000, 5, 66000], [950000, 7, 72000], [1500, 10, 120]],
+  [[1000000, 3, 90000], [850000, 3, 80000], [1150000, 5, 88000], [2000, 7, 150]]
+];
+function fmt(n, cur) { return (cur === 'USD' ? 'USD ' : '$ ') + Number(n).toLocaleString('es-AR'); }
+function digits(v) { return String(v).replace(/\D/g, ''); }
+function toDraft(v) { return v ? { t: String(v[0]), a: String(v[1]), v: String(v[2]) } : { t: '', a: '', v: '' }; }
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    var m = INIT.map(function (r) { return r.map(function (c) { return c ? c.slice() : null; }); });
+    this.state = { m: m, r: 1, c: 0, d: toDraft(m[1][0]), ver: 4, saved: false, sim: '612000', last: '' };
+  }
+  renderVals() {
+    var self = this, S = this.state, cur = DESTS[S.c].c, gaps = 0;
+    var rows = CATS.map(function (cat, r) {
+      return { cat: cat, cells: DESTS.map(function (d, c) {
+        var v = S.m[r][c], sel = r === S.r && c === S.c;
+        if (!v) gaps++;
+        return {
+          cls: v ? 'nm-btn' : 'nm-empty',
+          l1: v ? fmt(v[0], d.c) : 'Sin política',
+          l2: v ? v[1] + ' d · viático ' + fmt(v[2], d.c) : 'Definir',
+          pressed: sel ? 'true' : 'false', aria: cat + ' en ' + d.n,
+          pick: function () { self.setState({ r: r, c: c, d: toDraft(S.m[r][c]), saved: false }); }
+        };
+      }) };
+    });
+    var setD = function (k) { return function (e) { var n = Object.assign({}, self.state.d); n[k] = digits(e.target.value); self.setState({ d: n, saved: false }); }; };
+    var t = Number(S.d.t || 0), a = Number(S.d.a || 0), sim = Number(S.sim || 0);
+    var invalid = !S.d.t || !S.d.a, tOk = t > 0 && sim <= t, aOk = 17 >= a;
+    return {
+      ver: String(S.ver), nextVer: String(S.ver + 1), dests: DESTS, rows: rows,
+      hasGaps: gaps > 0,
+      gapText: gaps + (gaps === 1 ? ' combinación sin política: ' : ' combinaciones sin política: ') + 'esas solicitudes quedan bloqueadas.',
+      selTitle: CATS[S.r] + ' × ' + DESTS[S.c].n, cur: cur,
+      dTope: S.d.t, dAntic: S.d.a, dVia: S.d.v,
+      onTope: setD('t'), onAntic: setD('a'), onVia: setD('v'),
+      sim: S.sim, onSim: function (e) { self.setState({ sim: digits(e.target.value) }); },
+      simTope: tOk ? 'Tope: cumple' : 'Tope: excede → gerente del área',
+      simTopeDot: 'background: ' + (tOk ? '#4ecdc4' : '#ff6b6b'),
+      simAntic: aOk ? 'Anticipación: cumple' : 'Anticipación: insuficiente',
+      simAnticDot: 'background: ' + (aOk ? '#4ecdc4' : '#ff6b6b'),
+      invalid: invalid, saved: S.saved, lastChange: S.last,
+      save: function () {
+        if (invalid) return;
+        var m = self.state.m.map(function (r) { return r.slice(); });
+        var prev = m[S.r][S.c];
+        m[S.r][S.c] = [t, a, Number(S.d.v || 0)];
+        var label = CATS[S.r] + ' × ' + DESTS[S.c].n + ': ' + (prev ? 'tope ' + fmt(prev[0], cur) + ' → ' + fmt(t, cur) : 'alta de política');
+        self.setState({ m: m, ver: S.ver + 1, saved: true, last: label });
+      },
+      reset: function () { self.setState({ d: toDraft(S.m[S.r][S.c]), saved: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
