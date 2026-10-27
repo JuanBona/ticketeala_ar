@@ -82,9 +82,16 @@ Cada carpeta puede tener su propio `CLAUDE.md` con reglas específicas; se carga
 
 ## Interfaz
 
-- Estilo elegido: **[COMPLETAR: alto-contraste | neumorfismo]**. Si está sin completar, preguntá
-  antes de escribir componentes visuales.
-- Reproducí tokens, jerarquía y estados de `design/html/<estilo>/`; no copies el HTML tal cual.
+- Estilo elegido: **alto-contraste**. Referencia en `design/html/alto-contraste/` y
+  `design/screens/alto-contraste/`; `neumorfismo` queda descartado.
+- Reproducí tokens, jerarquía y estados de `design/html/alto-contraste/`; no copies el HTML tal cual.
+- Animaciones de alta calidad para una experiencia completa: transiciones entre pantallas, entrada
+  de listas y tarjetas, respuesta inmediata al tocar o pasar el mouse, carga con esqueletos y
+  confirmaciones animadas (aprobar, rendir, resultado del motor). Duraciones y curvas salen de
+  tokens con nombre, no de valores sueltos.
+- Las animaciones acompañan, no estorban: cortas, sin bloquear la acción del usuario, y se
+  reducen o se apagan con `prefers-reduced-motion` (web) y la opción de reducir movimiento del
+  sistema (móvil).
 - Accesibilidad: controles reales, etiquetas en inputs, contraste AA, estados que no dependan solo
   del color, objetivos táctiles de 44 px.
 
