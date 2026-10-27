@@ -101,3 +101,25 @@ Cada carpeta puede tener su propio `CLAUDE.md` con reglas específicas; se carga
 - Cada regla de negocio y cada señal del motor tiene tests. No hay PR sin tests en verde.
 - Si fallás dos veces en lo mismo, frená y explicá qué pasa en vez de seguir probando.
 - Al terminar, el usuario va a pedir `/explicar`; la explicación va en la descripción del PR.
+
+## Código y respuestas
+
+Código:
+- Nombres descriptivos en inglés; nada de abreviaturas ni `data`, `tmp`, `x`.
+- Funciones chicas que hacen una sola cosa; si pasa de ~30 líneas, partila.
+- Sin números mágicos: pesos, umbrales y topes salen de parámetros o constantes con nombre.
+- Retornos tempranos en vez de if anidados. Sin código comentado ni código muerto.
+- Tipado estricto: TypeScript `strict`, type hints en Python.
+- Errores explícitos: nunca un catch vacío.
+- Lo mínimo que cumpla el caso de uso y sus tests: sin dependencias, abstracciones ni opciones que
+  la tarea no pida.
+
+Comentarios:
+- Cada archivo empieza con una línea que dice qué hace.
+- Cada función pública o señal del motor tiene un docstring corto que cita su regla (RNxx, Sxx o UC-xx).
+- Comentá el porqué, no el qué. Nada de comentarios que repiten el código.
+
+Respuestas:
+- Cortas: qué hiciste, qué falta y qué tengo que decidir. Sin repetir el código del diff ni resumir
+  lo que ya se ve.
+- Para leer el documento, buscá la sección en `docs/fuente/etapa3.txt` (grep); no lo leas entero.
