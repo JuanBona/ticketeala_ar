@@ -1,6 +1,10 @@
 ## Qué cambia
 
-<!-- Una o dos líneas. -->
+<!-- Una o dos líneas. Cierra #issue -->
+
+## Explicación
+
+<!-- Pegar el bloque "Para la descripción del PR" que devuelve /explicar. -->
 
 ## Caso de uso y reglas
 

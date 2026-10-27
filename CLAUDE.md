@@ -26,8 +26,8 @@ el 18 de diciembre de 2026**, con el alcance de `docs/casos-de-uso.md` (columna 
 No agregues funciones fuera de ese alcance. Excluido siempre: emisión de pasajes (GDS), pagos o
 transferencias, modelos de aprendizaje automático propios, consulta en línea a ARCA.
 
-Fechas: 19–21/10 consulta con la cátedra (prueba de concepto del motor con métricas) ·
-26/10 tercera entrega del documento · 18/12 entrega del prototipo.
+Fechas: 26/10 tercera entrega del documento (hecha) · 23/11 circuito punta a punta funcionando ·
+13/12 código congelado · 18/12 entrega del prototipo. Plan completo en `docs/plan-trabajo.md`.
 
 ## Estructura
 
@@ -90,9 +90,14 @@ Cada carpeta puede tener su propio `CLAUDE.md` con reglas específicas; se carga
 
 ## Forma de trabajo
 
+- El equipo programa poco: explicá en lenguaje simple, definí los términos técnicos y no des nada
+  por sabido. Si un plan tiene más de 5 pasos, partilo en tareas más chicas.
+- Dueños: Juan Cruz (`apps/api`, `infra`, `docs/`), Manu (`services/verifier`, `data/eval`),
+  Felipe (`apps/web`, `apps/mobile`, `design/`). Si la tarea requiere tocar carpetas de otro,
+  frená y avisá antes de cambiarlas.
+- Una sesión = una tarea = una rama = un PR. Ramas `feat/uc02-s08-dhash`, `fix/...`.
+- Plan primero: no edites archivos hasta que el plan esté aprobado.
 - Código, nombres y commits en inglés; textos de interfaz en español rioplatense.
-- Una rama por tarea (`feat/uc02-s08-dhash`, `fix/...`), PR a `main` con revisión de otro integrante.
-- Antes de cambiar código fuera de tu carpeta, avisá: cada integrante es dueño de una parte
-  (ver `docs/plan-trabajo.md`).
-- Trabajá en pasos chicos: plan primero, después código y tests, después PR.
 - Cada regla de negocio y cada señal del motor tiene tests. No hay PR sin tests en verde.
+- Si fallás dos veces en lo mismo, frená y explicá qué pasa en vez de seguir probando.
+- Al terminar, el usuario va a pedir `/explicar`; la explicación va en la descripción del PR.
