@@ -31,7 +31,7 @@ algo que contradice el documento o `docs/decisiones.md`, frená y consultalo con
 ## API y datos — iteración 0 y 1
 
 1. > Leé apps/api/CLAUDE.md y docs/modelo-datos.sql. Armá infra/docker-compose.yml con PostgreSQL 17,
-   > Redis y MinIO, y un README de cómo levantarlo.
+   > Redis y SeaweedFS (S3, D17), y un README de cómo levantarlo.
 2. > Creá apps/api con NestJS y Prisma. Traducí docs/modelo-datos.sql a schema.prisma y las
    > restricciones que Prisma no soporta a una migración SQL. Verificá que la migración corre.
 3. > Escribí prisma/seed.ts con datos sintéticos: áreas, categorías, roles, 10 empleados con jerarquía,
