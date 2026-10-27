@@ -14,7 +14,7 @@ Dueño: rol API y datos. Arquitectura: punto 12.4 del PDF. Esquema: `docs/modelo
 - Guards de rol en todos los endpoints; TOTP obligatorio para aprobador, contaduria y administrador.
 - Auditoría: interceptor que registra en `registro_auditoria` aprobaciones, correcciones y cambios
   de políticas y parámetros, con valor anterior y nuevo.
-- Carga de comprobante: guardar la imagen en MinIO, crear el gasto en estado pendiente de
+- Carga de comprobante: guardar la imagen en el almacenamiento S3 (SeaweedFS, D17), crear el gasto en estado pendiente de
   verificación, publicar el trabajo en Redis Streams con el contexto que pide `verifier.schema.json`,
   persistir señales, puntaje y decisión al recibir el resultado.
 - `docs/contratos/api.openapi.yaml` se genera desde los decoradores y se commitea en cada PR que
