@@ -5,7 +5,7 @@ Si una decisión contradice al PDF, **gana esta lista**. Cada decisión aceptada
 llevarla al documento antes de la entrega.
 
 Estado: **Propuesta** (falta acordar entre los tres) · **Aceptada** · **En el documento**.
-D01–D16 aceptadas por el equipo el 27/10/2026. Falta pasarlas al documento antes de la entrega final.
+D01–D17 aceptadas por el equipo el 27/10/2026. Falta pasarlas al documento antes de la entrega final.
 
 ## Afectan al código
 
@@ -27,7 +27,7 @@ D01–D16 aceptadas por el equipo el 27/10/2026. Falta pasarlas al documento ant
 | D14 | `EMPLEADO` suma `activo` (baja lógica, RN28), `password_hash`, `totp_secret` y `consentimiento_ubicacion` con su fecha. | Necesarios para autenticación, segundo factor y Ley 25.326. | 12.2 | Aceptada |
 | D15 | Jerarquía para elegir aprobador: `EMPLEADO.legajo_jefe` y `AREA.legajo_gerente`. Suplente: `EMPLEADO.legajo_suplente` hasta que la Mutual defina si es por persona o por puesto. | UC-01 deriva al aprobador "según la regla jerárquica", pero el modelo no guarda la jerarquía. | 12.2, UC-01 | Aceptada |
 | D16 | Campos de soporte: `DESTINO.latitud/longitud` (S10), `COTIZACION.fuente` (UC-03 paso 7), `SOLICITUD_VIAJE.motivo_rechazo`, `RENDICION.observacion`, `GASTO.fecha_captura` (UC-02 paso 2), `VERIFICACION_COMPROBANTE.respuesta_ocr` y `datos_qr` (trazabilidad del motor). `SOLICITUD_VIAJE.legajo_aprobador` admite nulo hasta pasar a `pendiente`. | Los casos de uso usan estos datos y el diccionario no los tiene. | 12.2, 12.3, 12.5 | Aceptada |
-| D17 | Almacenamiento de imágenes: SeaweedFS (compatible con S3) en lugar de MinIO. La API lo usa con un cliente S3 estándar, así que cambiar de proveedor no toca el código. | MinIO dejó de publicar su imagen en Docker Hub (el repositorio `minio/minio` ya no existe) y no tiene versiones gratuitas con parches de seguridad. SeaweedFS es un proyecto activo con imagen oficial. | 12.4 | Propuesta |
+| D17 | Almacenamiento de imágenes: SeaweedFS (compatible con S3) en lugar de MinIO. La API lo usa con un cliente S3 estándar, así que cambiar de proveedor no toca el código. | MinIO dejó de publicar su imagen en Docker Hub (el repositorio `minio/minio` ya no existe) y no tiene versiones gratuitas con parches de seguridad. SeaweedFS es un proyecto activo con imagen oficial. | 12.4 | Aceptada |
 
 ## Solo del documento (no bloquean el código)
 
