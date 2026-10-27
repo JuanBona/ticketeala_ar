@@ -89,3 +89,29 @@ export async function createTravelRequest(
   });
   return travelRequest.id;
 }
+
+/** Initial engine parameter values from D20, D21 and D23 (docs/decisiones.md, D24). */
+export const INITIAL_ENGINE_PARAMETERS = {
+  acceptanceThreshold: 80,
+  alertThreshold: 50,
+  maximumImageAttempts: 3,
+  maximumQueueRetries: 3,
+};
+
+export type EngineParameterValues = typeof INITIAL_ENGINE_PARAMETERS;
+
+/** Creates parameter version 1 approved by the base employee, with the given engine values. */
+export function createParameterVersion(
+  client: PrismaClient,
+  base: BaseFixture,
+  values: EngineParameterValues,
+) {
+  return client.parameterVersion.create({
+    data: {
+      number: 1,
+      reason: 'Versión sintética',
+      approvedByEmployeeNumber: base.employeeNumber,
+      ...values,
+    },
+  });
+}

@@ -80,6 +80,24 @@ enum CorrectionOrigin {
   @@map("origen_correccion")
 }
 
+enum ExpenseVerificationStatus {
+  PENDING            @map("pendiente") // D25
+  VERIFIED           @map("verificado")
+  IMAGE_REJECTED     @map("imagen_rechazada")
+  DUPLICATE_REJECTED @map("duplicado_rechazado")
+  ERROR              @map("error")
+
+  @@map("estado_verificacion_gasto")
+}
+
+enum CapUnit {
+  PER_RECEIPT @map("por_comprobante") // D26
+  PER_NIGHT   @map("por_noche")
+  PER_DAY     @map("por_dia")
+
+  @@map("unidad_tope")
+}
+
 // ===== Organization and security =====
 
 model EmployeeCategory {
@@ -181,8 +199,9 @@ model Destination {
   latitude  Decimal? @map("latitud") @db.Decimal(10, 8) // S10
   longitude Decimal? @map("longitud") @db.Decimal(11, 8)
 
-  expensePolicies ExpensePolicy[]
-  travelRequests  TravelRequest[]
+  expensePolicies      ExpensePolicy[]
+  travelRequests       TravelRequest[] @relation("RequestDestination")
+  originTravelRequests TravelRequest[] @relation("RequestOrigin")
 
   @@map("destino")
 }
@@ -205,8 +224,22 @@ model ExpensePolicy {
   author      Employee         @relation(fields: [authorEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
 
   travelRequests TravelRequest[]
+  expenseCaps    ExpenseCap[]
 
   @@map("politica_gasto")
+}
+
+model ExpenseCap {
+  id       Int             @id @default(autoincrement()) // D26 (S11); immutable like its policy version
+  policyId Int             @map("id_politica")
+  category ExpenseCategory @map("tipo")
+  amount   Decimal         @map("monto") @db.Decimal(12, 2)
+  unit     CapUnit         @map("unidad")
+
+  policy ExpensePolicy @relation(fields: [policyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([policyId, category])
+  @@map("tope_gasto_politica")
 }
 
 model TravelRequest {
@@ -214,6 +247,7 @@ model TravelRequest {
   employeeNumber         Int                 @map("legajo_empleado")
   approverEmployeeNumber Int?                @map("legajo_aprobador") // assigned when the request becomes PENDING
   destinationId          Int                 @map("id_destino")
+  originId               Int?                @map("id_origen") // D19, D26 (optional)
   policyId               Int                 @map("id_politica") // policy version in force at creation
   status                 TravelRequestStatus @default(QUOTING) @map("estado")
   requestedAt            DateTime            @default(now()) @map("fecha_solicitud") @db.Timestamptz
@@ -224,7 +258,8 @@ model TravelRequest {
 
   employee    Employee      @relation("Requester", fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
   approver    Employee?     @relation("Approver", fields: [approverEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
-  destination Destination   @relation(fields: [destinationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  destination Destination   @relation("RequestDestination", fields: [destinationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  origin      Destination?  @relation("RequestOrigin", fields: [originId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   policy      ExpensePolicy @relation(fields: [policyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   quotes          Quote[]
@@ -295,28 +330,30 @@ model ExpenseReport {
 }
 
 model Expense {
-  id              Int              @id @default(autoincrement())
-  expenseReportId Int              @map("id_rendicion")
-  supplierCuit    String?          @map("cuit_proveedor") @db.VarChar(13) // D06: null for foreign suppliers
-  foreignTaxId    String?          @map("id_fiscal_extranjero") @db.VarChar(40) // D06
-  receiptType     String?          @map("tipo_comprobante") @db.VarChar(10) // D06
-  pointOfSale     Int?             @map("punto_venta") // D06
-  receiptNumber   BigInt?          @map("numero_comprobante") // D06
-  issuedOn        DateTime         @map("fecha") @db.Date
-  amount          Decimal          @map("monto") @db.Decimal(12, 2)
-  netAmount       Decimal?         @map("neto") @db.Decimal(12, 2) // D06 (S06)
-  vatAmount       Decimal?         @map("iva") @db.Decimal(12, 2) // D06 (S06)
-  currency        String           @default("ARS") @map("moneda") @db.Char(3) // D06
-  exchangeRate    Decimal?         @map("tipo_cambio") @db.Decimal(12, 4) // D06
-  category        ExpenseCategory? @map("tipo")
-  cae             String?          @db.VarChar(20)
-  caeExpiresOn    DateTime?        @map("cae_vencimiento") @db.Date // D06 (S05)
-  latitude        Decimal?         @map("latitud") @db.Decimal(10, 8)
-  longitude       Decimal?         @map("longitud") @db.Decimal(11, 8)
-  capturedAt      DateTime?        @map("fecha_captura") @db.Timestamptz
-  receiptUrl      String?          @map("comprobante_url") @db.VarChar(255)
-  dhash           String?          @db.Char(16) // D06 (S08)
-  active          Boolean          @default(true) @map("activo") // RN28
+  id                 Int                       @id @default(autoincrement())
+  expenseReportId    Int                       @map("id_rendicion")
+  supplierCuit       String?                   @map("cuit_proveedor") @db.VarChar(13) // D06: null for foreign suppliers
+  foreignTaxId       String?                   @map("id_fiscal_extranjero") @db.VarChar(40) // D06
+  receiptType        String?                   @map("tipo_comprobante") @db.VarChar(10) // D06
+  pointOfSale        Int?                      @map("punto_venta") // D06
+  receiptNumber      BigInt?                   @map("numero_comprobante") // D06
+  issuedOn           DateTime                  @map("fecha") @db.Date
+  amount             Decimal                   @map("monto") @db.Decimal(12, 2)
+  netAmount          Decimal?                  @map("neto") @db.Decimal(12, 2) // D06 (S06)
+  vatAmount          Decimal?                  @map("iva") @db.Decimal(12, 2) // D06 (S06)
+  currency           String                    @default("ARS") @map("moneda") @db.Char(3) // D06
+  exchangeRate       Decimal?                  @map("tipo_cambio") @db.Decimal(12, 4) // D06
+  category           ExpenseCategory?          @map("tipo")
+  cae                String?                   @db.VarChar(20)
+  caeExpiresOn       DateTime?                 @map("cae_vencimiento") @db.Date // D06 (S05)
+  latitude           Decimal?                  @map("latitud") @db.Decimal(10, 8)
+  longitude          Decimal?                  @map("longitud") @db.Decimal(11, 8)
+  capturedAt         DateTime?                 @map("fecha_captura") @db.Timestamptz
+  receiptUrl         String?                   @map("comprobante_url") @db.VarChar(255)
+  dhash              String?                   @db.Char(16) // D06 (S08)
+  verificationStatus ExpenseVerificationStatus @default(PENDING) @map("estado_verificacion") // D25
+  imageAttempts      Int                       @default(0) @map("intentos_imagen") @db.SmallInt // D25 (N of D21)
+  active             Boolean                   @default(true) @map("activo") // RN28; false when DUPLICATE_REJECTED (D25)
 
   expenseReport ExpenseReport        @relation(fields: [expenseReportId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   supplier      Supplier?            @relation(fields: [supplierCuit], references: [cuit], onDelete: NoAction, onUpdate: NoAction)
@@ -333,6 +370,10 @@ model ParameterVersion {
   effectiveFrom            DateTime @default(now()) @map("fecha_vigencia") @db.Timestamptz
   reason                   String   @map("motivo") @db.VarChar(255)
   approvedByEmployeeNumber Int      @map("legajo_aprobo")
+  acceptanceThreshold      Int      @map("umbral_aceptacion") @db.SmallInt // D24 (D20)
+  alertThreshold           Int      @map("umbral_alerta") @db.SmallInt // D24 (D20); below acceptance (RN22)
+  maximumImageAttempts     Int      @map("intentos_maximos_imagen") @db.SmallInt // D24 (N of D21)
+  maximumQueueRetries      Int      @map("reintentos_maximos_cola") @db.SmallInt // D24 (D23)
 
   approvedBy    Employee              @relation(fields: [approvedByEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
   signals       SignalParameter[]
@@ -343,14 +384,16 @@ model ParameterVersion {
 }
 
 model SignalParameter {
-  id          Int      @id @default(autoincrement())
-  version     Int
-  code        String   @map("codigo") @db.Char(3) // S01..S12
-  description String   @map("descripcion") @db.VarChar(150)
-  weight      Int      @map("peso") @db.SmallInt
-  threshold   Decimal? @map("umbral") @db.Decimal(10, 2)
-  blocking    Boolean  @map("bloqueante")
-  enabled     Boolean  @map("activa")
+  id               Int      @id @default(autoincrement())
+  version          Int
+  code             String   @map("codigo") @db.Char(3) // S01..S12
+  description      String   @map("descripcion") @db.VarChar(150)
+  weight           Int      @map("peso") @db.SmallInt
+  threshold        Decimal? @map("umbral") @db.Decimal(10, 2)
+  warningThreshold Decimal? @map("umbral_advertencia") @db.Decimal(10, 2) // D24 (S10)
+  factor           Decimal? @db.Decimal(6, 2) // D24 (S10: k of D19; S12: IQR multiplier)
+  blocking         Boolean  @map("bloqueante")
+  enabled          Boolean  @map("activa")
 
   parameterVersion ParameterVersion     @relation(fields: [version], references: [number], onDelete: NoAction, onUpdate: NoAction)
   signalResults    VerificationSignal[]

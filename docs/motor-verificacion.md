@@ -34,7 +34,7 @@ Este archivo lo resume para programar; ante dudas, manda el PDF (salvo `docs/dec
 | S08 | 3 | Sin imagen similar (Hamming del dHash > 10) | 40 | No |
 | S09 | 4 | Fecha dentro del viaje aprobado (±1 día) | 25 | No |
 | S10 | 4 | En el trayecto, d(origen, captura) + d(captura, destino) ≤ k × d(origen, destino), k inicial 1,2 → OK. Si no, sobre la menor distancia de la captura al origen o al destino: ≤ 50 km OK; 50–300 km advertencia; > 300 km falla (D19) | 10 | No |
-| S11 | 4 | Monto dentro del tope de la política: tope × cantidad según `tope_unidad` (por comprobante, por noche, por día), convertido con el tipo de cambio si la moneda difiere (D22) | 15 | No |
+| S11 | 4 | Monto dentro del tope de la política: tope del tipo de gasto × cantidad según su unidad (por comprobante, por noche, por día; D26), convertido con el tipo de cambio si la moneda difiere (D22, D26) | 15 | No |
 | S12 | 4 | Monto ≤ Q3 + 1,5 × IQR del historial de destino, categoría y tipo (solo con ≥ 20 gastos previos) | 10 | No |
 
 Pendiente: definir el asterisco de S07.
@@ -61,7 +61,7 @@ Se evalúa en orden y gana la primera condición que se cumple (D20):
 | # | Condición | Estado | Decisión |
 |---|---|---|---|
 | 1 | S01 no pasa y el intento es menor que N | `imagen_rechazada` | sin decisión (D21) |
-| 2 | S07 en falla | `duplicado_rechazado` | sin decisión: la API rechaza el gasto (UC-02 7a, RN05) |
+| 2 | S07 en falla | `duplicado_rechazado` | sin decisión: la API rechaza el gasto con baja lógica (UC-02 7a, RN05, D25) |
 | 3 | Otra bloqueante en falla | `verificado` | `alerta` |
 | 4 | puntaje ≥ 80 | `verificado` | `aceptado` |
 | 5 | 50 ≤ puntaje < 80 | `verificado` | `revision` |

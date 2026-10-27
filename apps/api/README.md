@@ -46,6 +46,11 @@ crea sola y **se vacía en cada test**. Por eso se niegan a correr si apunta a l
 2. `npx prisma migrate dev --name que-cambia` genera y aplica la migración nueva.
 3. Si el cambio incluye un índice parcial o un `CHECK`, usá `--create-only`, agregalo a mano al
    final del `migration.sql` y recién después corré `npx prisma migrate dev`.
+4. Si agregás una columna obligatoria a una tabla que puede tener datos, dale un `DEFAULT` en la
+   migración y quitáselo después (ver la migración de D24): sin eso, falla en la base de cualquiera
+   que ya tenga filas.
+5. Envolvé las migraciones editadas a mano en `BEGIN;` … `COMMIT;`: Prisma no usa transacción por
+   defecto y, si algo falla a mitad de camino, la migración queda aplicada a medias.
 
 ## Detalles que conviene saber
 

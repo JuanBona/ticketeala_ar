@@ -3,12 +3,14 @@ import { PrismaClient } from '../src/generated/prisma/client.js';
 import {
   BaseFixture,
   createBaseFixture,
+  createParameterVersion,
   createTestClient,
   createTravelRequest,
+  INITIAL_ENGINE_PARAMETERS,
   truncateAllTables,
 } from './test-database.js';
 
-const DOMAIN_TABLE_COUNT = 21;
+const DOMAIN_TABLE_COUNT = 22;
 const MAXIMUM_SCORE = 100;
 
 let client: PrismaClient;
@@ -178,13 +180,11 @@ describe('check constraints', () => {
         amount: '5000.00',
       },
     });
-    const parameterVersion = await client.parameterVersion.create({
-      data: {
-        number: 1,
-        reason: 'Versión sintética',
-        approvedByEmployeeNumber: base.employeeNumber,
-      },
-    });
+    const parameterVersion = await createParameterVersion(
+      client,
+      base,
+      INITIAL_ENGINE_PARAMETERS,
+    );
 
     const outOfRangeScore = client.receiptVerification.create({
       data: {
@@ -198,6 +198,41 @@ describe('check constraints', () => {
 
     await expect(outOfRangeScore).rejects.toThrow(
       /verificacion_comprobante_puntaje_check/,
+    );
+  });
+});
+
+describe('d24 engine parameter versions', () => {
+  it('rn22 rejects an acceptance threshold equal to the alert threshold', async () => {
+    const equalThresholds = createParameterVersion(client, base, {
+      ...INITIAL_ENGINE_PARAMETERS,
+      acceptanceThreshold: INITIAL_ENGINE_PARAMETERS.alertThreshold,
+    });
+
+    await expect(equalThresholds).rejects.toThrow(
+      /version_parametros_rn22_check/,
+    );
+  });
+
+  it('rejects an acceptance threshold above 100', async () => {
+    const outOfRange = createParameterVersion(client, base, {
+      ...INITIAL_ENGINE_PARAMETERS,
+      acceptanceThreshold: MAXIMUM_SCORE + 1,
+    });
+
+    await expect(outOfRange).rejects.toThrow(
+      /version_parametros_umbrales_rango_check/,
+    );
+  });
+
+  it('rejects zero image attempts', async () => {
+    const noAttempts = createParameterVersion(client, base, {
+      ...INITIAL_ENGINE_PARAMETERS,
+      maximumImageAttempts: 0,
+    });
+
+    await expect(noAttempts).rejects.toThrow(
+      /version_parametros_intentos_check/,
     );
   });
 });
