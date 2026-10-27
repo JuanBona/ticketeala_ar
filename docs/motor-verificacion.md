@@ -37,17 +37,20 @@ Este archivo lo resume para programar; ante dudas, manda el PDF (salvo `docs/dec
 | S11 | 4 | Monto dentro del tope de la política: tope del tipo de gasto × cantidad según su unidad (por comprobante, por noche, por día; D26), convertido con el tipo de cambio si la moneda difiere (D22, D26) | 15 | No |
 | S12 | 4 | Monto ≤ Q3 + 1,5 × IQR del historial de destino, categoría y tipo (solo con ≥ 20 gastos previos) | 10 | No |
 
-Pendiente: definir el asterisco de S07.
+S07*: es bloqueante y además la base lo impide con `ux_gasto_clave_fiscal` (D25).
 
 Pesos, umbrales, bloqueo y activación **no van en el código**: se leen de la versión vigente de
 `PARAMETRO_SENAL` (o de `services/verifier/config/parametros_v1.json` mientras no haya API).
 Con la cola, la API los envía en cada trabajo junto con su versión (D23). También son parámetros
-el factor k de S10 (D19) y la cantidad máxima de intentos de S01 (D21).
+el factor k de S10 (D19) y la cantidad máxima de intentos de S01 (D21). Qué columna usa cada
+señal: D29.
 
 Señales que no aplican (`no_aplica`, penalización 0): S03 sin QR; S05 y S04 en comprobantes del
 exterior; S06 si no es factura A; S10 sin ubicación (sin consentimiento); S11 sin tipo de cambio
 cuando la moneda del comprobante difiere de la de la política (D22); S12 con menos de 20 gastos
-previos. Una bloqueante en `no_aplica` no bloquea (D20).
+previos en la moneda del comprobante (D30). También cualquier señal inactiva o sin un valor de
+parámetro que usa (D29). Una bloqueante en `no_aplica` no bloquea (D20). Solo S06 y S10 dan
+`advertencia` (D30).
 
 ## Puntaje y decisión
 
@@ -75,7 +78,7 @@ Cada señal devuelve `resultado`, `valor_observado`, `penalizacion` y `detalle` 
 
 ## Contrato del servicio
 
-`docs/contratos/verifier.schema.json` (a definir en la primera semana, en un PR propio).
+`docs/contratos/verifier.schema.json` (D28), con ejemplos en `docs/contratos/ejemplos/verifier/`.
 
 **Integración (D23).** La API publica en el stream de Redis `verify.requests` y el motor responde
 en `verify.results`. Los reintentos se manejan con un consumer group; tras N fallos, el resultado
@@ -83,9 +86,10 @@ sale con estado `error`. `POST /verify` usa el mismo schema, con la imagen adjun
 clave del almacenamiento.
 
 **Entrada** (`verify.requests`): `job_id`, `gasto_id`, clave de la imagen en el almacenamiento de
-imágenes compatible con S3 (D17), número de intento (D21) y contexto: fechas del viaje, coordenadas del origen (D19) y del destino; tope,
-unidad del tope, cantidad, moneda de la política y tipo de cambio si la moneda difiere (D22);
-ubicación de captura si hay; dHash y claves fiscales previas del empleado; historial para S12;
+imágenes compatible con S3 (D17), número de intento (D21) y contexto: fechas del viaje, coordenadas del origen (D19) y del destino; tipo
+de gasto elegido por el empleado (D27); tope, unidad del tope, cantidad, moneda de la política y
+tipo de cambio si la moneda difiere (D22, D26); ubicación de captura si hay; dHash del empleado
+(12 meses) y claves fiscales de todos los gastos activos (D28); historial para S12;
 valores de los parámetros con su versión (D23).
 
 **Salida** (`verify.results`): `job_id`, `gasto_id`, `estado` y resultado según el estado (D21):
@@ -94,16 +98,10 @@ valores de los parámetros con su versión (D23).
 |---|---|
 | `verificado` | Campos extraídos con confianza, QR decodificado, señales, puntaje, decisión, calidad de imagen, respuesta cruda del OCR |
 | `imagen_rechazada` | Solo las métricas de calidad y un detalle para el empleado; sin puntaje ni decisión |
-| `duplicado_rechazado` | S07 con su detalle; sin puntaje ni decisión |
+| `duplicado_rechazado` | S07 con su detalle y el gasto original; opcionales, los campos leídos y la respuesta cruda del OCR (D28); sin puntaje ni decisión |
 | `error` | El trabajo falló N veces; sin resultado del motor |
 
 El verificador **no accede a la base**: la API le pasa el contexto y persiste el resultado.
-
-Pendientes:
-- Origen del viaje (D19): el modelo no lo tiene. Opción preferida: `SOLICITUD_VIAJE.id_origen` →
-  `DESTINO`, para reutilizar sus coordenadas. Lo decide Juan Cruz.
-- Si `GASTO` persiste no gravado, exento y otros tributos (D18); D06 solo guarda neto e IVA. El
-  motor los devuelve igual en los campos extraídos.
 
 ## Evaluación (UC-09, `EVALUACION_MOTOR` y `RESULTADO_CAMPO`)
 

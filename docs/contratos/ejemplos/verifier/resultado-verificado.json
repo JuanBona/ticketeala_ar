@@ -1,0 +1,61 @@
+{
+  "job_id": "0b6f6a52-4c1e-4f0e-9a51-3d2b8c7e1f01",
+  "gasto_id": 101,
+  "estado": "verificado",
+  "version_parametros": 2,
+  "calidad_imagen": { "nitidez": 412.7, "iluminacion": 138.2, "forzada": false },
+  "campos": {
+    "fecha": { "valor": "2026-10-25", "confianza": 0.98 },
+    "cuit": { "valor": "30111111118", "confianza": 0.91 },
+    "razon_social": { "valor": "Comercio Sintético SRL", "confianza": 0.86 },
+    "tipo_comprobante": { "valor": "A", "confianza": 0.97 },
+    "punto_venta": { "valor": "3", "confianza": 0.95 },
+    "numero_comprobante": { "valor": "1234", "confianza": 0.95 },
+    "total": { "valor": "48320.00", "confianza": 0.96 },
+    "neto": { "valor": "39933.88", "confianza": 0.93 },
+    "iva": { "valor": "8386.12", "confianza": 0.94 },
+    "no_gravado": { "valor": null, "confianza": null },
+    "exento": { "valor": null, "confianza": null },
+    "otros_tributos": { "valor": null, "confianza": null },
+    "moneda": { "valor": "ARS", "confianza": null },
+    "cae": { "valor": "76432109876543", "confianza": 0.92 },
+    "cae_vencimiento": { "valor": "2026-11-04", "confianza": 0.9 },
+    "id_fiscal_extranjero": { "valor": null, "confianza": null }
+  },
+  "qr": {
+    "ver": 1,
+    "fecha": "2026-10-25",
+    "cuit": 30111111118,
+    "ptoVta": 3,
+    "tipoCmp": 1,
+    "nroCmp": 1234,
+    "importe": 48320.0,
+    "moneda": "PES",
+    "ctz": 1,
+    "tipoDocRec": 80,
+    "nroDocRec": 30222222229,
+    "tipoCodAut": "E",
+    "codAut": 76432109876543
+  },
+  "senales": [
+    { "codigo": "S01", "resultado": "ok", "valor_observado": "nitidez 412,7 · brillo 138,2", "penalizacion": 0, "detalle": "La foto se ve nítida y con buena luz." },
+    { "codigo": "S02", "resultado": "ok", "valor_observado": "mínima 0,86 (razón social)", "penalizacion": 0, "detalle": "Todos los datos se leyeron con buena confianza." },
+    { "codigo": "S03", "resultado": "ok", "valor_observado": "4 de 4 coinciden", "penalizacion": 0, "detalle": "El QR fiscal coincide con lo leído: CUIT, fecha, número e importe." },
+    { "codigo": "S04", "resultado": "ok", "valor_observado": "30-11111111-8", "penalizacion": 0, "detalle": "El CUIT del comercio es válido." },
+    { "codigo": "S05", "resultado": "ok", "valor_observado": "vence 04/11/2026", "penalizacion": 0, "detalle": "El CAE tiene 14 dígitos y estaba vigente en la fecha del comprobante." },
+    { "codigo": "S06", "resultado": "ok", "valor_observado": "diferencia $ 0,00", "penalizacion": 0, "detalle": "Neto más IVA da el total de la factura." },
+    { "codigo": "S07", "resultado": "ok", "valor_observado": null, "penalizacion": 0, "detalle": "Este comprobante no se rindió antes." },
+    { "codigo": "S08", "resultado": "ok", "valor_observado": "distancia mínima 27", "penalizacion": 0, "detalle": "La foto no se parece a otros comprobantes tuyos." },
+    { "codigo": "S09", "resultado": "falla", "valor_observado": "25/10/2026", "penalizacion": 25, "detalle": "La fecha del comprobante (25/10) es posterior al fin del viaje (23/10)." },
+    { "codigo": "S10", "resultado": "advertencia", "valor_observado": "190 km", "penalizacion": 5, "detalle": "La foto se tomó a 190 km del destino; si la sacaste al volver, podés ignorar este aviso." },
+    { "codigo": "S11", "resultado": "ok", "valor_observado": "$ 48.320,00 de $ 180.000,00", "penalizacion": 0, "detalle": "El monto está dentro del tope de comida: $ 45.000 por día durante 4 días." },
+    { "codigo": "S12", "resultado": "no_aplica", "valor_observado": "2 gastos previos", "penalizacion": 0, "detalle": "Todavía no hay suficientes gastos parecidos para comparar (hacen falta 20)." }
+  ],
+  "puntaje": 70,
+  "decision": "revision",
+  "respuesta_ocr": {
+    "fullTextAnnotation": {
+      "text": "COMERCIO SINTETICO SRL\nFACTURA A\nPunto de Venta: 0003 Comp. Nro: 00001234\nFecha de Emision: 25/10/2026\nCUIT: 30-11111111-8\nImporte Neto Gravado: $ 39.933,88\nIVA 21%: $ 8.386,12\nImporte Total: $ 48.320,00\nCAE N°: 76432109876543\nFecha de Vto. de CAE: 04/11/2026"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "job_id": "0b6f6a52-4c1e-4f0e-9a51-3d2b8c7e1f01",
+  "gasto_id": 101,
+  "estado": "error",
+  "detalle": "El trabajo falló 3 veces: no se pudo descargar la imagen comprobantes/2026/10/gasto-101.jpg del almacenamiento."
+}

@@ -1,0 +1,425 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:amr-viajes:contratos:verifier",
+  "title": "Contrato API ↔ verificador",
+  "description": "Pedido: mensaje de verify.requests (campo 'pedido') y parte 'pedido' de POST /verify. Resultado: mensaje de verify.results (campo 'resultado') y respuesta de POST /verify. Validar contra #/$defs/Pedido o #/$defs/Resultado. Decisiones: D05, D21 a D30.",
+  "$defs": {
+    "Fecha": { "type": "string", "format": "date" },
+    "Moneda": { "type": "string", "pattern": "^[A-Z]{3}$", "description": "ISO 4217" },
+    "Monto": {
+      "type": "string",
+      "pattern": "^-?\\d{1,10}\\.\\d{2}$",
+      "description": "numeric(12,2) como texto, con punto decimal y sin separador de miles, para no perder centavos"
+    },
+    "Cuit": { "type": "string", "pattern": "^\\d{11}$", "description": "Sin guiones" },
+    "Dhash": { "type": "string", "pattern": "^[0-9a-f]{16}$", "description": "64 bits en hexadecimal (D06)" },
+    "GastoId": { "type": "integer", "minimum": 1 },
+    "JobId": { "type": "string", "format": "uuid" },
+    "Coordenadas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["latitud", "longitud"],
+      "properties": {
+        "latitud": { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitud": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
+    "CoordenadasOpcionales": {
+      "oneOf": [{ "$ref": "#/$defs/Coordenadas" }, { "type": "null" }]
+    },
+    "CodigoSenal": {
+      "enum": ["S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S11", "S12"]
+    },
+    "TipoGasto": { "enum": ["alojamiento", "transporte", "comida", "otros"] },
+    "UnidadTope": { "enum": ["por_comprobante", "por_noche", "por_dia"] },
+    "ResultadoSenal": { "enum": ["ok", "advertencia", "falla", "no_aplica"] },
+    "DecisionVerificacion": { "enum": ["aceptado", "revision", "alerta"] },
+    "EstadoVerificacion": { "enum": ["verificado", "imagen_rechazada", "duplicado_rechazado", "error"] },
+
+    "Imagen": {
+      "description": "Cola: clave en el almacenamiento compatible con S3 (D17). POST /verify: la foto va en la parte multipart 'archivo' (D23).",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["origen", "clave"],
+          "properties": {
+            "origen": { "const": "almacenamiento" },
+            "clave": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["origen", "nombre_archivo"],
+          "properties": {
+            "origen": { "const": "adjunto" },
+            "nombre_archivo": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+
+    "Viaje": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fecha_inicio", "fecha_fin", "destino", "origen"],
+      "properties": {
+        "fecha_inicio": { "$ref": "#/$defs/Fecha" },
+        "fecha_fin": { "$ref": "#/$defs/Fecha" },
+        "destino": {
+          "$ref": "#/$defs/CoordenadasOpcionales",
+          "description": "Nulo si DESTINO no tiene coordenadas: S10 da no_aplica"
+        },
+        "origen": {
+          "$ref": "#/$defs/CoordenadasOpcionales",
+          "description": "Opcional (D19, D26): sin origen, S10 mide solo contra el destino"
+        }
+      }
+    },
+
+    "Tope": {
+      "description": "Fila de TOPE_GASTO_POLITICA del tipo de gasto en la política de la solicitud (D26). Nulo si la política no tiene tope para ese tipo: S11 da no_aplica",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["monto", "unidad", "cantidad", "moneda"],
+          "properties": {
+            "monto": { "$ref": "#/$defs/Monto" },
+            "unidad": { "$ref": "#/$defs/UnidadTope" },
+            "cantidad": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "por_noche = noches del viaje (D11), por_dia = noches + 1, por_comprobante = 1 (D26)"
+            },
+            "moneda": { "$ref": "#/$defs/Moneda", "description": "POLITICA_GASTO.moneda" }
+          }
+        }
+      ]
+    },
+
+    "TipoCambio": {
+      "description": "Opcional (D22). cotizacion = unidades de la moneda de la política por 1 unidad de 'moneda'. El motor lo usa solo si 'moneda' es la del comprobante; si no, S11 da no_aplica (D28)",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["moneda", "cotizacion"],
+          "properties": {
+            "moneda": { "$ref": "#/$defs/Moneda" },
+            "cotizacion": {
+              "type": "string",
+              "pattern": "^\\d{1,8}\\.\\d{1,4}$",
+              "description": "numeric(12,4) como texto"
+            }
+          }
+        }
+      ]
+    },
+
+    "Contexto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "viaje",
+        "tipo_gasto",
+        "tope",
+        "tipo_cambio",
+        "ubicacion_captura",
+        "dhash_previos",
+        "claves_fiscales_previas",
+        "historial_montos"
+      ],
+      "properties": {
+        "viaje": { "$ref": "#/$defs/Viaje" },
+        "tipo_gasto": { "$ref": "#/$defs/TipoGasto", "description": "Lo elige el empleado al cargar la foto (D27)" },
+        "tope": { "$ref": "#/$defs/Tope" },
+        "tipo_cambio": { "$ref": "#/$defs/TipoCambio" },
+        "ubicacion_captura": {
+          "$ref": "#/$defs/CoordenadasOpcionales",
+          "description": "Nulo sin consentimiento (Ley 25.326, UC-02 2a): S10 da no_aplica"
+        },
+        "dhash_previos": {
+          "description": "Gastos activos del mismo empleado de los últimos 12 meses, sin incluir este gasto (S08)",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["gasto_id", "dhash"],
+            "properties": {
+              "gasto_id": { "$ref": "#/$defs/GastoId" },
+              "dhash": { "$ref": "#/$defs/Dhash" }
+            }
+          }
+        },
+        "claves_fiscales_previas": {
+          "description": "Gastos activos de cualquier empleado con clave fiscal completa, sin incluir este gasto (S07, RN05, D25, D28)",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["gasto_id", "cuit", "tipo_comprobante", "punto_venta", "numero_comprobante"],
+            "properties": {
+              "gasto_id": { "$ref": "#/$defs/GastoId" },
+              "cuit": { "$ref": "#/$defs/Cuit" },
+              "tipo_comprobante": { "type": "string", "minLength": 1, "maxLength": 10 },
+              "punto_venta": { "type": "integer", "minimum": 0 },
+              "numero_comprobante": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "historial_montos": {
+          "description": "Gastos aceptados del mismo destino, categoría del empleado y tipo de gasto (S12). El motor usa solo los de la moneda del comprobante (D30)",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["monto", "moneda"],
+            "properties": {
+              "monto": { "$ref": "#/$defs/Monto" },
+              "moneda": { "$ref": "#/$defs/Moneda" }
+            }
+          }
+        }
+      }
+    },
+
+    "ParametroSenal": {
+      "description": "Una fila de PARAMETRO_SENAL. Qué valor usa cada señal: D29. Si falta un valor que la señal usa, o activa = false, la señal da no_aplica",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["peso", "umbral", "umbral_advertencia", "factor", "bloqueante", "activa"],
+      "properties": {
+        "peso": { "type": "integer", "minimum": 0 },
+        "umbral": { "type": ["number", "null"] },
+        "umbral_advertencia": { "type": ["number", "null"] },
+        "factor": { "type": ["number", "null"] },
+        "bloqueante": { "type": "boolean" },
+        "activa": { "type": "boolean" }
+      }
+    },
+
+    "Parametros": {
+      "description": "VERSION_PARAMETROS vigente y sus PARAMETRO_SENAL (D23, D24). RN22 (umbral_aceptacion > umbral_alerta) la valida el motor: JSON Schema no compara dos campos",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "umbral_aceptacion",
+        "umbral_alerta",
+        "intentos_maximos_imagen",
+        "reintentos_maximos_cola",
+        "senales"
+      ],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 },
+        "umbral_aceptacion": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "umbral_alerta": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "intentos_maximos_imagen": { "type": "integer", "minimum": 1, "description": "N de D21" },
+        "reintentos_maximos_cola": { "type": "integer", "minimum": 1, "description": "D23" },
+        "senales": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09", "S10", "S11", "S12"],
+          "patternProperties": {
+            "^S(0[1-9]|1[0-2])$": { "$ref": "#/$defs/ParametroSenal" }
+          }
+        }
+      }
+    },
+
+    "Pedido": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["job_id", "gasto_id", "intento", "imagen", "contexto", "parametros"],
+      "properties": {
+        "job_id": { "$ref": "#/$defs/JobId" },
+        "gasto_id": { "$ref": "#/$defs/GastoId" },
+        "intento": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Intento de imagen (D21): GASTO.intentos_imagen + 1. Los reintentos de la cola no lo cambian"
+        },
+        "imagen": { "$ref": "#/$defs/Imagen" },
+        "contexto": { "$ref": "#/$defs/Contexto" },
+        "parametros": { "$ref": "#/$defs/Parametros" }
+      }
+    },
+
+    "Campo": {
+      "description": "Valor normalizado: fecha ISO, monto con dos decimales, CUIT sin guiones. valor nulo si no se leyó; confianza nula si el valor salió del QR",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["valor", "confianza"],
+      "properties": {
+        "valor": { "type": ["string", "null"] },
+        "confianza": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "Campos": {
+      "description": "no_gravado, exento y otros_tributos son de S06 (D18); no se guardan en GASTO (D25)",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fecha",
+        "cuit",
+        "razon_social",
+        "tipo_comprobante",
+        "punto_venta",
+        "numero_comprobante",
+        "total",
+        "neto",
+        "iva",
+        "no_gravado",
+        "exento",
+        "otros_tributos",
+        "moneda",
+        "cae",
+        "cae_vencimiento",
+        "id_fiscal_extranjero"
+      ],
+      "properties": {
+        "fecha": { "$ref": "#/$defs/Campo" },
+        "cuit": { "$ref": "#/$defs/Campo" },
+        "razon_social": { "$ref": "#/$defs/Campo" },
+        "tipo_comprobante": { "$ref": "#/$defs/Campo" },
+        "punto_venta": { "$ref": "#/$defs/Campo" },
+        "numero_comprobante": { "$ref": "#/$defs/Campo" },
+        "total": { "$ref": "#/$defs/Campo" },
+        "neto": { "$ref": "#/$defs/Campo" },
+        "iva": { "$ref": "#/$defs/Campo" },
+        "no_gravado": { "$ref": "#/$defs/Campo" },
+        "exento": { "$ref": "#/$defs/Campo" },
+        "otros_tributos": { "$ref": "#/$defs/Campo" },
+        "moneda": { "$ref": "#/$defs/Campo" },
+        "cae": { "$ref": "#/$defs/Campo" },
+        "cae_vencimiento": { "$ref": "#/$defs/Campo" },
+        "id_fiscal_extranjero": { "$ref": "#/$defs/Campo" }
+      }
+    },
+
+    "Senal": {
+      "description": "Una fila de SENAL_VERIFICACION",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["codigo", "resultado", "valor_observado", "penalizacion", "detalle"],
+      "properties": {
+        "codigo": { "$ref": "#/$defs/CodigoSenal" },
+        "resultado": { "$ref": "#/$defs/ResultadoSenal" },
+        "valor_observado": { "type": ["string", "null"], "maxLength": 100 },
+        "penalizacion": { "type": "integer", "minimum": 0 },
+        "detalle": { "type": "string", "maxLength": 255, "description": "Español llano para el empleado (RNF06)" }
+      }
+    },
+
+    "CalidadImagen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nitidez", "iluminacion", "forzada"],
+      "properties": {
+        "nitidez": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Varianza del Laplaciano (VERIFICACION_COMPROBANTE.calidad_imagen)"
+        },
+        "iluminacion": { "type": "number", "minimum": 0, "maximum": 255, "description": "Brillo medio" },
+        "forzada": {
+          "type": "boolean",
+          "description": "true si S01 no pasó y se procesó igual por ser el intento N (D21)"
+        }
+      }
+    },
+
+    "Resultado": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["job_id", "gasto_id", "estado"],
+      "properties": {
+        "job_id": { "$ref": "#/$defs/JobId" },
+        "gasto_id": { "$ref": "#/$defs/GastoId" },
+        "estado": { "$ref": "#/$defs/EstadoVerificacion" },
+        "version_parametros": { "type": "integer", "minimum": 1 },
+        "calidad_imagen": { "$ref": "#/$defs/CalidadImagen" },
+        "campos": { "$ref": "#/$defs/Campos" },
+        "qr": {
+          "type": ["object", "null"],
+          "description": "JSON del QR fiscal decodificado tal como lo define ARCA (VERIFICACION_COMPROBANTE.datos_qr). Nulo sin QR"
+        },
+        "senales": { "type": "array", "items": { "$ref": "#/$defs/Senal" } },
+        "puntaje": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "decision": { "$ref": "#/$defs/DecisionVerificacion" },
+        "respuesta_ocr": {
+          "type": ["object", "null"],
+          "description": "Respuesta cruda del proveedor de OCR. Nula si el OCR no respondió (UC-02 5a)"
+        },
+        "duplicado_de": {
+          "$ref": "#/$defs/GastoId",
+          "description": "gasto_id del comprobante original, para mostrarlo (UC-02 7a)"
+        },
+        "detalle": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Para el empleado (imagen_rechazada) o para soporte (error)"
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "estado": { "const": "verificado" } } },
+          "then": {
+            "required": [
+              "version_parametros",
+              "calidad_imagen",
+              "campos",
+              "qr",
+              "senales",
+              "puntaje",
+              "decision",
+              "respuesta_ocr"
+            ],
+            "properties": { "senales": { "minItems": 12, "maxItems": 12 } }
+          }
+        },
+        {
+          "if": { "properties": { "estado": { "const": "imagen_rechazada" } } },
+          "then": { "required": ["version_parametros", "calidad_imagen", "detalle"] }
+        },
+        {
+          "if": { "properties": { "estado": { "const": "duplicado_rechazado" } } },
+          "then": {
+            "description": "campos y respuesta_ocr son opcionales: la API guarda qué se leyó del comprobante rechazado (D28)",
+            "required": ["version_parametros", "senales", "duplicado_de"],
+            "properties": {
+              "senales": {
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "properties": {
+                    "codigo": { "const": "S07" },
+                    "resultado": { "const": "falla" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "estado": { "const": "error" } } },
+          "then": { "required": ["detalle"] }
+        },
+        {
+          "if": { "properties": { "estado": { "not": { "const": "verificado" } } } },
+          "then": { "not": { "anyOf": [{ "required": ["puntaje"] }, { "required": ["decision"] }] } }
+        },
+        {
+          "if": { "properties": { "estado": { "enum": ["imagen_rechazada", "error"] } } },
+          "then": { "not": { "anyOf": [{ "required": ["campos"] }, { "required": ["respuesta_ocr"] }] } }
+        }
+      ]
+    }
+  }
+}
