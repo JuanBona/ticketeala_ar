@@ -192,3 +192,84 @@ def test_job_id_that_is_not_uuid_is_invalid() -> None:
     errors = validation_errors(request, REQUEST_DEFINITION)
 
     assert errors != []
+
+
+def test_image_sharpness_above_numeric_8_2_is_invalid() -> None:
+    verified = load_example("resultado-verificado.json")
+    verified["calidad_imagen"]["nitidez"] = 1000000.0
+
+    errors = validation_errors(verified, RESULT_DEFINITION)
+
+    assert errors != []
+
+
+def test_request_without_declared_currency_is_invalid() -> None:
+    request = load_example("pedido-cola.json")
+    del request["contexto"]["moneda_declarada"]
+
+    errors = validation_errors(request, REQUEST_DEFINITION)
+
+    assert errors != []
+
+
+def test_declared_currency_outside_iso_format_is_invalid() -> None:
+    request = load_example("pedido-cola.json")
+    request["contexto"]["moneda_declarada"] = "pesos"
+
+    errors = validation_errors(request, REQUEST_DEFINITION)
+
+    assert errors != []
+
+
+def test_previous_fiscal_key_with_letter_receipt_type_is_invalid() -> None:
+    request = load_example("pedido-cola.json")
+    request["contexto"]["claves_fiscales_previas"][0]["tipo_comprobante"] = "B"
+
+    errors = validation_errors(request, REQUEST_DEFINITION)
+
+    assert errors != []
+
+
+def test_previous_fiscal_key_with_leading_zero_receipt_type_is_invalid() -> None:
+    request = load_example("pedido-cola.json")
+    request["contexto"]["claves_fiscales_previas"][0]["tipo_comprobante"] = "06"
+
+    errors = validation_errors(request, REQUEST_DEFINITION)
+
+    assert errors != []
+
+
+def test_previous_fiscal_key_without_receipt_type_is_invalid() -> None:
+    request = load_example("pedido-cola.json")
+    request["contexto"]["claves_fiscales_previas"][0]["tipo_comprobante"] = None
+
+    errors = validation_errors(request, REQUEST_DEFINITION)
+
+    assert errors != []
+
+
+def test_read_receipt_type_with_letter_is_invalid() -> None:
+    verified = load_example("resultado-verificado.json")
+    verified["campos"]["tipo_comprobante"]["valor"] = "A"
+
+    errors = validation_errors(verified, RESULT_DEFINITION)
+
+    assert errors != []
+
+
+def test_read_receipt_type_null_is_valid() -> None:
+    verified = load_example("resultado-verificado.json")
+    verified["campos"]["tipo_comprobante"] = {"valor": None, "confianza": None}
+
+    errors = validation_errors(verified, RESULT_DEFINITION)
+
+    assert errors == []
+
+
+def test_read_currency_null_is_invalid() -> None:
+    verified = load_example("resultado-verificado.json")
+    verified["campos"]["moneda"] = {"valor": None, "confianza": None}
+
+    errors = validation_errors(verified, RESULT_DEFINITION)
+
+    assert errors != []

@@ -17,7 +17,7 @@
     "fecha": { "valor": "2026-10-21", "confianza": 0.97 },
     "cuit": { "valor": "30222222229", "confianza": 0.94 },
     "razon_social": { "valor": "Parrilla Sintética SA", "confianza": 0.88 },
-    "tipo_comprobante": { "valor": "B", "confianza": 0.96 },
+    "tipo_comprobante": { "valor": "6", "confianza": 0.96 },
     "punto_venta": { "valor": "1", "confianza": 0.95 },
     "numero_comprobante": { "valor": "5521", "confianza": 0.95 },
     "total": { "valor": "27400.00", "confianza": 0.95 },

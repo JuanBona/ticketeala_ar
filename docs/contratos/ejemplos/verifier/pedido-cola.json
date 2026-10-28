@@ -11,6 +11,7 @@
       "origen": { "latitud": -32.9442, "longitud": -60.6505 }
     },
     "tipo_gasto": "comida",
+    "moneda_declarada": "ARS",
     "tope": { "monto": "45000.00", "unidad": "por_dia", "cantidad": 4, "moneda": "ARS" },
     "tipo_cambio": null,
     "ubicacion_captura": { "latitud": -33.1232, "longitud": -64.3493 },
@@ -22,7 +23,7 @@
       {
         "gasto_id": 87,
         "cuit": "30222222229",
-        "tipo_comprobante": "B",
+        "tipo_comprobante": "6",
         "punto_venta": 1,
         "numero_comprobante": 5521
       }

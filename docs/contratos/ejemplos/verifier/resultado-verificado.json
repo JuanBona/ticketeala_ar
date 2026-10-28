@@ -8,7 +8,7 @@
     "fecha": { "valor": "2026-10-25", "confianza": 0.98 },
     "cuit": { "valor": "30111111118", "confianza": 0.91 },
     "razon_social": { "valor": "Comercio Sintético SRL", "confianza": 0.86 },
-    "tipo_comprobante": { "valor": "A", "confianza": 0.97 },
+    "tipo_comprobante": { "valor": "1", "confianza": 0.97 },
     "punto_venta": { "valor": "3", "confianza": 0.95 },
     "numero_comprobante": { "valor": "1234", "confianza": 0.95 },
     "total": { "valor": "48320.00", "confianza": 0.96 },

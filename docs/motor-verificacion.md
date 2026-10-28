@@ -87,10 +87,13 @@ clave del almacenamiento.
 
 **Entrada** (`verify.requests`): `job_id`, `gasto_id`, clave de la imagen en el almacenamiento de
 imágenes compatible con S3 (D17), número de intento (D21) y contexto: fechas del viaje, coordenadas del origen (D19) y del destino; tipo
-de gasto elegido por el empleado (D27); tope, unidad del tope, cantidad, moneda de la política y
-tipo de cambio si la moneda difiere (D22, D26); ubicación de captura si hay; dHash del empleado
-(12 meses) y claves fiscales de todos los gastos activos (D28); historial para S12;
-valores de los parámetros con su versión (D23).
+de gasto elegido por el empleado (D27); moneda declarada por el empleado (D31); tope, unidad del
+tope, cantidad, moneda de la política y tipo de cambio si la moneda difiere (D22, D26); ubicación
+de captura si hay; dHash del empleado (12 meses) y claves fiscales de todos los gastos activos
+(D28); historial para S12; valores de los parámetros con su versión (D23).
+
+**Moneda del comprobante (D28, D31).** La del QR, convertida de código de ARCA a ISO 4217; sin QR,
+la declarada. Así el resultado siempre trae moneda y `GASTO.moneda` nunca queda sin valor.
 
 **Salida** (`verify.results`): `job_id`, `gasto_id`, `estado` y resultado según el estado (D21):
 
@@ -126,6 +129,10 @@ Los números se reportan como salen, con el tamaño del set. Con ~50 comprobante
 
 - En comprobantes sin QR, una edición del importe solo la detectan S11 (tope) o S12 (lo habitual).
 - El CAE se valida en formato y coherencia, sin consultar a ARCA.
+- `claves_fiscales_previas` manda todas las claves fiscales activas en cada trabajo, así que el
+  mensaje crece con el historial. Mejora futura: un set de Redis con las claves activas, que la API
+  mantiene (alta al verificar, baja con la baja lógica) y el motor consulta con `SISMEMBER`, sin
+  acceder a la base. `ux_gasto_clave_fiscal` sigue siendo la red final.
 
 ## Recalibración (UC-09)
 

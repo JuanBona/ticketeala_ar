@@ -11,6 +11,7 @@
       "origen": null
     },
     "tipo_gasto": "alojamiento",
+    "moneda_declarada": "ARS",
     "tope": { "monto": "60000.00", "unidad": "por_noche", "cantidad": 3, "moneda": "ARS" },
     "tipo_cambio": null,
     "ubicacion_captura": null,
