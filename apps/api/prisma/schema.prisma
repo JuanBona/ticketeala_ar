@@ -1,5 +1,5 @@
 // Database schema: replicates docs/modelo-datos.sql with English names mapped to the Spanish tables.
-// Partial unique indexes and CHECK constraints live in the hand-written part of the init migration.
+// Partial unique indexes, CHECK constraints and immutability triggers live in hand-written migration SQL.
 
 generator client {
   provider     = "prisma-client"
@@ -127,8 +127,8 @@ model Employee {
   email                    String    @unique @db.VarChar(150)
   categoryId               Int       @map("id_categoria")
   areaId                   Int       @map("id_area")
-  supervisorEmployeeNumber Int?      @map("legajo_jefe") // D15
-  substituteEmployeeNumber Int?      @map("legajo_suplente") // D15
+  supervisorEmployeeNumber Int?      @map("legajo_jefe") // D15; never the employee itself (D33)
+  substituteEmployeeNumber Int?      @map("legajo_suplente") // D15; never the employee itself (D33)
   active                   Boolean   @default(true) @map("activo") // D14 (RN28)
   passwordHash             String    @map("password_hash") @db.VarChar(255) // D14
   totpSecret               String?   @map("totp_secret") @db.VarChar(64) // D14 (RN30)
@@ -334,7 +334,7 @@ model Expense {
   expenseReportId    Int                       @map("id_rendicion")
   supplierCuit       String?                   @map("cuit_proveedor") @db.VarChar(13) // D06: null for foreign suppliers
   foreignTaxId       String?                   @map("id_fiscal_extranjero") @db.VarChar(40) // D06
-  receiptType        String?                   @map("tipo_comprobante") @db.VarChar(10) // D06
+  receiptType        String?                   @map("tipo_comprobante") @db.VarChar(10) // D06; official ARCA code, e.g. "1" = Factura A (D32)
   pointOfSale        Int?                      @map("punto_venta") // D06
   receiptNumber      BigInt?                   @map("numero_comprobante") // D06
   issuedOn           DateTime                  @map("fecha") @db.Date

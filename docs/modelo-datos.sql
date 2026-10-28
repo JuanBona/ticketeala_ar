@@ -39,7 +39,9 @@ CREATE TABLE empleado (
   password_hash             varchar(255) NOT NULL,                 -- D14
   totp_secret               varchar(64),                           -- D14 (RN30)
   consentimiento_ubicacion  boolean NOT NULL DEFAULT false,        -- D14 (Ley 25.326)
-  consentimiento_fecha      timestamptz                            -- D14
+  consentimiento_fecha      timestamptz,                           -- D14
+  CHECK (legajo_jefe <> legajo),                                   -- D33
+  CHECK (legajo_suplente <> legajo)                                -- D33
 );
 ALTER TABLE area ADD FOREIGN KEY (legajo_gerente) REFERENCES empleado(legajo);
 
@@ -162,7 +164,7 @@ CREATE TABLE gasto (
   id_rendicion         integer NOT NULL REFERENCES rendicion(id),
   cuit_proveedor       varchar(13) REFERENCES proveedor(cuit),  -- D06: nulo para el exterior
   id_fiscal_extranjero varchar(40),                             -- D06
-  tipo_comprobante     varchar(10),                             -- D06 (A, B, C, ticket…)
+  tipo_comprobante     varchar(10) CHECK (tipo_comprobante ~ '^[1-9][0-9]{0,2}$'), -- D32: código ARCA (1 = Factura A, 6 = Factura B, 11 = Factura C)
   punto_venta          integer,                                 -- D06
   numero_comprobante   bigint,                                  -- D06
   fecha                date NOT NULL,
@@ -268,3 +270,10 @@ CREATE TABLE resultado_campo (
   exactitud_motor    numeric(5,4) NOT NULL,
   PRIMARY KEY (id_evaluacion, campo)
 );
+
+-- ===== Inmutabilidad (reglas transversales de CLAUDE.md; RNF11) =====
+-- Triggers BEFORE UPDATE/DELETE. La implementación está en la migración
+-- apps/api/prisma/migrations/*_immutability_and_data_rules.
+--   politica_gasto:       solo se permite cerrar vigente_hasta (de nulo a una fecha), una vez; sin DELETE.
+--   tope_gasto_politica, version_parametros, parametro_senal: sin UPDATE ni DELETE.
+--   registro_auditoria:   solo INSERT.
