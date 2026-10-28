@@ -9,8 +9,9 @@ Dueño: rol Motor. Especificación: `docs/motor-verificacion.md` y punto 12.5 de
 - El servicio no accede a PostgreSQL. Recibe imagen + contexto y devuelve el resultado
   (`docs/contratos/verifier.schema.json`). Consume trabajos de Redis Streams y expone `POST /verify`
   para pruebas.
-- El proveedor de OCR va detrás de una interfaz (`ocr/base.py`) con adaptadores Google Vision y
-  AWS Textract, y un adaptador falso que lee respuestas grabadas, para tests sin red ni costo.
+- El proveedor de OCR va detrás de una interfaz (`ocr/base.py`) con un adaptador Google Vision y
+  un adaptador falso que lee respuestas grabadas, para tests sin red ni costo. AWS Textract queda
+  postergado (D28).
 - Guardar la respuesta cruda del OCR en el resultado.
 - Antes de codificar el formato del QR fiscal, buscar la especificación vigente en la documentación
   oficial de ARCA y citarla en un comentario.

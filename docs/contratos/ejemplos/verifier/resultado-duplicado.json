@@ -1,0 +1,39 @@
+{
+  "job_id": "0b6f6a52-4c1e-4f0e-9a51-3d2b8c7e1f01",
+  "gasto_id": 101,
+  "estado": "duplicado_rechazado",
+  "version_parametros": 2,
+  "senales": [
+    {
+      "codigo": "S07",
+      "resultado": "falla",
+      "valor_observado": "gasto 87",
+      "penalizacion": 0,
+      "detalle": "Este comprobante (Factura B 0001-00005521) ya se rindió en el gasto 87. No se puede agregar de nuevo."
+    }
+  ],
+  "duplicado_de": 87,
+  "campos": {
+    "fecha": { "valor": "2026-10-21", "confianza": 0.97 },
+    "cuit": { "valor": "30222222229", "confianza": 0.94 },
+    "razon_social": { "valor": "Parrilla Sintética SA", "confianza": 0.88 },
+    "tipo_comprobante": { "valor": "B", "confianza": 0.96 },
+    "punto_venta": { "valor": "1", "confianza": 0.95 },
+    "numero_comprobante": { "valor": "5521", "confianza": 0.95 },
+    "total": { "valor": "27400.00", "confianza": 0.95 },
+    "neto": { "valor": null, "confianza": null },
+    "iva": { "valor": null, "confianza": null },
+    "no_gravado": { "valor": null, "confianza": null },
+    "exento": { "valor": null, "confianza": null },
+    "otros_tributos": { "valor": null, "confianza": null },
+    "moneda": { "valor": "ARS", "confianza": null },
+    "cae": { "valor": "76432109870011", "confianza": 0.93 },
+    "cae_vencimiento": { "valor": "2026-10-31", "confianza": 0.91 },
+    "id_fiscal_extranjero": { "valor": null, "confianza": null }
+  },
+  "respuesta_ocr": {
+    "fullTextAnnotation": {
+      "text": "PARRILLA SINTETICA SA\nFACTURA B\nPunto de Venta: 0001 Comp. Nro: 00005521\nFecha de Emision: 21/10/2026\nCUIT: 30-22222222-9\nImporte Total: $ 27.400,00\nCAE N°: 76432109870011\nFecha de Vto. de CAE: 31/10/2026"
+    }
+  }
+}

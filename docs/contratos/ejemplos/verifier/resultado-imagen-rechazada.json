@@ -1,0 +1,8 @@
+{
+  "job_id": "0b6f6a52-4c1e-4f0e-9a51-3d2b8c7e1f01",
+  "gasto_id": 101,
+  "estado": "imagen_rechazada",
+  "version_parametros": 2,
+  "calidad_imagen": { "nitidez": 38.4, "iluminacion": 41.0, "forzada": false },
+  "detalle": "La foto está borrosa y oscura. Apoyá el comprobante sobre una superficie con buena luz y sacá otra foto."
+}

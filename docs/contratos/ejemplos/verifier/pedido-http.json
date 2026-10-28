@@ -1,0 +1,42 @@
+{
+  "job_id": "5d9c2e47-8a13-4b6f-b0c2-7e4f1a9d3c02",
+  "gasto_id": 102,
+  "intento": 3,
+  "imagen": { "origen": "adjunto", "nombre_archivo": "factura-hotel-sintetica.jpg" },
+  "contexto": {
+    "viaje": {
+      "fecha_inicio": "2026-10-20",
+      "fecha_fin": "2026-10-23",
+      "destino": { "latitud": -31.4201, "longitud": -64.1888 },
+      "origen": null
+    },
+    "tipo_gasto": "alojamiento",
+    "tope": { "monto": "60000.00", "unidad": "por_noche", "cantidad": 3, "moneda": "ARS" },
+    "tipo_cambio": null,
+    "ubicacion_captura": null,
+    "dhash_previos": [],
+    "claves_fiscales_previas": [],
+    "historial_montos": []
+  },
+  "parametros": {
+    "version": 1,
+    "umbral_aceptacion": 80,
+    "umbral_alerta": 50,
+    "intentos_maximos_imagen": 3,
+    "reintentos_maximos_cola": 3,
+    "senales": {
+      "S01": { "peso": 0, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S02": { "peso": 10, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S03": { "peso": 25, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S04": { "peso": 30, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": true, "activa": true },
+      "S05": { "peso": 15, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S06": { "peso": 15, "umbral": 1.0, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S07": { "peso": 0, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": true, "activa": true },
+      "S08": { "peso": 40, "umbral": 10, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S09": { "peso": 25, "umbral": 1, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S10": { "peso": 10, "umbral": 300, "umbral_advertencia": 50, "factor": 1.2, "bloqueante": false, "activa": true },
+      "S11": { "peso": 15, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S12": { "peso": 10, "umbral": 20, "umbral_advertencia": null, "factor": 1.5, "bloqueante": false, "activa": true }
+    }
+  }
+}

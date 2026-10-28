@@ -1,0 +1,57 @@
+{
+  "job_id": "0b6f6a52-4c1e-4f0e-9a51-3d2b8c7e1f01",
+  "gasto_id": 101,
+  "intento": 1,
+  "imagen": { "origen": "almacenamiento", "clave": "comprobantes/2026/10/gasto-101.jpg" },
+  "contexto": {
+    "viaje": {
+      "fecha_inicio": "2026-10-20",
+      "fecha_fin": "2026-10-23",
+      "destino": { "latitud": -31.4201, "longitud": -64.1888 },
+      "origen": { "latitud": -32.9442, "longitud": -60.6505 }
+    },
+    "tipo_gasto": "comida",
+    "tope": { "monto": "45000.00", "unidad": "por_dia", "cantidad": 4, "moneda": "ARS" },
+    "tipo_cambio": null,
+    "ubicacion_captura": { "latitud": -33.1232, "longitud": -64.3493 },
+    "dhash_previos": [
+      { "gasto_id": 87, "dhash": "f0e1d2c3b4a59687" },
+      { "gasto_id": 92, "dhash": "0f1e2d3c4b5a6978" }
+    ],
+    "claves_fiscales_previas": [
+      {
+        "gasto_id": 87,
+        "cuit": "30222222229",
+        "tipo_comprobante": "B",
+        "punto_venta": 1,
+        "numero_comprobante": 5521
+      }
+    ],
+    "historial_montos": [
+      { "monto": "39800.00", "moneda": "ARS" },
+      { "monto": "52150.50", "moneda": "ARS" },
+      { "monto": "61.00", "moneda": "USD" }
+    ]
+  },
+  "parametros": {
+    "version": 2,
+    "umbral_aceptacion": 80,
+    "umbral_alerta": 50,
+    "intentos_maximos_imagen": 3,
+    "reintentos_maximos_cola": 3,
+    "senales": {
+      "S01": { "peso": 0, "umbral": 100.0, "umbral_advertencia": 60.0, "factor": null, "bloqueante": false, "activa": true },
+      "S02": { "peso": 10, "umbral": 0.8, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S03": { "peso": 25, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S04": { "peso": 30, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": true, "activa": true },
+      "S05": { "peso": 15, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S06": { "peso": 15, "umbral": 1.0, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S07": { "peso": 0, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": true, "activa": true },
+      "S08": { "peso": 40, "umbral": 10, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S09": { "peso": 25, "umbral": 1, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S10": { "peso": 10, "umbral": 300, "umbral_advertencia": 50, "factor": 1.2, "bloqueante": false, "activa": true },
+      "S11": { "peso": 15, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
+      "S12": { "peso": 10, "umbral": 20, "umbral_advertencia": null, "factor": 1.5, "bloqueante": false, "activa": true }
+    }
+  }
+}
