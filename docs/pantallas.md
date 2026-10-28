@@ -45,3 +45,15 @@ detalle que las existentes, antes de programarlas.
   o descartar cada señal.
 - **Mobile-Solicitud**: después de enviar, la solicitud queda "En cotización" hasta que el empleado
   elige una cotización (UC-01 pasos 6–10).
+
+## Campos nuevos por decisiones del equipo (pendientes de diseño)
+
+Las capturas de `design/` no los muestran. Sumalos al programar cada pantalla:
+
+- **Mobile-Solicitud · Origen del viaje (D19):** selector de ciudad, **opcional**. Lo usa S10 para no
+  marcar gastos hechos en el trayecto.
+- **Mobile-OCR · Tipo de gasto (D27):** selector **obligatorio** al cargar la foto: alojamiento,
+  transporte, comida u otros. Sin él, el motor no puede evaluar S11 ni S12.
+- **Mobile-OCR · Moneda (D31):** selector que arranca en **ARS**; el empleado lo cambia solo si el
+  comprobante es en otra moneda (lista ISO 4217: USD, EUR, BRL, CLP, UYU…). Con un control real
+  y etiqueta visible, no solo un ícono.

@@ -117,7 +117,8 @@ CREATE TABLE solicitud_viaje (
 
 CREATE TABLE proveedor (
   cuit         varchar(13) PRIMARY KEY,
-  razon_social varchar(150) NOT NULL
+  razon_social varchar(150) NOT NULL,
+  CHECK (cuit ~ '^[0-9]{11}$')                 -- D31: sin guiones
 );
 
 CREATE TABLE cotizacion (
@@ -168,7 +169,7 @@ CREATE TABLE gasto (
   monto                numeric(12,2) NOT NULL,
   neto                 numeric(12,2),                           -- D06 (S06, factura A)
   iva                  numeric(12,2),                           -- D06 (S06, factura A)
-  moneda               char(3) NOT NULL DEFAULT 'ARS',          -- D06
+  moneda               char(3) NOT NULL DEFAULT 'ARS',          -- D06; la declara el empleado (D31)
   tipo_cambio          numeric(12,4),                           -- D06 (valor fijo)
   tipo                 tipo_gasto,
   cae                  varchar(20),

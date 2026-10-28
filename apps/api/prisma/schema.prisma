@@ -270,7 +270,7 @@ model TravelRequest {
 }
 
 model Supplier {
-  cuit      String @id @db.VarChar(13)
+  cuit      String @id @db.VarChar(13) // D31: 11 digits, no dashes (CHECK in migration)
   legalName String @map("razon_social") @db.VarChar(150)
 
   quotes   Quote[]
@@ -341,7 +341,7 @@ model Expense {
   amount             Decimal                   @map("monto") @db.Decimal(12, 2)
   netAmount          Decimal?                  @map("neto") @db.Decimal(12, 2) // D06 (S06)
   vatAmount          Decimal?                  @map("iva") @db.Decimal(12, 2) // D06 (S06)
-  currency           String                    @default("ARS") @map("moneda") @db.Char(3) // D06
+  currency           String                    @default("ARS") @map("moneda") @db.Char(3) // D06; declared by the employee, ARS by default (D31)
   exchangeRate       Decimal?                  @map("tipo_cambio") @db.Decimal(12, 4) // D06
   category           ExpenseCategory?          @map("tipo")
   cae                String?                   @db.VarChar(20)

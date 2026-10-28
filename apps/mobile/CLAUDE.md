@@ -2,6 +2,10 @@
 
 Dueño: rol Interfaces. Pantallas: `docs/pantallas.md`. Diseño: `design/html/<estilo>/Mobile-*.html`.
 
+**Antes de programar una pantalla, leé "Campos nuevos por decisiones del equipo" en
+`docs/pantallas.md`:** Mobile-Solicitud y Mobile-OCR suman campos que las capturas no muestran
+(D19, D27, D31).
+
 - React Native + Expo + TypeScript + Expo Router. Mismos tokens de diseño que la web (paquete
   compartido) y mismo cliente de API.
 - Cámara con `expo-camera`; ubicación con `expo-location` **solo si el empleado dio el consentimiento**
