@@ -95,7 +95,7 @@ describe('quote selection', () => {
 
 describe('s07 duplicate fiscal key', () => {
   const fiscalKey = {
-    supplierCuit: '30-00000000-7',
+    supplierCuit: '30000000007',
     receiptType: 'A',
     pointOfSale: 1,
     receiptNumber: 1234n,
@@ -234,5 +234,32 @@ describe('d24 engine parameter versions', () => {
     await expect(noAttempts).rejects.toThrow(
       /version_parametros_intentos_check/,
     );
+  });
+});
+
+describe('d31 receipt formats', () => {
+  it('rejects a supplier CUIT written with dashes', async () => {
+    const dashedCuit = client.supplier.create({
+      data: { cuit: '30-00000000-7', legalName: 'Proveedor Sintético SA' },
+    });
+
+    await expect(dashedCuit).rejects.toThrow(/proveedor_cuit_formato_check/);
+  });
+
+  it('stores ARS when the expense currency is not declared', async () => {
+    const travelRequestId = await createTravelRequest(client, base);
+    const expenseReport = await client.expenseReport.create({
+      data: { travelRequestId },
+    });
+
+    const expense = await client.expense.create({
+      data: {
+        expenseReportId: expenseReport.id,
+        issuedOn: new Date('2026-11-11'),
+        amount: '5000.00',
+      },
+    });
+
+    expect(expense.currency).toBe('ARS');
   });
 });
