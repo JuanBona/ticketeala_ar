@@ -10,6 +10,10 @@ Monolito modular con NestJS, Prisma y PostgreSQL 17. Reglas del módulo en `CLAU
 - `prisma/migrations/`: la migración inicial. La generó Prisma y al final tiene, escritas a mano, las
   restricciones que Prisma no sabe expresar: 3 índices únicos parciales (D01, cotización
   seleccionada, S07) y 2 `CHECK` (fechas de la solicitud y puntaje 0–100).
+- Migraciones posteriores con reglas escritas a mano: *triggers* que hacen inmutables las versiones
+  de políticas y parámetros (de una política solo se puede cerrar `vigente_hasta`) y que dejan
+  `registro_auditoria` en solo inserción; códigos ARCA en `tipo_comprobante` (D32) y nadie como su
+  propio jefe o suplente (D33).
 - `src/prisma/`: `PrismaService`, la conexión a la base que usan todos los módulos.
 - `test/`: tests de integración que corren contra el PostgreSQL de `infra/`.
 

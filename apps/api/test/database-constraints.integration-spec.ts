@@ -12,6 +12,7 @@ import {
 
 const DOMAIN_TABLE_COUNT = 22;
 const MAXIMUM_SCORE = 100;
+const ARCA_CODE_FACTURA_A = '1';
 
 let client: PrismaClient;
 let base: BaseFixture;
@@ -96,7 +97,7 @@ describe('quote selection', () => {
 describe('s07 duplicate fiscal key', () => {
   const fiscalKey = {
     supplierCuit: '30000000007',
-    receiptType: 'A',
+    receiptType: ARCA_CODE_FACTURA_A,
     pointOfSale: 1,
     receiptNumber: 1234n,
   };
@@ -261,5 +262,160 @@ describe('d31 receipt formats', () => {
     });
 
     expect(expense.currency).toBe('ARS');
+  });
+});
+
+describe('immutable policy versions', () => {
+  it('rejects changing the amount cap of a policy version', async () => {
+    const changedCap = client.expensePolicy.update({
+      where: { id: base.policyId },
+      data: { amountCap: '999999.00' },
+    });
+
+    await expect(changedCap).rejects.toThrow(/es inmutable/);
+  });
+
+  it('rejects reopening a closed policy version', async () => {
+    await client.expensePolicy.update({
+      where: { id: base.policyId },
+      data: { validUntil: new Date('2026-10-27T12:00:00Z') },
+    });
+
+    const reopened = client.expensePolicy.update({
+      where: { id: base.policyId },
+      data: { validUntil: null },
+    });
+
+    await expect(reopened).rejects.toThrow(/es inmutable/);
+  });
+
+  it('rejects deleting a policy version', async () => {
+    const deleted = client.expensePolicy.delete({
+      where: { id: base.policyId },
+    });
+
+    await expect(deleted).rejects.toThrow(/es inmutable/);
+  });
+});
+
+describe('immutable engine parameters', () => {
+  it('rejects changing the thresholds of a parameter version', async () => {
+    await createParameterVersion(client, base, INITIAL_ENGINE_PARAMETERS);
+
+    const changedThresholds = client.parameterVersion.update({
+      where: { number: 1 },
+      data: { acceptanceThreshold: 90 },
+    });
+
+    await expect(changedThresholds).rejects.toThrow(/es inmutable/);
+  });
+
+  it('rejects changing the weight of a signal parameter', async () => {
+    await createParameterVersion(client, base, INITIAL_ENGINE_PARAMETERS);
+    const signal = await client.signalParameter.create({
+      data: {
+        version: 1,
+        code: 'S04',
+        description: 'Dígito verificador del CUIT',
+        weight: 30,
+        blocking: true,
+        enabled: true,
+      },
+    });
+
+    const changedWeight = client.signalParameter.update({
+      where: { id: signal.id },
+      data: { weight: 0 },
+    });
+
+    await expect(changedWeight).rejects.toThrow(/es inmutable/);
+  });
+});
+
+describe('rnf11 audit log', () => {
+  async function createAuditEntry() {
+    return client.auditLog.create({
+      data: {
+        employeeNumber: base.employeeNumber,
+        entity: 'politica_gasto',
+        entityId: String(base.policyId),
+        action: 'cierre',
+      },
+    });
+  }
+
+  it('rejects editing an audit entry', async () => {
+    const entry = await createAuditEntry();
+
+    const edited = client.auditLog.update({
+      where: { id: entry.id },
+      data: { action: 'otra' },
+    });
+
+    await expect(edited).rejects.toThrow(/es inmutable/);
+  });
+
+  it('rejects deleting an audit entry', async () => {
+    const entry = await createAuditEntry();
+
+    const deleted = client.auditLog.delete({ where: { id: entry.id } });
+
+    await expect(deleted).rejects.toThrow(/es inmutable/);
+  });
+});
+
+describe('rn28 records with history', () => {
+  it('rejects deleting an employee who has a travel request', async () => {
+    await createTravelRequest(client, base);
+
+    const deleted = client.employee.delete({
+      where: { employeeNumber: base.employeeNumber },
+    });
+
+    await expect(deleted).rejects.toThrow(/Foreign key constraint/);
+  });
+});
+
+describe('d32 receipt type', () => {
+  it('rejects a receipt type written as text instead of the ARCA code', async () => {
+    const travelRequestId = await createTravelRequest(client, base);
+    const expenseReport = await client.expenseReport.create({
+      data: { travelRequestId },
+    });
+
+    const textType = client.expense.create({
+      data: {
+        expenseReportId: expenseReport.id,
+        receiptType: 'FACTURA A',
+        issuedOn: new Date('2026-11-11'),
+        amount: '5000.00',
+      },
+    });
+
+    await expect(textType).rejects.toThrow(
+      /gasto_tipo_comprobante_codigo_arca_check/,
+    );
+  });
+});
+
+describe('d33 hierarchy', () => {
+  it('rejects an employee as their own supervisor', async () => {
+    const ownSupervisor = client.employee.update({
+      where: { employeeNumber: base.employeeNumber },
+      data: { supervisorEmployeeNumber: base.employeeNumber },
+    });
+
+    await expect(ownSupervisor).rejects.toThrow(/empleado_jefe_distinto_check/);
+  });
+
+  it('rejects an employee as their own substitute', async () => {
+    const ownSubstitute = client.employee.update({
+      where: { employeeNumber: base.employeeNumber },
+      data: { substituteEmployeeNumber: base.employeeNumber },
+    });
+
+    await expect(ownSubstitute).rejects.toThrow(
+      /empleado_suplente_distinto_check/,
+    );
   });
 });
