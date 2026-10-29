@@ -67,6 +67,18 @@ CREATE TABLE registro_auditoria (                                   -- D13 (RNF1
   valor_nuevo    jsonb
 );
 
+CREATE TABLE sesion_refresh (                                       -- D34
+  id           bigserial PRIMARY KEY,
+  legajo       integer NOT NULL REFERENCES empleado(legajo),
+  id_familia   uuid NOT NULL,           -- todas las rotaciones que nacen de un mismo login
+  token_hash   char(64) NOT NULL UNIQUE, -- SHA-256 del refresh token; el token nunca se guarda
+  creado       timestamptz NOT NULL DEFAULT now(),
+  vence        timestamptz NOT NULL,
+  usado        timestamptz,             -- cuándo se cambió por uno nuevo
+  revocado     timestamptz              -- logout o reúso detectado
+);
+CREATE INDEX ix_sesion_refresh_familia ON sesion_refresh (id_familia);
+
 -- ===== Viajes y políticas =====
 CREATE TABLE destino (
   id     serial PRIMARY KEY,

@@ -2,11 +2,13 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { configureApp } from './configure-app.js';
 
 const DEFAULT_PORT = 3000;
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  configureApp(app);
   app.enableShutdownHooks();
   await app.listen(process.env.PORT ?? DEFAULT_PORT);
 }

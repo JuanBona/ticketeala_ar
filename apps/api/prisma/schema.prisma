@@ -145,6 +145,7 @@ model Employee {
   substitutedEmployees      Employee[]          @relation("Substitute")
   roles                     EmployeeRole[]
   auditLogs                 AuditLog[]
+  refreshSessions           RefreshSession[]
   authoredPolicies          ExpensePolicy[]
   travelRequests            TravelRequest[]     @relation("Requester")
   travelRequestsToApprove   TravelRequest[]     @relation("Approver")
@@ -188,6 +189,22 @@ model AuditLog {
   employee Employee? @relation(fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("registro_auditoria")
+}
+
+model RefreshSession {
+  id             BigInt    @id @default(autoincrement()) // D34
+  employeeNumber Int       @map("legajo")
+  familyId       String    @map("id_familia") @db.Uuid // every rotation born from one login
+  tokenHash      String    @unique @map("token_hash") @db.Char(64) // SHA-256; the token itself is never stored
+  createdAt      DateTime  @default(now()) @map("creado") @db.Timestamptz
+  expiresAt      DateTime  @map("vence") @db.Timestamptz
+  usedAt         DateTime? @map("usado") @db.Timestamptz
+  revokedAt      DateTime? @map("revocado") @db.Timestamptz
+
+  employee Employee @relation(fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([familyId], map: "ix_sesion_refresh_familia")
+  @@map("sesion_refresh")
 }
 
 // ===== Travel and policies =====

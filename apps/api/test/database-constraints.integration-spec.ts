@@ -10,7 +10,7 @@ import {
   truncateAllTables,
 } from './test-database.js';
 
-const DOMAIN_TABLE_COUNT = 22;
+const DOMAIN_TABLE_COUNT = 23;
 const MAXIMUM_SCORE = 100;
 const ARCA_CODE_FACTURA_A = '1';
 
