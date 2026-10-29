@@ -38,6 +38,7 @@ CREATE TABLE empleado (
   activo                    boolean NOT NULL DEFAULT true,         -- D14 (RN28)
   password_hash             varchar(255) NOT NULL,                 -- D14
   totp_secret               varchar(64),                           -- D14 (RN30)
+  totp_ultimo_paso          bigint,                                -- D35: último paso de 30 s aceptado (anti-reuso)
   consentimiento_ubicacion  boolean NOT NULL DEFAULT false,        -- D14 (Ley 25.326)
   consentimiento_fecha      timestamptz,                           -- D14
   CHECK (legajo_jefe <> legajo),                                   -- D33
@@ -75,9 +76,24 @@ CREATE TABLE sesion_refresh (                                       -- D34
   creado       timestamptz NOT NULL DEFAULT now(),
   vence        timestamptz NOT NULL,
   usado        timestamptz,             -- cuándo se cambió por uno nuevo
-  revocado     timestamptz              -- logout o reúso detectado
+  revocado     timestamptz,             -- logout o reúso detectado
+  segundo_factor boolean NOT NULL DEFAULT false -- D35: la sesión nació con TOTP verificado (RN30)
 );
 CREATE INDEX ix_sesion_refresh_familia ON sesion_refresh (id_familia);
+
+CREATE TYPE tipo_codigo_segundo_factor AS ENUM ('habilitacion', 'recuperacion'); -- D36
+
+CREATE TABLE codigo_segundo_factor (                                -- D36
+  id             bigserial PRIMARY KEY,
+  legajo         integer NOT NULL REFERENCES empleado(legajo),
+  tipo           tipo_codigo_segundo_factor NOT NULL,
+  codigo_hash    char(64) NOT NULL UNIQUE,  -- SHA-256 del código; el código nunca se guarda
+  creado         timestamptz NOT NULL DEFAULT now(),
+  vence          timestamptz,               -- solo habilitación (24 h); recuperación no vence
+  usado          timestamptz,
+  anulado        timestamptz,               -- un código nuevo o un reinicio anula los anteriores
+  legajo_emisor  integer REFERENCES empleado(legajo) -- administrador que lo emitió; nulo = consola
+);
 
 -- ===== Viajes y políticas =====
 CREATE TABLE destino (

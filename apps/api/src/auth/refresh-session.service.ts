@@ -10,7 +10,18 @@ const REFRESH_TOKEN_BYTES = 32;
 export interface RotatedSession {
   employeeNumber: number;
   familyId: string;
+  /** RN30 (D35): whether the login that opened this family passed TOTP. */
+  secondFactorVerified: boolean;
   refreshToken: string;
+}
+
+export interface SessionOwner {
+  employeeNumber: number;
+  secondFactorVerified: boolean;
+}
+
+interface SessionFamily extends SessionOwner {
+  familyId: string;
 }
 
 type SessionWriter = Pick<PrismaService, 'refreshSession'>;
@@ -19,14 +30,15 @@ type SessionWriter = Pick<PrismaService, 'refreshSession'>;
 export class RefreshSessionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Opens a new session family at login and returns its first refresh token (D34). */
-  start(employeeNumber: number): Promise<string> {
-    return this.issue(this.prisma, employeeNumber, randomUUID());
+  /** Opens a new session family at login and returns its first refresh token (D34, D35). */
+  start(owner: SessionOwner): Promise<string> {
+    return this.issue(this.prisma, { ...owner, familyId: randomUUID() });
   }
 
   /** Swaps a valid refresh token for a new one; a reused token revokes its whole family (D34). */
   async rotate(refreshToken: string): Promise<RotatedSession> {
     const session = await this.findByToken(refreshToken);
+    // Already used or revoked: someone is replaying an old token, probably a stolen one.
     if (session.usedAt || session.revokedAt) {
       return this.rejectReuse(session);
     }
@@ -36,12 +48,14 @@ export class RefreshSessionService {
       );
     }
     const nextToken = await this.claimAndReplace(session);
+    // Another request used this same token a moment ago: treat it as reuse too.
     if (!nextToken) {
       return this.rejectReuse(session);
     }
     return {
       employeeNumber: session.employeeNumber,
       familyId: session.familyId,
+      secondFactorVerified: session.secondFactor,
       refreshToken: nextToken,
     };
   }
@@ -78,6 +92,7 @@ export class RefreshSessionService {
   /** Marks the token used and issues its successor atomically; null if another request won the race. */
   private claimAndReplace(session: RefreshSession): Promise<string | null> {
     return this.prisma.$transaction(async (transaction) => {
+      // Mark it used only if nobody did it first; count tells whether we won.
       const claimed = await transaction.refreshSession.updateMany({
         where: { id: session.id, usedAt: null, revokedAt: null },
         data: { usedAt: new Date() },
@@ -85,7 +100,11 @@ export class RefreshSessionService {
       if (claimed.count === 0) {
         return null;
       }
-      return this.issue(transaction, session.employeeNumber, session.familyId);
+      return this.issue(transaction, {
+        employeeNumber: session.employeeNumber,
+        familyId: session.familyId,
+        secondFactorVerified: session.secondFactor,
+      });
     });
   }
 
@@ -98,14 +117,15 @@ export class RefreshSessionService {
 
   private async issue(
     writer: SessionWriter,
-    employeeNumber: number,
-    familyId: string,
+    family: SessionFamily,
   ): Promise<string> {
+    // 32 random bytes as URL-safe text; the client keeps it, the database keeps only its hash.
     const refreshToken = randomBytes(REFRESH_TOKEN_BYTES).toString('base64url');
     await writer.refreshSession.create({
       data: {
-        employeeNumber,
-        familyId,
+        employeeNumber: family.employeeNumber,
+        familyId: family.familyId,
+        secondFactor: family.secondFactorVerified,
         tokenHash: hashToken(refreshToken),
         expiresAt: new Date(Date.now() + REFRESH_TOKEN_LIFETIME_MILLISECONDS),
       },

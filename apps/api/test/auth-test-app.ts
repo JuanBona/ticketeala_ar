@@ -1,17 +1,33 @@
-// Helpers for auth integration tests: the real app on the test database plus synthetic employees.
-import { Controller, Get, INestApplication } from '@nestjs/common';
+// Helpers for auth integration tests: the real app on the test database, synthetic employees and TOTP.
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  INestApplication,
+  Post,
+} from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import argon2 from 'argon2';
+import { generate, ScureBase32Plugin } from 'otplib';
+import { randomBytes } from 'node:crypto';
 import { AppModule } from '../src/app.module.js';
+import {
+  Audited,
+  auditedChange,
+  type AuditedChange,
+} from '../src/auditoria/audited.decorator.js';
 import { Roles } from '../src/auth/decorators.js';
 import type { Role } from '../src/auth/role.js';
+import { TOTP_SECRET_BYTES } from '../src/auth/auth.constants.js';
+import { resetSecondFactor } from '../src/auth/second-factor-codes.js';
+import { TotpSecretCipher } from '../src/auth/totp-secret-cipher.js';
 import { configureApp } from '../src/configure-app.js';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
 export const SYNTHETIC_PASSWORD = 'clave-sintetica-de-test';
 
-/** Endpoints that exist only in tests, to exercise the global guards. */
+/** Endpoints that exist only in tests, to exercise the global guards and the audit interceptor. */
 @Controller('probe')
 class ProbeController {
   @Get('any-employee')
@@ -19,10 +35,33 @@ class ProbeController {
     return 'ok';
   }
 
-  @Roles('contaduria')
-  @Get('accounting-only')
-  accountingOnly(): string {
+  @Roles('gerencia')
+  @Get('management-only')
+  managementOnly(): string {
     return 'ok';
+  }
+
+  @Audited({ entity: 'politica_gasto', action: 'cerrar_version' })
+  @Post('audited-change')
+  auditedChangeProbe(): AuditedChange<{ closed: boolean }> {
+    return auditedChange({
+      entityId: '7',
+      previousValue: { vigenteHasta: null },
+      newValue: { vigenteHasta: '2026-11-01' },
+      response: { closed: true },
+    });
+  }
+
+  @Audited({ entity: 'politica_gasto', action: 'cerrar_version' })
+  @Post('audited-failure')
+  auditedFailureProbe(): never {
+    throw new BadRequestException('Política 7 ya cerrada');
+  }
+
+  @Audited({ entity: 'politica_gasto', action: 'cerrar_version' })
+  @Post('audited-without-change')
+  auditedWithoutChangeProbe(): { closed: boolean } {
+    return { closed: true };
   }
 }
 
@@ -82,4 +121,45 @@ function roleGrant(name: Role) {
   return {
     role: { connectOrCreate: { where: { name }, create: { name } } },
   };
+}
+
+/** RN30: stores an encrypted TOTP secret for the employee, as a finished enrollment would, and returns it. */
+export async function enrollSecondFactor(
+  client: PrismaClient,
+  employeeNumber: number,
+): Promise<string> {
+  const secretBytes = randomBytes(TOTP_SECRET_BYTES);
+  await client.employee.update({
+    where: { employeeNumber },
+    data: { totpSecret: new TotpSecretCipher().encrypt(secretBytes) },
+  });
+  return new ScureBase32Plugin().encode(secretBytes);
+}
+
+/** The code an authenticator app would show right now for this secret. */
+export function currentCode(secret: string): Promise<string> {
+  return generate({ secret });
+}
+
+/** Reads the base32 secret out of the otpauth:// link returned at enrollment. */
+export function secretFromUri(otpauthUri: string): string {
+  const secret = new URL(otpauthUri).searchParams.get('secret');
+  if (!secret) {
+    throw new Error(`Link de alta sin secret: ${otpauthUri}`);
+  }
+  return secret;
+}
+
+/** D36: what an administrator would hand over; issued directly, without going through the endpoint. */
+export async function issueEnrollmentCode(
+  client: PrismaClient,
+  employeeNumber: number,
+): Promise<string> {
+  const issued = await client.$transaction((transaction) =>
+    resetSecondFactor(transaction, {
+      employeeNumber,
+      issuedByEmployeeNumber: null,
+    }),
+  );
+  return issued.enrollmentCode;
 }

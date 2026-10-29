@@ -1,4 +1,4 @@
-// Endpoint decorators for authentication (D12): @Public, @Roles and @CurrentEmployee.
+// Endpoint decorators for authentication (D12, RN30): @Public, @Roles, @CurrentEmployee and @CurrentChallenge.
 import {
   createParamDecorator,
   ExecutionContext,
@@ -9,6 +9,7 @@ import type {
   AuthenticatedRequest,
 } from './authenticated-employee.js';
 import type { Role } from './role.js';
+import type { SecondFactorChallenge } from './second-factor-challenge.service.js';
 
 export const IS_PUBLIC_KEY = 'auth:isPublic';
 export const ROLES_KEY = 'auth:roles';
@@ -29,5 +30,18 @@ export const CurrentEmployee = createParamDecorator(
       );
     }
     return request.employee;
+  },
+);
+
+/** Injects the second factor challenge checked by SecondFactorChallengeGuard (RN30). */
+export const CurrentChallenge = createParamDecorator(
+  (_unused: unknown, context: ExecutionContext): SecondFactorChallenge => {
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    if (!request.secondFactorChallenge) {
+      throw new Error(
+        `Endpoint sin desafío de segundo factor: ${request.method} ${request.url} no usa SecondFactorChallengeGuard`,
+      );
+    }
+    return request.secondFactorChallenge;
   },
 );
