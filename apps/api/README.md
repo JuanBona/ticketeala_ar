@@ -128,7 +128,29 @@ Reglas para quien programe endpoints:
 
 - Los códigos se ven una sola vez: en la base queda solo su hash, en `codigo_segundo_factor`.
 
-Todavía falta el interceptor de auditoría: va en el PR siguiente.
+## Auditoría
+
+`registro_auditoria` guarda quién cambió qué registro, cuándo, y el valor anterior y el nuevo
+(D13, RNF11). La base solo permite agregar filas: nunca se editan ni se borran.
+
+Para auditar un endpoint (aprobaciones, correcciones, cambios de políticas y parámetros):
+
+```ts
+@Audited({ entity: 'politica_gasto', action: 'cerrar_version' })
+@Post(':id/cerrar')
+async close(@Param('id') id: string): Promise<AuditedChange<PolicyResponse>> {
+  const before = …; const after = …;
+  return auditedChange({ entityId: id, previousValue: before, newValue: after, response: after });
+}
+```
+
+- El **interceptor** (`AuditInterceptor`, global) espera a que el endpoint termine bien, guarda la
+  fila con el legajo del JWT y responde al cliente solo `response`.
+- Si el endpoint falla, no se guarda nada. Si un endpoint `@Audited` se olvida de `auditedChange()`,
+  responde 500 para que el error se vea en los tests.
+- La fila se escribe **después** de la operación, no en la misma transacción. Si justo falla esa
+  escritura, el cambio queda hecho sin su registro. Para lo más delicado (como el segundo factor)
+  se usa `AuditService.record(entrada, transacción)`, que escribe en la misma transacción.
 
 ## Cambiar el esquema
 

@@ -1,10 +1,21 @@
 // Helpers for auth integration tests: the real app on the test database, synthetic employees and TOTP.
-import { Controller, Get, INestApplication } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  INestApplication,
+  Post,
+} from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import argon2 from 'argon2';
 import { generate, ScureBase32Plugin } from 'otplib';
 import { randomBytes } from 'node:crypto';
 import { AppModule } from '../src/app.module.js';
+import {
+  Audited,
+  auditedChange,
+  type AuditedChange,
+} from '../src/auditoria/audited.decorator.js';
 import { Roles } from '../src/auth/decorators.js';
 import type { Role } from '../src/auth/role.js';
 import { TOTP_SECRET_BYTES } from '../src/auth/auth.constants.js';
@@ -16,7 +27,7 @@ import { PrismaService } from '../src/prisma/prisma.service.js';
 
 export const SYNTHETIC_PASSWORD = 'clave-sintetica-de-test';
 
-/** Endpoints that exist only in tests, to exercise the global guards. */
+/** Endpoints that exist only in tests, to exercise the global guards and the audit interceptor. */
 @Controller('probe')
 class ProbeController {
   @Get('any-employee')
@@ -28,6 +39,29 @@ class ProbeController {
   @Get('management-only')
   managementOnly(): string {
     return 'ok';
+  }
+
+  @Audited({ entity: 'politica_gasto', action: 'cerrar_version' })
+  @Post('audited-change')
+  auditedChangeProbe(): AuditedChange<{ closed: boolean }> {
+    return auditedChange({
+      entityId: '7',
+      previousValue: { vigenteHasta: null },
+      newValue: { vigenteHasta: '2026-11-01' },
+      response: { closed: true },
+    });
+  }
+
+  @Audited({ entity: 'politica_gasto', action: 'cerrar_version' })
+  @Post('audited-failure')
+  auditedFailureProbe(): never {
+    throw new BadRequestException('Política 7 ya cerrada');
+  }
+
+  @Audited({ entity: 'politica_gasto', action: 'cerrar_version' })
+  @Post('audited-without-change')
+  auditedWithoutChangeProbe(): { closed: boolean } {
+    return { closed: true };
   }
 }
 
