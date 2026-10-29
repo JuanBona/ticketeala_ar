@@ -14,6 +14,7 @@ export async function seedDatabase(
 ): Promise<void> {
   await client.$transaction(
     async (transaction) => {
+      // Order matters: policies need categories, and parameters need an approver employee.
       await seedOrganization(transaction, passwordHash);
       await seedTravelPolicies(transaction);
       await seedEngineParameters(transaction);

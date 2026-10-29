@@ -151,9 +151,11 @@ export async function seedEngineParameters(
   const existing = await transaction.parameterVersion.findUnique({
     where: { number: SEED_PARAMETER_VERSION },
   });
+  // Versions are immutable (triggers): if version 1 exists, the seed must not touch it.
   if (existing) {
     return;
   }
+  // The version and its 12 signals are inserted together (nested create).
   await transaction.parameterVersion.create({
     data: {
       number: SEED_PARAMETER_VERSION,
