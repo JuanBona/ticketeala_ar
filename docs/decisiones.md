@@ -5,7 +5,7 @@ Si una decisión contradice al PDF, **gana esta lista**. Cada decisión aceptada
 llevarla al documento antes de la entrega.
 
 Estado: **Propuesta** (falta acordar entre los tres) · **Aceptada** · **En el documento**.
-D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con los ajustes de D25 y D26. D27–D30 propuestas el 27/10/2026 con el contrato del motor; D31–D33 el 28/10/2026. Falta pasarlas al documento antes de la entrega final.
+D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con los ajustes de D25 y D26. D27–D30 propuestas el 27/10/2026 con el contrato del motor; D31–D33 el 28/10/2026; D35 el 29/10/2026. Falta pasarlas al documento antes de la entrega final.
 
 ## Afectan al código
 
@@ -44,6 +44,7 @@ D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con lo
 | D31 | Formatos del comprobante en la API. El CUIT se guarda siempre sin guiones (11 dígitos), igual que en `verifier.schema.json`; la base lo exige con un `CHECK` en `PROVEEDOR`. La moneda la declara el empleado al cargar la foto: por defecto ARS, con un selector en Mobile-OCR para cambiarla (ISO 4217). La API la manda al motor como `moneda_declarada`; el motor usa la del QR si la hay y, si no, la declarada, así `GASTO.moneda` nunca queda sin valor. | Con y sin guiones conviviendo, `ux_gasto_clave_fiscal` (S07) no detecta el duplicado. D28 dejaba la moneda nula sin QR ni CUIT, pero `GASTO.moneda` es obligatoria y guardar ARS para un comprobante del exterior sería falso. | 12.2, 12.5, S07, D06, D28 | Propuesta |
 | D32 | `GASTO.tipo_comprobante` guarda el **código oficial de ARCA** del tipo de comprobante, sin ceros a la izquierda, el mismo que trae el QR fiscal en `tipoCmp` (1 = Factura A, 6 = Factura B, 11 = Factura C). La base lo exige con un `CHECK`. Los comprobantes sin código (exterior, ticket no fiscal) lo dejan nulo y quedan fuera de S07 por clave fiscal. | Con texto libre, `A` y `FACTURA A` son claves distintas y `ux_gasto_clave_fiscal` (S07) no detecta el duplicado. | 12.2, 12.5, S07, D06, D28 | Propuesta |
 | D33 | Un empleado no puede ser su propio jefe ni su propio suplente (`CHECK` en `EMPLEADO`). | Con la regla jerárquica de UC-01, alguien podría quedar como aprobador de su propia solicitud. | 12.2, UC-01, D15 | Propuesta |
+| D35 | Penalización de una advertencia: peso / 2 **redondeado hacia arriba** (ej.: S06, peso 15 → 8). El puntaje se calcula con las penalizaciones ya redondeadas. | `penalizacion` es entero (`smallint`) y con peso impar la mitad da decimales. Hacia arriba, una advertencia nunca resta menos de la mitad del peso, y la suma de las penalizaciones que ve el empleado da 100 − puntaje. El redondeo al par de Python (7,5 → 8, pero 12,5 → 12) sería difícil de explicar. | 12.5, D30 | Propuesta |
 
 ## Solo del documento (no bloquean el código)
 
