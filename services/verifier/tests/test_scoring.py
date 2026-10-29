@@ -1,4 +1,4 @@
-"""Penalización, puntaje y decisión del motor (punto 12.5, D20, D21, D35)."""
+"""Penalización, puntaje y decisión del motor (punto 12.5, D20, D21, D36)."""
 
 import json
 from typing import Any

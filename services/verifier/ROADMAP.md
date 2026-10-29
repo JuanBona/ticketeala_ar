@@ -8,7 +8,7 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 |---|---|---|---|---|
 | 1 | Hecho (PR #6) | `feat/verifier-contract` | `docs/contratos/verifier.schema.json`, ejemplos sintéticos, tests del contrato, D27 a D30 | 1 |
 | 1 (ajustes) | Hecho (PR #10) | `fix/verifier-contract-review` | Ajustes al contrato: techo de la nitidez, moneda declarada (D31), código de ARCA del tipo de comprobante (D32) | — |
-| 2 | En curso | `feat/verifier-core` | Modelos del contrato, carga de parámetros con RN22, registro de señales (D29), puntaje y decisión (D20, D21, D35), `config/parametros_v1.json`, `GET /health` | 2, y la parte de puntaje y decisión del 8 |
+| 2 | En curso | `feat/verifier-core` | Modelos del contrato, carga de parámetros con RN22, registro de señales (D29), puntaje y decisión (D20, D21, D36), `config/parametros_v1.json`, `GET /health` | 2, y la parte de puntaje y decisión del 8 |
 | 3 | Pendiente | `feat/verifier-fiscal-checks` | Importes en formato argentino, dígito verificador del CUIT, S04, S05 y S06. Cumple el hito de la iteración 1 (el motor valida aritmética y CAE, 8/11) | 3 |
 | 4 | Pendiente | `feat/verifier-image` | S01 (Laplaciano e histograma) y preprocesamiento: contorno, perspectiva y CLAHE | 4 |
 | 5 | Pendiente | `feat/verifier-transport` | Pipeline, `POST /verify`, worker de Redis Streams, almacenamiento S3 y OCR falso. Destraba la integración con la API | La parte de `POST /verify` del 8 |

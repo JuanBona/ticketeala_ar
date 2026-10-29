@@ -5,7 +5,7 @@ Si una decisión contradice al PDF, **gana esta lista**. Cada decisión aceptada
 llevarla al documento antes de la entrega.
 
 Estado: **Propuesta** (falta acordar entre los tres) · **Aceptada** · **En el documento**.
-D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con los ajustes de D25 y D26. D27–D30 propuestas el 27/10/2026 con el contrato del motor; D31–D33 el 28/10/2026; D34 el 29/10/2026 con la autenticación; D35 el 29/10/2026. Falta pasarlas al documento antes de la entrega final.
+D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con los ajustes de D25 y D26. D27–D30 propuestas el 27/10/2026 con el contrato del motor; D31–D33 el 28/10/2026; D34 el 29/10/2026 con la autenticación; D36 el 29/10/2026. Falta pasarlas al documento antes de la entrega final.
 
 ## Afectan al código
 
@@ -45,7 +45,7 @@ D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con lo
 | D32 | `GASTO.tipo_comprobante` guarda el **código oficial de ARCA** del tipo de comprobante, sin ceros a la izquierda, el mismo que trae el QR fiscal en `tipoCmp` (1 = Factura A, 6 = Factura B, 11 = Factura C). La base lo exige con un `CHECK`. Los comprobantes sin código (exterior, ticket no fiscal) lo dejan nulo y quedan fuera de S07 por clave fiscal. | Con texto libre, `A` y `FACTURA A` son claves distintas y `ux_gasto_clave_fiscal` (S07) no detecta el duplicado. | 12.2, 12.5, S07, D06, D28 | Propuesta |
 | D33 | Un empleado no puede ser su propio jefe ni su propio suplente (`CHECK` en `EMPLEADO`). | Con la regla jerárquica de UC-01, alguien podría quedar como aprobador de su propia solicitud. | 12.2, UC-01, D15 | Propuesta |
 | D34 | Sesiones de D12. El JWT de acceso dura 15 minutos y el refresh token, 7 días. El refresh es un valor al azar que se guarda solo como hash SHA-256 en la tabla nueva `SESION_REFRESH` y se **rota** en cada uso: el usado queda marcado y se entrega otro de la misma familia. Si llega un refresh ya usado o revocado, se revoca toda la familia (posible robo). El logout revoca la familia. Login: dos límites independientes por minuto, 10 intentos por correo (frena adivinar una contraseña desde muchas IPs) y 30 por IP (frena probar claves comunes en todas las cuentas). | D12 no fija duraciones ni cómo revocar una sesión; un refresh que no se guarda no se puede revocar ni detectar si lo robaron (RFC 9700). | 12.2, 12.4, D12 | Propuesta |
-| D35 | Penalización de una advertencia: peso / 2 **redondeado hacia arriba** (ej.: S06, peso 15 → 8). El puntaje se calcula con las penalizaciones ya redondeadas. | `penalizacion` es entero (`smallint`) y con peso impar la mitad da decimales. Hacia arriba, una advertencia nunca resta menos de la mitad del peso, y la suma de las penalizaciones que ve el empleado da 100 − puntaje. El redondeo al par de Python (7,5 → 8, pero 12,5 → 12) sería difícil de explicar. | 12.5, D30 | Propuesta |
+| D36 | Penalización de una advertencia: peso / 2 **redondeado hacia arriba** (ej.: S06, peso 15 → 8). El puntaje se calcula con las penalizaciones ya redondeadas. | `penalizacion` es entero (`smallint`) y con peso impar la mitad da decimales. Hacia arriba, una advertencia nunca resta menos de la mitad del peso, y la suma de las penalizaciones que ve el empleado da 100 − puntaje. El redondeo al par de Python (7,5 → 8, pero 12,5 → 12) sería difícil de explicar. | 12.5, D30 | Propuesta |
 
 ## Solo del documento (no bloquean el código)
 
