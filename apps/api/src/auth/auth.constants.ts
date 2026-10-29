@@ -5,7 +5,8 @@ const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 export const ACCESS_TOKEN_LIFETIME_SECONDS = 15 * SECONDS_PER_MINUTE;
 export const REFRESH_TOKEN_LIFETIME_MILLISECONDS = 7 * MILLISECONDS_PER_DAY;
 
-export const LOGIN_ATTEMPTS_PER_WINDOW = 5;
+export const LOGIN_ATTEMPTS_PER_EMAIL_PER_WINDOW = 10;
+export const LOGIN_ATTEMPTS_PER_IP_PER_WINDOW = 30;
 export const LOGIN_ATTEMPT_WINDOW_MILLISECONDS = 60 * 1000;
 
 /** HS256 needs a key at least as long as its 256-bit output; shorter secrets are guessable. */

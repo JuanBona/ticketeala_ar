@@ -89,7 +89,8 @@ Reglas para quien programe endpoints:
   protegerlo: el guard es global.
 - `@Roles('contaduria', 'aprobador')` limita el endpoint a quien tenga alguno de esos roles (RN29).
 - `@CurrentEmployee()` da el legajo y los roles de quien llama. Nunca tomes el legajo del body.
-- El login admite 5 intentos por minuto por IP y correo; el sexto responde 429.
+- El login admite 10 intentos por minuto por correo y 30 por IP, contados por separado; el
+  siguiente responde 429.
 - La firma del JWT usa `JWT_SECRET` del `.env` (al menos 32 caracteres; generalo con
   `openssl rand -base64 48`). Sin él, la API no arranca.
 - En la base solo queda el hash SHA-256 de cada refresh, en `sesion_refresh`.

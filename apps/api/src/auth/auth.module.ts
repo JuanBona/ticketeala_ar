@@ -9,12 +9,13 @@ import {
   ACCESS_TOKEN_LIFETIME_SECONDS,
   JWT_ALGORITHM,
   LOGIN_ATTEMPT_WINDOW_MILLISECONDS,
-  LOGIN_ATTEMPTS_PER_WINDOW,
+  LOGIN_ATTEMPTS_PER_EMAIL_PER_WINDOW,
+  LOGIN_ATTEMPTS_PER_IP_PER_WINDOW,
 } from './auth.constants.js';
 import { AuthService } from './auth.service.js';
 import { JwtAuthGuard } from './jwt-auth.guard.js';
 import { readJwtSecret } from './jwt-secret.js';
-import { trackLoginAttempt } from './login-attempt-tracker.js';
+import { trackLoginByEmail, trackLoginByIp } from './login-attempt-tracker.js';
 import { RefreshSessionService } from './refresh-session.service.js';
 import { RolesGuard } from './roles.guard.js';
 
@@ -34,12 +35,19 @@ import { RolesGuard } from './roles.guard.js';
     ThrottlerModule.forRoot({
       throttlers: [
         {
+          name: 'login-per-email',
           ttl: LOGIN_ATTEMPT_WINDOW_MILLISECONDS,
-          limit: LOGIN_ATTEMPTS_PER_WINDOW,
+          limit: LOGIN_ATTEMPTS_PER_EMAIL_PER_WINDOW,
+          getTracker: trackLoginByEmail,
+        },
+        {
+          name: 'login-per-ip',
+          ttl: LOGIN_ATTEMPT_WINDOW_MILLISECONDS,
+          limit: LOGIN_ATTEMPTS_PER_IP_PER_WINDOW,
+          getTracker: trackLoginByIp,
         },
       ],
-      getTracker: trackLoginAttempt,
-      errorMessage: `Demasiados intentos de ingreso: máximo ${LOGIN_ATTEMPTS_PER_WINDOW} por minuto`,
+      errorMessage: `Demasiados intentos de ingreso: máximo ${LOGIN_ATTEMPTS_PER_EMAIL_PER_WINDOW} por minuto por correo y ${LOGIN_ATTEMPTS_PER_IP_PER_WINDOW} por dirección IP`,
     }),
   ],
   controllers: [AuthController],

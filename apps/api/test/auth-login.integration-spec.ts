@@ -10,7 +10,8 @@ import {
 } from './auth-test-app.js';
 import { createTestClient, truncateAllTables } from './test-database.js';
 
-const LOGIN_ATTEMPTS_PER_MINUTE = 5;
+const LOGIN_ATTEMPTS_PER_EMAIL_PER_MINUTE = 10;
+const LOGIN_ATTEMPTS_PER_IP_PER_MINUTE = 30;
 
 describe('POST /auth/login', () => {
   let client: PrismaClient;
@@ -102,8 +103,12 @@ describe('POST /auth/login', () => {
     expect(response.status).toBe(400);
   });
 
-  it('D34: the sixth attempt within a minute for the same email is refused', async () => {
-    for (let attempt = 0; attempt < LOGIN_ATTEMPTS_PER_MINUTE; attempt++) {
+  it('D34: the eleventh attempt within a minute for the same email is refused', async () => {
+    for (
+      let attempt = 0;
+      attempt < LOGIN_ATTEMPTS_PER_EMAIL_PER_MINUTE;
+      attempt++
+    ) {
       await login(employee.email, 'otra-clave');
     }
 
@@ -117,12 +122,30 @@ describe('POST /auth/login', () => {
       employeeNumber: 2002,
       roles: ['empleado'],
     });
-    for (let attempt = 0; attempt < LOGIN_ATTEMPTS_PER_MINUTE; attempt++) {
+    for (
+      let attempt = 0;
+      attempt < LOGIN_ATTEMPTS_PER_EMAIL_PER_MINUTE;
+      attempt++
+    ) {
       await login(employee.email, 'otra-clave');
     }
 
     const response = await login(colleague.email, SYNTHETIC_PASSWORD);
 
     expect(response.status).toBe(200);
+  });
+
+  it('D34: the thirty-first attempt within a minute from one IP is refused, even across emails', async () => {
+    for (
+      let attempt = 0;
+      attempt < LOGIN_ATTEMPTS_PER_IP_PER_MINUTE;
+      attempt++
+    ) {
+      await login(`cuenta.${attempt}@example.com`, 'clave-comun');
+    }
+
+    const response = await login(employee.email, SYNTHETIC_PASSWORD);
+
+    expect(response.status).toBe(429);
   });
 });
