@@ -1,9 +1,11 @@
-"""Registro de las 12 señales y de qué valores de PARAMETRO_SENAL usa cada una (D29)."""
+"""Registro de las 12 señales: qué valores de PARAMETRO_SENAL usa cada una (D29) y su función."""
 
 from dataclasses import dataclass
 from enum import StrEnum
 
 from verifier.contract import SignalCode
+from verifier.signals import s04_cuit, s05_cae, s06_totals
+from verifier.signals.base import SignalFunction
 
 
 class ParameterValue(StrEnum):
@@ -16,10 +18,11 @@ class ParameterValue(StrEnum):
 
 @dataclass(frozen=True)
 class SignalSpec:
-    """Una señal del catálogo de 12.5 y los valores que necesita para evaluarse."""
+    """Una señal del catálogo de 12.5, los valores que necesita y su función (None si falta)."""
 
     code: SignalCode
     uses: frozenset[ParameterValue]
+    evaluate: SignalFunction | None = None
 
 
 _THRESHOLD_ONLY = frozenset({ParameterValue.THRESHOLD})
@@ -35,9 +38,9 @@ SIGNAL_SPECS: dict[SignalCode, SignalSpec] = {
         ),
         SignalSpec(SignalCode.S02, _THRESHOLD_ONLY),  # confianza mínima por campo
         SignalSpec(SignalCode.S03, _NO_VALUES),
-        SignalSpec(SignalCode.S04, _NO_VALUES),
-        SignalSpec(SignalCode.S05, _NO_VALUES),
-        SignalSpec(SignalCode.S06, _THRESHOLD_ONLY),  # tolerancia en pesos
+        SignalSpec(SignalCode.S04, _NO_VALUES, s04_cuit.evaluate),
+        SignalSpec(SignalCode.S05, _NO_VALUES, s05_cae.evaluate),
+        SignalSpec(SignalCode.S06, _THRESHOLD_ONLY, s06_totals.evaluate),  # tolerancia en pesos
         SignalSpec(SignalCode.S07, _NO_VALUES),
         SignalSpec(SignalCode.S08, _THRESHOLD_ONLY),  # distancia de Hamming máxima
         SignalSpec(SignalCode.S09, _THRESHOLD_ONLY),  # días de tolerancia
