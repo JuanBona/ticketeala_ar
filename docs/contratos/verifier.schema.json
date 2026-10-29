@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:amr-viajes:contratos:verifier",
   "title": "Contrato API ↔ verificador",
-  "description": "Pedido: mensaje de verify.requests (campo 'pedido') y parte 'pedido' de POST /verify. Resultado: mensaje de verify.results (campo 'resultado') y respuesta de POST /verify. Validar contra #/$defs/Pedido o #/$defs/Resultado. Decisiones: D05, D21 a D30.",
+  "description": "Pedido: mensaje de verify.requests (campo 'pedido') y parte 'pedido' de POST /verify. Resultado: mensaje de verify.results (campo 'resultado') y respuesta de POST /verify. Validar contra #/$defs/Pedido o #/$defs/Resultado. Decisiones: D05, D21 a D32.",
   "$defs": {
     "Fecha": { "type": "string", "format": "date" },
     "Moneda": { "type": "string", "pattern": "^[A-Z]{3}$", "description": "ISO 4217" },
@@ -12,6 +12,11 @@
       "description": "numeric(12,2) como texto, con punto decimal y sin separador de miles, para no perder centavos"
     },
     "Cuit": { "type": "string", "pattern": "^\\d{11}$", "description": "Sin guiones" },
+    "TipoComprobante": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,2}$",
+      "description": "Código de ARCA sin ceros a la izquierda, como tipoCmp del QR: 1 = Factura A, 6 = Factura B, 11 = Factura C (D32)"
+    },
     "Dhash": { "type": "string", "pattern": "^[0-9a-f]{16}$", "description": "64 bits en hexadecimal (D06)" },
     "GastoId": { "type": "integer", "minimum": 1 },
     "JobId": { "type": "string", "format": "uuid" },
@@ -126,6 +131,7 @@
       "required": [
         "viaje",
         "tipo_gasto",
+        "moneda_declarada",
         "tope",
         "tipo_cambio",
         "ubicacion_captura",
@@ -136,6 +142,10 @@
       "properties": {
         "viaje": { "$ref": "#/$defs/Viaje" },
         "tipo_gasto": { "$ref": "#/$defs/TipoGasto", "description": "Lo elige el empleado al cargar la foto (D27)" },
+        "moneda_declarada": {
+          "$ref": "#/$defs/Moneda",
+          "description": "La declara el empleado al cargar la foto (ARS por defecto). El motor la usa si no hay QR (D31)"
+        },
         "tope": { "$ref": "#/$defs/Tope" },
         "tipo_cambio": { "$ref": "#/$defs/TipoCambio" },
         "ubicacion_captura": {
@@ -156,7 +166,7 @@
           }
         },
         "claves_fiscales_previas": {
-          "description": "Gastos activos de cualquier empleado con clave fiscal completa, sin incluir este gasto (S07, RN05, D25, D28)",
+          "description": "Gastos activos de cualquier empleado con clave fiscal completa, sin incluir este gasto (S07, RN05, D25, D28). Los comprobantes sin código de ARCA no entran (D32)",
           "type": "array",
           "items": {
             "type": "object",
@@ -165,7 +175,7 @@
             "properties": {
               "gasto_id": { "$ref": "#/$defs/GastoId" },
               "cuit": { "$ref": "#/$defs/Cuit" },
-              "tipo_comprobante": { "type": "string", "minLength": 1, "maxLength": 10 },
+              "tipo_comprobante": { "$ref": "#/$defs/TipoComprobante" },
               "punto_venta": { "type": "integer", "minimum": 0 },
               "numero_comprobante": { "type": "integer", "minimum": 0 }
             }
@@ -286,7 +296,11 @@
         "fecha": { "$ref": "#/$defs/Campo" },
         "cuit": { "$ref": "#/$defs/Campo" },
         "razon_social": { "$ref": "#/$defs/Campo" },
-        "tipo_comprobante": { "$ref": "#/$defs/Campo" },
+        "tipo_comprobante": {
+          "$ref": "#/$defs/Campo",
+          "properties": { "valor": { "oneOf": [{ "$ref": "#/$defs/TipoComprobante" }, { "type": "null" }] } },
+          "description": "Código de ARCA sin ceros a la izquierda, como tipoCmp del QR (D32). Nulo si el comprobante no tiene código de ARCA (exterior o ticket no fiscal; D06, D32)"
+        },
         "punto_venta": { "$ref": "#/$defs/Campo" },
         "numero_comprobante": { "$ref": "#/$defs/Campo" },
         "total": { "$ref": "#/$defs/Campo" },
@@ -295,7 +309,11 @@
         "no_gravado": { "$ref": "#/$defs/Campo" },
         "exento": { "$ref": "#/$defs/Campo" },
         "otros_tributos": { "$ref": "#/$defs/Campo" },
-        "moneda": { "$ref": "#/$defs/Campo" },
+        "moneda": {
+          "$ref": "#/$defs/Campo",
+          "properties": { "valor": { "$ref": "#/$defs/Moneda" } },
+          "description": "La del QR (código de ARCA convertido a ISO 4217); sin QR, contexto.moneda_declarada (D31). Nunca nula"
+        },
         "cae": { "$ref": "#/$defs/Campo" },
         "cae_vencimiento": { "$ref": "#/$defs/Campo" },
         "id_fiscal_extranjero": { "$ref": "#/$defs/Campo" }
@@ -324,7 +342,8 @@
         "nitidez": {
           "type": "number",
           "minimum": 0,
-          "description": "Varianza del Laplaciano (VERIFICACION_COMPROBANTE.calidad_imagen)"
+          "maximum": 999999.99,
+          "description": "Varianza del Laplaciano (VERIFICACION_COMPROBANTE.calidad_imagen, numeric(8,2))"
         },
         "iluminacion": { "type": "number", "minimum": 0, "maximum": 255, "description": "Brillo medio" },
         "forzada": {
