@@ -16,6 +16,7 @@ Monolito modular con NestJS, Prisma y PostgreSQL 17. Reglas del módulo en `CLAU
   propio jefe o suplente (D33).
 - `prisma/seed.ts` y `prisma/seed/`: la **semilla**, datos sintéticos para desarrollar (ver abajo).
 - `src/prisma/`: `PrismaService`, la conexión a la base que usan todos los módulos.
+- `src/auth/`: el ingreso (D12, D34). Ver "Autenticación" más abajo.
 - `test/`: tests de integración que corren contra el PostgreSQL de `infra/`.
 
 ## Primera vez
@@ -67,6 +68,35 @@ Se puede correr las veces que quieras: lo que ya existe no se duplica ni se pisa
 los parámetros son versiones inmutables, así que si la versión 1 ya está, la semilla no la toca.
 Para cambiarlas se cierra la vigente y se crea otra versión, nunca editando la semilla.
 
+## Autenticación
+
+Cómo entra alguien a la API (D12, D34):
+
+1. `POST /auth/login` con `email` y `password`. La contraseña se compara con el hash argon2 de la
+   base. Si está bien, la API devuelve dos **tokens** (cadenas de texto que prueban quién sos):
+   - `accessToken`: un **JWT** que dura 15 minutos. Va en cada pedido, en el encabezado
+     `Authorization: Bearer <accessToken>`.
+   - `refreshToken`: dura 7 días y sirve solo para pedir un par nuevo.
+2. Cuando el JWT vence, `POST /auth/refresh` con `refreshToken` devuelve un par nuevo. El refresh
+   viejo deja de servir (**rotación**). Si alguien usa uno viejo, la API supone que lo robaron y
+   cierra toda esa sesión.
+3. `POST /auth/logout` con `refreshToken` cierra la sesión.
+4. `GET /auth/me` devuelve el legajo y los roles del JWT.
+
+Reglas para quien programe endpoints:
+
+- **Todo endpoint pide JWT** salvo los marcados `@Public()`. No hace falta agregar nada para
+  protegerlo: el guard es global.
+- `@Roles('contaduria', 'aprobador')` limita el endpoint a quien tenga alguno de esos roles (RN29).
+- `@CurrentEmployee()` da el legajo y los roles de quien llama. Nunca tomes el legajo del body.
+- El login admite 10 intentos por minuto por correo y 30 por IP, contados por separado; el
+  siguiente responde 429.
+- La firma del JWT usa `JWT_SECRET` del `.env` (al menos 32 caracteres; generalo con
+  `openssl rand -base64 48`). Sin él, la API no arranca.
+- En la base solo queda el hash SHA-256 de cada refresh, en `sesion_refresh`.
+
+Todavía falta el segundo factor (TOTP, RN30) y el registro de auditoría: van en los PR siguientes.
+
 ## Cambiar el esquema
 
 1. Primero se cambia `docs/modelo-datos.sql` (es la referencia) y después `prisma/schema.prisma`.
@@ -93,5 +123,8 @@ Para cambiarlas se cierra la vigente y se crea otra versión, nunca editando la 
 - **Node 22.22.3 o más nuevo**: con `engine-strict`, npm también hace cumplir lo que piden las
   dependencias, y `@nestjs/cli` pide esa versión. Si `npx npm@11 ci` dice `EBADENGINE` con
   `node`, actualizá Node 22.
+- Para probar la API con `tsx` u otra herramienta basada en esbuild, compilá antes con
+  `npm run build`: esbuild no guarda los tipos de los constructores que Nest usa para inyectar
+  dependencias. `npm run start:dev` ya compila con `nest`.
 - npm 11 no corre los scripts de instalación de las dependencias hasta que alguien los aprueba
   (`npm install-scripts`). La API no los necesita: `argon2` y `esbuild` traen sus binarios armados.
