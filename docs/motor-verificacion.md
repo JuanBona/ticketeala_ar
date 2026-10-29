@@ -5,9 +5,13 @@ Este archivo lo resume para programar; ante dudas, manda el PDF (salvo `docs/dec
 
 ## Etapas
 
-1. **Preprocesamiento (S01).** Nitidez = varianza del Laplaciano; iluminación por histograma.
-   Si no pasan el umbral, se pide otra foto **sin llamar al OCR**; tras N rechazos se procesa igual
-   (D21). Luego: contorno del comprobante, corrección de perspectiva y CLAHE.
+1. **Preprocesamiento (S01).** Región del papel por color (clara y casi sin saturación). Sobre esa
+   región en la foto original (o la foto entera si no hay papel) se miden nitidez = 100 × (1 −
+   desenfoque de Crete et al., D40) e iluminación = brillo medio, antes de CLAHE y a 1000 px de
+   lado largo (D29, D39). Si no pasan el umbral, se pide otra foto **sin llamar al OCR**; tras N
+   rechazos se procesa igual (D21). Luego se corrige la perspectiva, solo si el papel no toca el
+   borde y su cuadrilátero deja afuera como mucho el 2,5 % del papel (D39), y se aplica CLAHE a la
+   imagen del OCR.
 2. **Post-procesamiento fiscal.** Decodificar el QR fiscal y contrastarlo con el OCR. Dígito
    verificador del CUIT (módulo 11, pesos 5-4-3-2-7-6-5-4-3-2). CAE de 14 dígitos y vigente.
    Importes en formato argentino (punto de miles, coma decimal). En facturas A, la suma de los
