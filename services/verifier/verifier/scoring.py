@@ -1,4 +1,4 @@
-"""Penalización, puntaje y decisión del motor (punto 12.5, D20, D21, D36)."""
+"""Penalización, puntaje y decisión del motor (punto 12.5, D20, D21, D37)."""
 
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -21,7 +21,7 @@ class Verdict:
 
 
 def penalty(result: SignalResult, weight: int) -> int:
-    """12.5: falla resta el peso y advertencia la mitad, redondeada hacia arriba (D36)."""
+    """12.5: falla resta el peso y advertencia la mitad, redondeada hacia arriba (D37)."""
     if result is SignalResult.FAIL:
         return weight
     if result is SignalResult.WARNING:
