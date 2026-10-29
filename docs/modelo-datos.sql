@@ -38,6 +38,7 @@ CREATE TABLE empleado (
   activo                    boolean NOT NULL DEFAULT true,         -- D14 (RN28)
   password_hash             varchar(255) NOT NULL,                 -- D14
   totp_secret               varchar(64),                           -- D14 (RN30)
+  totp_ultimo_paso          bigint,                                -- D35: último paso de 30 s aceptado (anti-reuso)
   consentimiento_ubicacion  boolean NOT NULL DEFAULT false,        -- D14 (Ley 25.326)
   consentimiento_fecha      timestamptz,                           -- D14
   CHECK (legajo_jefe <> legajo),                                   -- D33
@@ -75,7 +76,8 @@ CREATE TABLE sesion_refresh (                                       -- D34
   creado       timestamptz NOT NULL DEFAULT now(),
   vence        timestamptz NOT NULL,
   usado        timestamptz,             -- cuándo se cambió por uno nuevo
-  revocado     timestamptz              -- logout o reúso detectado
+  revocado     timestamptz,             -- logout o reúso detectado
+  segundo_factor boolean NOT NULL DEFAULT false -- D35: la sesión nació con TOTP verificado (RN30)
 );
 CREATE INDEX ix_sesion_refresh_familia ON sesion_refresh (id_familia);
 

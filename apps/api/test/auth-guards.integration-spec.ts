@@ -2,6 +2,7 @@
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import request from 'supertest';
+import { ACCESS_TOKEN_AUDIENCE } from '../src/auth/auth.constants.js';
 import { readJwtSecret } from '../src/auth/jwt-secret.js';
 import type { Role } from '../src/auth/role.js';
 import { PrismaClient } from '../src/generated/prisma/client.js';
@@ -69,13 +70,14 @@ describe('global authentication and role guards', () => {
   });
 
   it('D12: /auth/me returns the employee number and roles of the token', async () => {
-    const accessToken = await accessTokenFor(2001, ['empleado', 'contaduria']);
+    const accessToken = await accessTokenFor(2001, ['empleado', 'gerencia']);
 
     const response = await getWithToken('/auth/me', accessToken);
 
     expect(response.body).toEqual({
       employeeNumber: 2001,
-      roles: expect.arrayContaining(['empleado', 'contaduria']),
+      roles: expect.arrayContaining(['empleado', 'gerencia']),
+      secondFactorVerified: false,
     });
   });
 
@@ -113,11 +115,15 @@ describe('global authentication and role guards', () => {
   it('D34: an expired access token is rejected', async () => {
     const expiredToken = await new JwtService({
       secret: readJwtSecret(),
-    }).signAsync({
-      sub: '2001',
-      roles: ['empleado'],
-      exp: ONE_MINUTE_AGO_IN_SECONDS,
-    });
+    }).signAsync(
+      {
+        sub: '2001',
+        roles: ['empleado'],
+        secondFactorVerified: false,
+        exp: ONE_MINUTE_AGO_IN_SECONDS,
+      },
+      { audience: ACCESS_TOKEN_AUDIENCE },
+    );
 
     const response = await getWithToken('/probe/any-employee', expiredToken);
 
@@ -127,15 +133,15 @@ describe('global authentication and role guards', () => {
   it('12.4: an employee without the required role gets 403', async () => {
     const accessToken = await accessTokenFor(2001, ['empleado']);
 
-    const response = await getWithToken('/probe/accounting-only', accessToken);
+    const response = await getWithToken('/probe/management-only', accessToken);
 
     expect(response.status).toBe(403);
   });
 
   it('RN29: holding the required role among several is enough', async () => {
-    const accessToken = await accessTokenFor(2001, ['empleado', 'contaduria']);
+    const accessToken = await accessTokenFor(2001, ['empleado', 'gerencia']);
 
-    const response = await getWithToken('/probe/accounting-only', accessToken);
+    const response = await getWithToken('/probe/management-only', accessToken);
 
     expect(response.status).toBe(200);
   });

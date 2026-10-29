@@ -131,7 +131,8 @@ model Employee {
   substituteEmployeeNumber Int?      @map("legajo_suplente") // D15; never the employee itself (D33)
   active                   Boolean   @default(true) @map("activo") // D14 (RN28)
   passwordHash             String    @map("password_hash") @db.VarChar(255) // D14
-  totpSecret               String?   @map("totp_secret") @db.VarChar(64) // D14 (RN30)
+  totpSecret               String?   @map("totp_secret") @db.VarChar(64) // D14 (RN30); AES-256-GCM ciphertext (D35)
+  totpLastTimeStep         BigInt?   @map("totp_ultimo_paso") // D35: last accepted 30-second step, against code reuse
   locationConsent          Boolean   @default(false) @map("consentimiento_ubicacion") // D14 (Ley 25.326)
   locationConsentAt        DateTime? @map("consentimiento_fecha") @db.Timestamptz // D14
 
@@ -200,6 +201,7 @@ model RefreshSession {
   expiresAt      DateTime  @map("vence") @db.Timestamptz
   usedAt         DateTime? @map("usado") @db.Timestamptz
   revokedAt      DateTime? @map("revocado") @db.Timestamptz
+  secondFactor   Boolean   @default(false) @map("segundo_factor") // D35: born from a verified TOTP (RN30)
 
   employee Employee @relation(fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
 

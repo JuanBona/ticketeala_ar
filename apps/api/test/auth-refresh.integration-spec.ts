@@ -144,13 +144,13 @@ describe('POST /auth/refresh and /auth/logout', () => {
 
   it('D34: a role granted after login is in the token issued at the next refresh', async () => {
     const refreshToken = await loginRefreshToken();
-    const accountingRole = await client.role.create({
-      data: { name: 'contaduria' },
+    const managementRole = await client.role.create({
+      data: { name: 'gerencia' },
     });
     await client.employeeRole.create({
       data: {
         employeeNumber: employee.employeeNumber,
-        roleId: accountingRole.id,
+        roleId: managementRole.id,
       },
     });
 
@@ -159,6 +159,6 @@ describe('POST /auth/refresh and /auth/logout', () => {
       .get('/auth/me')
       .set('Authorization', `Bearer ${refreshed.body.accessToken}`);
 
-    expect(me.body.roles).toContain('contaduria');
+    expect(me.body.roles).toContain('gerencia');
   });
 });
