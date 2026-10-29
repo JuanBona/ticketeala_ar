@@ -21,6 +21,7 @@ export class JwtAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // @Public can be on the method or on the whole controller; the method wins.
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -29,6 +30,7 @@ export class JwtAuthGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    // The client sends `Authorization: Bearer <token>`; anything else is a 401.
     const token = readBearerToken(request.headers.authorization);
     const employee = await this.accessTokens.verify(token);
     // RN30: login never issues such a token; refusing it here also guards against a future bug there.
@@ -40,6 +42,7 @@ export class JwtAuthGuard implements CanActivate {
         `Empleado ${employee.employeeNumber} necesita segundo factor para sus roles (RN30)`,
       );
     }
+    // From here on, @CurrentEmployee and RolesGuard read who is calling from the request.
     request.employee = employee;
     return true;
   }

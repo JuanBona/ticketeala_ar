@@ -30,3 +30,9 @@ export const TOTP_ISSUER = 'AMR Viajes';
 export const TOTP_CLOCK_TOLERANCE_SECONDS = 30;
 export const TOTP_ATTEMPTS_PER_EMPLOYEE_PER_WINDOW = 5;
 export const TOTP_ENCRYPTION_KEY_BYTES = 32;
+
+/** D36: one-time codes of the second factor. */
+export const SECOND_FACTOR_CODE_BYTES = 10;
+export const SECOND_FACTOR_CODE_GROUP_LENGTH = 4;
+export const ENROLLMENT_CODE_LIFETIME_MILLISECONDS = MILLISECONDS_PER_DAY;
+export const RECOVERY_CODE_COUNT = 8;

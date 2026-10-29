@@ -147,6 +147,8 @@ model Employee {
   roles                     EmployeeRole[]
   auditLogs                 AuditLog[]
   refreshSessions           RefreshSession[]
+  secondFactorCodes         SecondFactorCode[]  @relation("SecondFactorCodeOwner")
+  issuedSecondFactorCodes   SecondFactorCode[]  @relation("SecondFactorCodeIssuer")
   authoredPolicies          ExpensePolicy[]
   travelRequests            TravelRequest[]     @relation("Requester")
   travelRequestsToApprove   TravelRequest[]     @relation("Approver")
@@ -207,6 +209,30 @@ model RefreshSession {
 
   @@index([familyId], map: "ix_sesion_refresh_familia")
   @@map("sesion_refresh")
+}
+
+enum SecondFactorCodeType {
+  ENROLLMENT @map("habilitacion") // D36: issued by an administrator, allows setting up TOTP once
+  RECOVERY   @map("recuperacion") // D36: given at enrollment, replaces one TOTP code once
+
+  @@map("tipo_codigo_segundo_factor")
+}
+
+model SecondFactorCode {
+  id                     BigInt               @id @default(autoincrement()) // D36
+  employeeNumber         Int                  @map("legajo")
+  type                   SecondFactorCodeType @map("tipo")
+  codeHash               String               @unique @map("codigo_hash") @db.Char(64) // SHA-256; the code itself is never stored
+  createdAt              DateTime             @default(now()) @map("creado") @db.Timestamptz
+  expiresAt              DateTime?            @map("vence") @db.Timestamptz // enrollment codes only
+  usedAt                 DateTime?            @map("usado") @db.Timestamptz
+  voidedAt               DateTime?            @map("anulado") @db.Timestamptz
+  issuedByEmployeeNumber Int?                 @map("legajo_emisor") // null when issued from the console
+
+  employee Employee  @relation("SecondFactorCodeOwner", fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+  issuedBy Employee? @relation("SecondFactorCodeIssuer", fields: [issuedByEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("codigo_segundo_factor")
 }
 
 // ===== Travel and policies =====

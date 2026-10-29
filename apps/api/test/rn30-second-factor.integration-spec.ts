@@ -14,6 +14,7 @@ import {
   createSyntheticEmployee,
   currentCode,
   enrollSecondFactor,
+  issueEnrollmentCode,
   secretFromUri,
   SYNTHETIC_PASSWORD,
 } from './auth-test-app.js';
@@ -68,6 +69,19 @@ describe('RN30 second factor', () => {
       });
   }
 
+  /** D36: password, enrollment code from an administrator, then the QR secret to scan. */
+  async function startEnrollment() {
+    const firstStep = await login(APPROVER_NUMBER, ['empleado', 'aprobador']);
+    const enrollmentCode = await issueEnrollmentCode(client, APPROVER_NUMBER);
+    const enrollment = await request(app.getHttpServer())
+      .post('/auth/totp/enroll')
+      .send({ challengeToken: firstStep.body.challengeToken, enrollmentCode });
+    return {
+      challengeToken: enrollment.body.challengeToken as string,
+      secret: secretFromUri(enrollment.body.otpauthUri),
+    };
+  }
+
   function verify(challengeToken: string, code: string) {
     return request(app.getHttpServer())
       .post('/auth/totp/verify')
@@ -93,19 +107,16 @@ describe('RN30 second factor', () => {
       const response = await login(APPROVER_NUMBER, ['empleado', role]);
 
       expect(response.body.step).toBe('totp_enrollment_required');
-      expect(response.body.otpauthUri).toMatch(/^otpauth:\/\/totp\//);
+      // D36: no QR yet; it comes only after an administrator's enrollment code.
+      expect(response.body).not.toHaveProperty('otpauthUri');
       expect(response.body.accessToken).toBeUndefined();
     },
   );
 
   it('RN30: the first valid code stores the secret encrypted and opens a session with second factor', async () => {
-    const enrollment = await login(APPROVER_NUMBER, ['empleado', 'aprobador']);
-    const secret = secretFromUri(enrollment.body.otpauthUri);
+    const { challengeToken, secret } = await startEnrollment();
 
-    const response = await verify(
-      enrollment.body.challengeToken,
-      await currentCode(secret),
-    );
+    const response = await verify(challengeToken, await currentCode(secret));
 
     expect(response.status).toBe(200);
     const employee = await client.employee.findUniqueOrThrow({
@@ -118,12 +129,13 @@ describe('RN30 second factor', () => {
   });
 
   it('RN30: activating the second factor is recorded in the audit log', async () => {
-    const enrollment = await login(APPROVER_NUMBER, ['empleado', 'aprobador']);
-    const secret = secretFromUri(enrollment.body.otpauthUri);
+    const { challengeToken, secret } = await startEnrollment();
 
-    await verify(enrollment.body.challengeToken, await currentCode(secret));
+    await verify(challengeToken, await currentCode(secret));
 
-    const entry = await client.auditLog.findFirstOrThrow();
+    const entry = await client.auditLog.findFirstOrThrow({
+      where: { action: 'activar_segundo_factor' },
+    });
     expect(entry).toMatchObject({
       employeeNumber: APPROVER_NUMBER,
       entity: 'empleado',
@@ -135,11 +147,10 @@ describe('RN30 second factor', () => {
   });
 
   it('RN30: a wrong code at enrollment stores no secret', async () => {
-    const enrollment = await login(APPROVER_NUMBER, ['empleado', 'aprobador']);
-    const secret = secretFromUri(enrollment.body.otpauthUri);
+    const { challengeToken, secret } = await startEnrollment();
 
     const response = await verify(
-      enrollment.body.challengeToken,
+      challengeToken,
       wrongCode(await currentCode(secret)),
     );
 
@@ -248,14 +259,13 @@ describe('RN30 second factor', () => {
   });
 
   it('RN30: the sixth code within a minute for one employee is refused', async () => {
-    const enrollment = await login(APPROVER_NUMBER, ['empleado', 'aprobador']);
-    const secret = secretFromUri(enrollment.body.otpauthUri);
+    const { challengeToken, secret } = await startEnrollment();
     const code = await currentCode(secret);
     for (let attempt = 0; attempt < TOTP_ATTEMPTS_PER_MINUTE; attempt++) {
-      await verify(enrollment.body.challengeToken, wrongCode(code));
+      await verify(challengeToken, wrongCode(code));
     }
 
-    const response = await verify(enrollment.body.challengeToken, code);
+    const response = await verify(challengeToken, code);
 
     expect(response.status).toBe(429);
   });

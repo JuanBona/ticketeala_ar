@@ -4,7 +4,8 @@ import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 export interface AuditEntry {
-  employeeNumber: number;
+  /** Who did it; null when the system did it, e.g. from the console. */
+  employeeNumber: number | null;
   entity: string;
   entityId: string;
   action: string;

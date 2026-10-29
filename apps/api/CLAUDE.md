@@ -20,3 +20,7 @@ Dueño: rol API y datos. Arquitectura: punto 12.4 del PDF. Esquema: `docs/modelo
 - `docs/contratos/api.openapi.yaml` se genera desde los decoradores y se commitea en cada PR que
   cambie endpoints.
 - Semillas en `prisma/seed.ts`, todas marcadas como sintéticas.
+- Comentarios explicativos (pedido de Juan Cruz, 29/10): además del encabezado y los docstrings, cada
+  paso de lógica lleva una línea corta antes que diga qué hace y por qué, para entender el código
+  leyéndolo en VS Code sin conocer NestJS ni Prisma. Cortos: una línea por paso, sin repetir el
+  código literal.

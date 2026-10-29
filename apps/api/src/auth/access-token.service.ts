@@ -30,6 +30,7 @@ export class AccessTokenService {
   /** Checks signature, algorithm, audience and expiry, and rebuilds the employee it proves (D12). */
   async verify(token: string): Promise<AuthenticatedEmployee> {
     const claims = await this.readClaims(token);
+    // `sub` (subject) carries the employee number as text, as the JWT standard asks.
     const employeeNumber = Number(claims.sub);
     if (!Number.isInteger(employeeNumber) || !Array.isArray(claims.roles)) {
       throw new UnauthorizedException(
@@ -38,6 +39,7 @@ export class AccessTokenService {
     }
     return {
       employeeNumber,
+      // Unknown role names are dropped, so a typo never grants anything.
       roles: claims.roles.filter(isRole),
       secondFactorVerified: claims.secondFactorVerified === true,
     };
@@ -45,6 +47,7 @@ export class AccessTokenService {
 
   private async readClaims(token: string): Promise<AccessTokenClaims> {
     try {
+      // Checks signature, algorithm, expiry and that the audience is the access one.
       return await this.jwtService.verifyAsync<AccessTokenClaims>(token, {
         audience: ACCESS_TOKEN_AUDIENCE,
       });
