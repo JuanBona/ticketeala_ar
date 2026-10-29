@@ -22,6 +22,7 @@ function guardRequiring(roles: Role[] | undefined): RolesGuard {
 const employeeOnly: AuthenticatedEmployee = {
   employeeNumber: 2001,
   roles: ['empleado'],
+  secondFactorVerified: false,
 };
 
 describe('RolesGuard', () => {
@@ -36,6 +37,7 @@ describe('RolesGuard', () => {
     const approver: AuthenticatedEmployee = {
       employeeNumber: 2002,
       roles: ['empleado', 'aprobador'],
+      secondFactorVerified: true,
     };
 
     expect(guard.canActivate(contextFor(approver))).toBe(true);

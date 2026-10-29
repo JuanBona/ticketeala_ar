@@ -1,4 +1,4 @@
-// Global guard (D12): every endpoint needs a valid access token unless it is marked @Public.
+// Global guard (D12, RN30): every endpoint needs a valid access token unless it is marked @Public.
 import {
   CanActivate,
   ExecutionContext,
@@ -9,6 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { AccessTokenService } from './access-token.service.js';
 import type { AuthenticatedRequest } from './authenticated-employee.js';
 import { IS_PUBLIC_KEY } from './decorators.js';
+import { requiresSecondFactor } from './role.js';
 
 const BEARER_PREFIX = 'Bearer ';
 
@@ -29,7 +30,17 @@ export class JwtAuthGuard implements CanActivate {
     }
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const token = readBearerToken(request.headers.authorization);
-    request.employee = await this.accessTokens.verify(token);
+    const employee = await this.accessTokens.verify(token);
+    // RN30: login never issues such a token; refusing it here also guards against a future bug there.
+    if (
+      requiresSecondFactor(employee.roles) &&
+      !employee.secondFactorVerified
+    ) {
+      throw new UnauthorizedException(
+        `Empleado ${employee.employeeNumber} necesita segundo factor para sus roles (RN30)`,
+      );
+    }
+    request.employee = employee;
     return true;
   }
 }

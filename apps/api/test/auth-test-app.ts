@@ -1,10 +1,14 @@
-// Helpers for auth integration tests: the real app on the test database plus synthetic employees.
+// Helpers for auth integration tests: the real app on the test database, synthetic employees and TOTP.
 import { Controller, Get, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import argon2 from 'argon2';
+import { generate, ScureBase32Plugin } from 'otplib';
+import { randomBytes } from 'node:crypto';
 import { AppModule } from '../src/app.module.js';
 import { Roles } from '../src/auth/decorators.js';
 import type { Role } from '../src/auth/role.js';
+import { TOTP_SECRET_BYTES } from '../src/auth/auth.constants.js';
+import { TotpSecretCipher } from '../src/auth/totp-secret-cipher.js';
 import { configureApp } from '../src/configure-app.js';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
@@ -19,9 +23,9 @@ class ProbeController {
     return 'ok';
   }
 
-  @Roles('contaduria')
-  @Get('accounting-only')
-  accountingOnly(): string {
+  @Roles('gerencia')
+  @Get('management-only')
+  managementOnly(): string {
     return 'ok';
   }
 }
@@ -82,4 +86,31 @@ function roleGrant(name: Role) {
   return {
     role: { connectOrCreate: { where: { name }, create: { name } } },
   };
+}
+
+/** RN30: stores an encrypted TOTP secret for the employee, as a finished enrollment would, and returns it. */
+export async function enrollSecondFactor(
+  client: PrismaClient,
+  employeeNumber: number,
+): Promise<string> {
+  const secretBytes = randomBytes(TOTP_SECRET_BYTES);
+  await client.employee.update({
+    where: { employeeNumber },
+    data: { totpSecret: new TotpSecretCipher().encrypt(secretBytes) },
+  });
+  return new ScureBase32Plugin().encode(secretBytes);
+}
+
+/** The code an authenticator app would show right now for this secret. */
+export function currentCode(secret: string): Promise<string> {
+  return generate({ secret });
+}
+
+/** Reads the base32 secret out of the otpauth:// link returned at enrollment. */
+export function secretFromUri(otpauthUri: string): string {
+  const secret = new URL(otpauthUri).searchParams.get('secret');
+  if (!secret) {
+    throw new Error(`Link de alta sin secret: ${otpauthUri}`);
+  }
+  return secret;
 }

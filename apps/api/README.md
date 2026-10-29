@@ -70,32 +70,47 @@ Para cambiarlas se cierra la vigente y se crea otra versión, nunca editando la 
 
 ## Autenticación
 
-Cómo entra alguien a la API (D12, D34):
+Cómo entra alguien a la API (D12, D34, D35):
 
 1. `POST /auth/login` con `email` y `password`. La contraseña se compara con el hash argon2 de la
-   base. Si está bien, la API devuelve dos **tokens** (cadenas de texto que prueban quién sos):
-   - `accessToken`: un **JWT** que dura 15 minutos. Va en cada pedido, en el encabezado
-     `Authorization: Bearer <accessToken>`.
-   - `refreshToken`: dura 7 días y sirve solo para pedir un par nuevo.
-2. Cuando el JWT vence, `POST /auth/refresh` con `refreshToken` devuelve un par nuevo. El refresh
+   base. La respuesta trae `step`, que dice qué sigue:
+   - `authenticated`: listo. Trae dos **tokens** (cadenas de texto que prueban quién sos):
+     - `accessToken`: un **JWT** que dura 15 minutos. Va en cada pedido, en el encabezado
+       `Authorization: Bearer <accessToken>`.
+     - `refreshToken`: dura 7 días y sirve solo para pedir un par nuevo.
+   - `totp_required`: la persona tiene rol aprobador, contaduria o administrador (RN30) y tiene que
+     mandar el código de 6 dígitos de su app (Google Authenticator u otra). Trae un
+     `challengeToken` (desafío) que vale 5 minutos y no abre ningún endpoint.
+   - `totp_enrollment_required`: igual que el anterior, pero es la primera vez. Además trae
+     `otpauthUri`, el link que la web o la app convierten en el QR para escanear.
+2. `POST /auth/totp/verify` con `challengeToken` y `code` devuelve los tokens. En la primera vez,
+   ese código además confirma el alta: recién ahí se guarda el secreto (cifrado) y se registra en
+   `registro_auditoria`.
+3. Cuando el JWT vence, `POST /auth/refresh` con `refreshToken` devuelve un par nuevo. El refresh
    viejo deja de servir (**rotación**). Si alguien usa uno viejo, la API supone que lo robaron y
    cierra toda esa sesión.
-3. `POST /auth/logout` con `refreshToken` cierra la sesión.
-4. `GET /auth/me` devuelve el legajo y los roles del JWT.
+4. `POST /auth/logout` con `refreshToken` cierra la sesión.
+5. `GET /auth/me` devuelve el legajo, los roles y si la sesión pasó el segundo factor.
 
 Reglas para quien programe endpoints:
 
 - **Todo endpoint pide JWT** salvo los marcados `@Public()`. No hace falta agregar nada para
   protegerlo: el guard es global.
 - `@Roles('contaduria', 'aprobador')` limita el endpoint a quien tenga alguno de esos roles (RN29).
+  Quien tiene un rol de RN30 siempre llega con el segundo factor verificado: el guard rechaza
+  cualquier otro token.
 - `@CurrentEmployee()` da el legajo y los roles de quien llama. Nunca tomes el legajo del body.
-- El login admite 10 intentos por minuto por correo y 30 por IP, contados por separado; el
-  siguiente responde 429.
-- La firma del JWT usa `JWT_SECRET` del `.env` (al menos 32 caracteres; generalo con
-  `openssl rand -base64 48`). Sin él, la API no arranca.
+- El login admite 10 intentos por minuto por correo y 30 por IP, contados por separado; el código
+  TOTP, 5 por minuto por empleado. El siguiente responde 429.
+- Un mismo código TOTP no sirve dos veces, aunque siga dentro de sus 30 segundos.
+- Variables del `.env`: `JWT_SECRET` firma los JWT (al menos 32 caracteres; generalo con
+  `openssl rand -base64 48`) y `TOTP_ENCRYPTION_KEY` cifra los secretos TOTP (32 bytes en base64;
+  `openssl rand -base64 32`). Sin ellas, la API no arranca. **Si cambiás `TOTP_ENCRYPTION_KEY`,
+  los secretos guardados ya no se pueden leer** y cada persona tiene que darse de alta de nuevo.
 - En la base solo queda el hash SHA-256 de cada refresh, en `sesion_refresh`.
 
-Todavía falta el segundo factor (TOTP, RN30) y el registro de auditoría: van en los PR siguientes.
+Todavía faltan los códigos de recuperación, el reinicio del TOTP por un Administrador y el
+interceptor de auditoría: van en los PR siguientes.
 
 ## Cambiar el esquema
 
