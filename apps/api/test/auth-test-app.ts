@@ -8,6 +8,7 @@ import { AppModule } from '../src/app.module.js';
 import { Roles } from '../src/auth/decorators.js';
 import type { Role } from '../src/auth/role.js';
 import { TOTP_SECRET_BYTES } from '../src/auth/auth.constants.js';
+import { resetSecondFactor } from '../src/auth/second-factor-codes.js';
 import { TotpSecretCipher } from '../src/auth/totp-secret-cipher.js';
 import { configureApp } from '../src/configure-app.js';
 import { PrismaClient } from '../src/generated/prisma/client.js';
@@ -113,4 +114,18 @@ export function secretFromUri(otpauthUri: string): string {
     throw new Error(`Link de alta sin secret: ${otpauthUri}`);
   }
   return secret;
+}
+
+/** D36: what an administrator would hand over; issued directly, without going through the endpoint. */
+export async function issueEnrollmentCode(
+  client: PrismaClient,
+  employeeNumber: number,
+): Promise<string> {
+  const issued = await client.$transaction((transaction) =>
+    resetSecondFactor(transaction, {
+      employeeNumber,
+      issuedByEmployeeNumber: null,
+    }),
+  );
+  return issued.enrollmentCode;
 }

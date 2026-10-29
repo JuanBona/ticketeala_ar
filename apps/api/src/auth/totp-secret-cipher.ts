@@ -13,9 +13,11 @@ export class TotpSecretCipher {
 
   /** Returns base64 of IV + tag + ciphertext; a 20-byte secret fits the 64 characters of totp_secret. */
   encrypt(secret: Uint8Array): string {
+    // A new random IV each time: the same secret never encrypts to the same text twice.
     const initializationVector = randomBytes(INITIALIZATION_VECTOR_BYTES);
     const cipher = createCipheriv(ALGORITHM, this.key, initializationVector);
     const ciphertext = Buffer.concat([cipher.update(secret), cipher.final()]);
+    // The tag lets decrypt() detect any change; IV and tag are not secret, so they travel along.
     return Buffer.concat([
       initializationVector,
       cipher.getAuthTag(),
@@ -25,6 +27,7 @@ export class TotpSecretCipher {
 
   /** GCM checks the tag, so a ciphertext altered in the database fails instead of decrypting to garbage. */
   decrypt(stored: string): Uint8Array {
+    // Split the stored value back into IV (12 bytes), tag (16 bytes) and ciphertext (the rest).
     const bytes = Buffer.from(stored, 'base64');
     const tagEnd = INITIALIZATION_VECTOR_BYTES + AUTHENTICATION_TAG_BYTES;
     const decipher = createDecipheriv(

@@ -81,6 +81,20 @@ CREATE TABLE sesion_refresh (                                       -- D34
 );
 CREATE INDEX ix_sesion_refresh_familia ON sesion_refresh (id_familia);
 
+CREATE TYPE tipo_codigo_segundo_factor AS ENUM ('habilitacion', 'recuperacion'); -- D36
+
+CREATE TABLE codigo_segundo_factor (                                -- D36
+  id             bigserial PRIMARY KEY,
+  legajo         integer NOT NULL REFERENCES empleado(legajo),
+  tipo           tipo_codigo_segundo_factor NOT NULL,
+  codigo_hash    char(64) NOT NULL UNIQUE,  -- SHA-256 del código; el código nunca se guarda
+  creado         timestamptz NOT NULL DEFAULT now(),
+  vence          timestamptz,               -- solo habilitación (24 h); recuperación no vence
+  usado          timestamptz,
+  anulado        timestamptz,               -- un código nuevo o un reinicio anula los anteriores
+  legajo_emisor  integer REFERENCES empleado(legajo) -- administrador que lo emitió; nulo = consola
+);
+
 -- ===== Viajes y políticas =====
 CREATE TABLE destino (
   id     serial PRIMARY KEY,

@@ -38,6 +38,7 @@ export class RefreshSessionService {
   /** Swaps a valid refresh token for a new one; a reused token revokes its whole family (D34). */
   async rotate(refreshToken: string): Promise<RotatedSession> {
     const session = await this.findByToken(refreshToken);
+    // Already used or revoked: someone is replaying an old token, probably a stolen one.
     if (session.usedAt || session.revokedAt) {
       return this.rejectReuse(session);
     }
@@ -47,6 +48,7 @@ export class RefreshSessionService {
       );
     }
     const nextToken = await this.claimAndReplace(session);
+    // Another request used this same token a moment ago: treat it as reuse too.
     if (!nextToken) {
       return this.rejectReuse(session);
     }
@@ -90,6 +92,7 @@ export class RefreshSessionService {
   /** Marks the token used and issues its successor atomically; null if another request won the race. */
   private claimAndReplace(session: RefreshSession): Promise<string | null> {
     return this.prisma.$transaction(async (transaction) => {
+      // Mark it used only if nobody did it first; count tells whether we won.
       const claimed = await transaction.refreshSession.updateMany({
         where: { id: session.id, usedAt: null, revokedAt: null },
         data: { usedAt: new Date() },
@@ -116,6 +119,7 @@ export class RefreshSessionService {
     writer: SessionWriter,
     family: SessionFamily,
   ): Promise<string> {
+    // 32 random bytes as URL-safe text; the client keeps it, the database keeps only its hash.
     const refreshToken = randomBytes(REFRESH_TOKEN_BYTES).toString('base64url');
     await writer.refreshSession.create({
       data: {

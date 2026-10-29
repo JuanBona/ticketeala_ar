@@ -81,16 +81,21 @@ Cómo entra alguien a la API (D12, D34, D35):
    - `totp_required`: la persona tiene rol aprobador, contaduria o administrador (RN30) y tiene que
      mandar el código de 6 dígitos de su app (Google Authenticator u otra). Trae un
      `challengeToken` (desafío) que vale 5 minutos y no abre ningún endpoint.
-   - `totp_enrollment_required`: igual que el anterior, pero es la primera vez. Además trae
-     `otpauthUri`, el link que la web o la app convierten en el QR para escanear.
-2. `POST /auth/totp/verify` con `challengeToken` y `code` devuelve los tokens. En la primera vez,
-   ese código además confirma el alta: recién ahí se guarda el secreto (cifrado) y se registra en
-   `registro_auditoria`.
-3. Cuando el JWT vence, `POST /auth/refresh` con `refreshToken` devuelve un par nuevo. El refresh
+   - `totp_enrollment_required`: todavía no configuró el TOTP. Necesita el **código de
+     habilitación** que le entrega en persona un Administrador (ver abajo).
+2. Solo la primera vez: `POST /auth/totp/enroll` con `challengeToken` y `enrollmentCode` devuelve un
+   `challengeToken` nuevo y `otpauthUri`, el link que la web o la app convierten en el QR.
+3. `POST /auth/totp/verify` con `challengeToken` y `code` devuelve los tokens. En la primera vez,
+   ese código además confirma el alta: se guarda el secreto (cifrado), se gasta el código de
+   habilitación y la respuesta trae `recoveryCodes`, 8 **códigos de recuperación** que se muestran
+   esa única vez.
+4. Si perdió el celular: `POST /auth/totp/recover` con `challengeToken` y uno de sus códigos de
+   recuperación. Cada código sirve una sola vez.
+5. Cuando el JWT vence, `POST /auth/refresh` con `refreshToken` devuelve un par nuevo. El refresh
    viejo deja de servir (**rotación**). Si alguien usa uno viejo, la API supone que lo robaron y
    cierra toda esa sesión.
-4. `POST /auth/logout` con `refreshToken` cierra la sesión.
-5. `GET /auth/me` devuelve el legajo, los roles y si la sesión pasó el segundo factor.
+6. `POST /auth/logout` con `refreshToken` cierra la sesión.
+7. `GET /auth/me` devuelve el legajo, los roles y si la sesión pasó el segundo factor.
 
 Reglas para quien programe endpoints:
 
@@ -109,8 +114,21 @@ Reglas para quien programe endpoints:
   los secretos guardados ya no se pueden leer** y cada persona tiene que darse de alta de nuevo.
 - En la base solo queda el hash SHA-256 de cada refresh, en `sesion_refresh`.
 
-Todavía faltan los códigos de recuperación, el reinicio del TOTP por un Administrador y el
-interceptor de auditoría: van en los PR siguientes.
+### Códigos de habilitación (D36)
+
+- Un Administrador emite uno con `POST /auth/totp/enrollment-codes` y `{ "employeeNumber": 1002 }`.
+  Sirve para la primera vez y para cuando alguien pierde el celular: **reinicia** el segundo factor
+  (borra el secreto, anula los códigos viejos y cierra todas las sesiones de esa persona).
+- Vence a las 24 horas y sirve una sola vez. Nadie puede emitirse uno a sí mismo.
+- El primer Administrador no tiene a quién pedírselo: se emite por consola.
+
+  ```sh
+  npm run auth:enrollment-code -- 1010
+  ```
+
+- Los códigos se ven una sola vez: en la base queda solo su hash, en `codigo_segundo_factor`.
+
+Todavía falta el interceptor de auditoría: va en el PR siguiente.
 
 ## Cambiar el esquema
 

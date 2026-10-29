@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuditModule } from '../auditoria/audit.module.js';
 import { AccessTokenService } from './access-token.service.js';
+import { ActiveEmployeeReader } from './active-employee.reader.js';
 import { AuthController } from './auth.controller.js';
 import {
   ACCESS_TOKEN_LIFETIME_SECONDS,
@@ -29,6 +30,9 @@ import { RefreshSessionService } from './refresh-session.service.js';
 import { RolesGuard } from './roles.guard.js';
 import { SecondFactorChallengeGuard } from './second-factor-challenge.guard.js';
 import { SecondFactorChallengeService } from './second-factor-challenge.service.js';
+import { SecondFactorController } from './second-factor.controller.js';
+import { SecondFactorService } from './second-factor.service.js';
+import { SessionIssuer } from './session-issuer.service.js';
 import { TotpSecretCipher } from './totp-secret-cipher.js';
 import { TotpService } from './totp.service.js';
 
@@ -39,6 +43,7 @@ import { TotpService } from './totp.service.js';
       useFactory: () => ({
         secret: readJwtSecret(),
         // Pinning the algorithm stops forged tokens that declare "none" or another algorithm.
+        // Access tokens use these defaults; challenge tokens override audience and expiry.
         signOptions: {
           algorithm: JWT_ALGORITHM,
           expiresIn: ACCESS_TOKEN_LIFETIME_SECONDS,
@@ -46,6 +51,7 @@ import { TotpService } from './totp.service.js';
         verifyOptions: { algorithms: [JWT_ALGORITHM] },
       }),
     }),
+    // Three independent limits; each endpoint skips the ones that are not about it.
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -71,11 +77,14 @@ import { TotpService } from './totp.service.js';
         'Demasiados intentos de ingreso: esperá un minuto y probá de nuevo',
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, SecondFactorController],
   providers: [
     AccessTokenService,
+    ActiveEmployeeReader,
     RefreshSessionService,
+    SessionIssuer,
     AuthService,
+    SecondFactorService,
     SecondFactorChallengeService,
     SecondFactorChallengeGuard,
     TotpSecretCipher,

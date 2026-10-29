@@ -20,6 +20,7 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
+    // Without @Roles any authenticated employee may enter (JwtAuthGuard already checked the token).
     if (!requiredRoles) {
       return true;
     }
@@ -27,6 +28,7 @@ export class RolesGuard implements CanActivate {
       .switchToHttp()
       .getRequest<AuthenticatedRequest>();
     const heldRoles = employee?.roles ?? [];
+    // RN29: one matching role among several is enough.
     if (heldRoles.some((role) => requiredRoles.includes(role))) {
       return true;
     }

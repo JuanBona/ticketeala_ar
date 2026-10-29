@@ -1,4 +1,4 @@
-// Challenge token between password and TOTP (RN30): proves step 1 passed, opens nothing but step 2.
+// Challenge token between password and TOTP (RN30): proves step 1 passed, opens nothing but the TOTP endpoints.
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -6,27 +6,36 @@ import {
   SECOND_FACTOR_CHALLENGE_LIFETIME_SECONDS,
 } from './auth.constants.js';
 
+/** Data of a TOTP setup in progress (D36): the new secret and the enrollment code that allowed it. */
+export interface PendingEnrollment {
+  /** The new TOTP secret, already shown to the employee in the QR. */
+  secret: string;
+  /** Id of the enrollment code; it is spent when the first TOTP code confirms the setup. */
+  enrollmentCodeId: string;
+}
+
 export interface SecondFactorChallenge {
   employeeNumber: number;
-  /** Present only at first enrollment: the new secret, already shown to the employee in the QR. */
-  enrollmentSecret?: string;
+  /** Present only after POST /auth/totp/enroll accepted an enrollment code. */
+  enrollment?: PendingEnrollment;
 }
 
 interface ChallengeClaims {
   sub: string;
-  enrollmentSecret?: string;
+  enrollment?: PendingEnrollment;
 }
 
 @Injectable()
 export class SecondFactorChallengeService {
   constructor(private readonly jwtService: JwtService) {}
 
-  /** RN30: issued after the right password to an employee whose roles need TOTP. */
+  /** RN30: issued after the right password, or after a valid enrollment code (D36). */
   sign(challenge: SecondFactorChallenge): Promise<string> {
     const claims: ChallengeClaims = {
       sub: String(challenge.employeeNumber),
-      enrollmentSecret: challenge.enrollmentSecret,
+      enrollment: challenge.enrollment,
     };
+    // Its own audience keeps it apart from access tokens: neither works where the other goes.
     return this.jwtService.signAsync(claims, {
       audience: SECOND_FACTOR_CHALLENGE_AUDIENCE,
       expiresIn: SECOND_FACTOR_CHALLENGE_LIFETIME_SECONDS,
@@ -42,11 +51,12 @@ export class SecondFactorChallengeService {
         `Desafío de segundo factor con datos inválidos: sub=${claims.sub}`,
       );
     }
-    return { employeeNumber, enrollmentSecret: claims.enrollmentSecret };
+    return { employeeNumber, enrollment: claims.enrollment };
   }
 
   private async readClaims(token: string): Promise<ChallengeClaims> {
     try {
+      // Checks signature, algorithm, expiry and that the audience is the challenge one.
       return await this.jwtService.verifyAsync<ChallengeClaims>(token, {
         audience: SECOND_FACTOR_CHALLENGE_AUDIENCE,
       });
