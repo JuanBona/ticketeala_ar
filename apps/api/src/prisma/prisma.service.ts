@@ -6,9 +6,11 @@ import { PrismaClient } from '../generated/prisma/client.js';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleDestroy {
   constructor() {
+    // Prisma 7 connects through a driver adapter: here, `pg` (node-postgres) with the .env URL.
     super({ adapter: new PrismaPg({ connectionString: readDatabaseUrl() }) });
   }
 
+  /** Nest calls this when the app stops, so open connections are closed cleanly. */
   async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
   }

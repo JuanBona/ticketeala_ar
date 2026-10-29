@@ -161,6 +161,7 @@ async function seedRoles(
 ): Promise<Map<string, number>> {
   const roleIds = new Map<string, number>();
   for (const name of ROLE_NAMES) {
+    // upsert = insert if missing; `update: {}` leaves an existing row untouched.
     const role = await transaction.role.upsert({
       where: { name },
       update: {},
@@ -193,6 +194,7 @@ async function seedAreas(
   const areaIds = new Map<string, number>();
   for (const { name } of SYNTHETIC_AREAS) {
     const existing = await transaction.area.findFirst({ where: { name } });
+    // Reuse the area if it is already there; create it otherwise.
     const area =
       existing ?? (await transaction.area.create({ data: { name } }));
     areaIds.set(name, area.id);
@@ -230,6 +232,7 @@ async function seedEmployee(
       categoryId: requireId(context.categoryIds, employee.category),
       areaId: requireId(context.areaIds, employee.areaName),
       passwordHash: context.passwordHash,
+      // No second factor yet: RN30 roles set it up with an enrollment code (D36).
       totpSecret: null,
     },
   });
@@ -246,6 +249,7 @@ async function seedHierarchy(transaction: Transaction): Promise<void> {
       },
     });
   }
+  // D15: each area points to its manager, who must exist by now.
   for (const area of SYNTHETIC_AREAS) {
     await transaction.area.updateMany({
       where: { name: area.name },
@@ -258,6 +262,7 @@ async function seedEmployeeRoles(
   transaction: Transaction,
   roleIds: Map<string, number>,
 ): Promise<void> {
+  // One row per employee and role (RN29: several roles per employee).
   const assignments = SYNTHETIC_EMPLOYEES.flatMap((employee) =>
     employee.roles.map((role) => ({
       employeeNumber: employee.employeeNumber,
@@ -266,6 +271,7 @@ async function seedEmployeeRoles(
   );
   await transaction.employeeRole.createMany({
     data: assignments,
+    // Running the seed again does not fail on roles already granted.
     skipDuplicates: true,
   });
 }
@@ -279,6 +285,7 @@ export async function seedOrganization(
   const categoryIds = await seedCategories(transaction);
   const areaIds = await seedAreas(transaction);
   const context = { categoryIds, areaIds, passwordHash };
+  // First every employee, then the hierarchy: a supervisor must exist before someone points to it.
   for (const employee of SYNTHETIC_EMPLOYEES) {
     await seedEmployee(transaction, employee, context);
   }

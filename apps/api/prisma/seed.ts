@@ -14,6 +14,7 @@ function readRequiredVariable(name: string): string {
 }
 
 async function main(): Promise<void> {
+  // Hash once and reuse it: argon2 is slow on purpose, and every synthetic employee shares it.
   const passwordHash = await argon2.hash(readRequiredVariable('SEED_PASSWORD'));
   const client = new PrismaClient({
     adapter: new PrismaPg({
@@ -23,6 +24,7 @@ async function main(): Promise<void> {
   try {
     await seedDatabase(client, passwordHash);
   } finally {
+    // Close the connection even if the seed failed, so the command ends.
     await client.$disconnect();
   }
 }

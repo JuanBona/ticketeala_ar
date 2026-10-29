@@ -100,6 +100,7 @@ async function seedDestination(
   destination: SyntheticDestination,
 ): Promise<number> {
   const where = { city: destination.city, country: destination.country };
+  // Destinations have no unique key, so look them up by city and country before creating.
   const existing = await transaction.destination.findFirst({ where });
   if (existing) {
     return existing.id;
@@ -108,10 +109,12 @@ async function seedDestination(
   return created.id;
 }
 
+/** Money goes to the database as text with two decimals, so numeric(12,2) gets no float errors. */
 function toMoney(amount: number): string {
   return amount.toFixed(2);
 }
 
+/** D26: one cap per expense type (lodging per night, food per day…), scaled by the category. */
 function buildExpenseCaps(amounts: PolicyAmounts, multiplier: number) {
   return Object.entries(CAP_UNIT_BY_EXPENSE_CATEGORY).map(
     ([category, unit]) => ({
@@ -147,6 +150,7 @@ async function seedPolicy(
   if (existing) {
     return;
   }
+  // Amounts are defined for Junior per city; Senior and Gerencial multiply them.
   const amounts = JUNIOR_AMOUNTS_BY_CITY[target.city];
   const multiplier = CATEGORY_MULTIPLIER[target.categoryName];
   await transaction.expensePolicy.create({
@@ -159,6 +163,7 @@ async function seedPolicy(
       dailyAllowance: toMoney(amounts.dailyAllowance * multiplier),
       version: SEED_POLICY_VERSION,
       authorEmployeeNumber: POLICY_AUTHOR_EMPLOYEE_NUMBER,
+      // Nested create: the policy and its caps are inserted together.
       expenseCaps: { create: buildExpenseCaps(amounts, multiplier) },
     },
   });
@@ -171,6 +176,7 @@ export async function seedTravelPolicies(
   const categories = await transaction.employeeCategory.findMany({
     where: { name: { in: [...CATEGORY_NAMES] } },
   });
+  // Every destination gets one policy per category: 4 destinations × 3 categories = 12 policies.
   for (const destination of SYNTHETIC_DESTINATIONS) {
     const destinationId = await seedDestination(transaction, destination);
     for (const category of categories) {
