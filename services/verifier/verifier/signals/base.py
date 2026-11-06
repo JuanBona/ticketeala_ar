@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from verifier.contract import Context, ReadFields, SignalParameters, SignalResult
+from verifier.image.quality import QualityMeasurement
 
 MAXIMUM_OBSERVED_VALUE_LENGTH = 100  # valor_observado del contrato
 
@@ -31,6 +32,8 @@ class SignalOutcome:
 
 
 SignalFunction = Callable[[SignalInput, SignalParameters], SignalOutcome]
+# S01 corre antes del OCR, cuando todavía no hay campos leídos: evalúa las medidas de la foto.
+ImageSignalFunction = Callable[[QualityMeasurement, SignalParameters], SignalOutcome]
 
 
 def not_applicable(detail: str, observed_value: str | None = None) -> SignalOutcome:

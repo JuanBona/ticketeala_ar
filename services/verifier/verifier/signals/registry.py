@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from verifier.contract import SignalCode
-from verifier.signals import s04_cuit, s05_cae, s06_totals
-from verifier.signals.base import SignalFunction
+from verifier.signals import s01_image_quality, s04_cuit, s05_cae, s06_totals
+from verifier.signals.base import ImageSignalFunction, SignalFunction
 
 
 class ParameterValue(StrEnum):
@@ -18,11 +18,15 @@ class ParameterValue(StrEnum):
 
 @dataclass(frozen=True)
 class SignalSpec:
-    """Una señal del catálogo de 12.5, los valores que necesita y su función (None si falta)."""
+    """Una señal del catálogo de 12.5, los valores que necesita y su función (None si falta).
+
+    S01 usa evaluate_image y no evaluate: se evalúa antes del OCR, con las medidas de la foto.
+    """
 
     code: SignalCode
     uses: frozenset[ParameterValue]
     evaluate: SignalFunction | None = None
+    evaluate_image: ImageSignalFunction | None = None
 
 
 _THRESHOLD_ONLY = frozenset({ParameterValue.THRESHOLD})
@@ -35,6 +39,7 @@ SIGNAL_SPECS: dict[SignalCode, SignalSpec] = {
         SignalSpec(
             SignalCode.S01,
             frozenset({ParameterValue.THRESHOLD, ParameterValue.WARNING_THRESHOLD}),
+            evaluate_image=s01_image_quality.evaluate,
         ),
         SignalSpec(SignalCode.S02, _THRESHOLD_ONLY),  # confianza mínima por campo
         SignalSpec(SignalCode.S03, _NO_VALUES),

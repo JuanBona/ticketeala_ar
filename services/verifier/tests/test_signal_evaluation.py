@@ -29,3 +29,9 @@ def test_fiscal_signals_of_step_3_are_registered() -> None:
     registered = {code for code, spec in SIGNAL_SPECS.items() if spec.evaluate is not None}
 
     assert registered == {SignalCode.S04, SignalCode.S05, SignalCode.S06}
+
+
+def test_s01_is_the_only_image_signal_of_step_4() -> None:
+    registered = {code for code, spec in SIGNAL_SPECS.items() if spec.evaluate_image is not None}
+
+    assert registered == {SignalCode.S01}
