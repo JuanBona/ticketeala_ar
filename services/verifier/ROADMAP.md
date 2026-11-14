@@ -12,7 +12,7 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 | 3 | Hecho (PR #17) | `feat/verifier-fiscal-checks` | Importes en formato argentino, dígito verificador del CUIT, S04, S05 y S06. Cumple el hito de la iteración 1 (el motor valida aritmética y CAE, 8/11) | 3 |
 | 4 | Hecho (PR #18) | `feat/verifier-image` | S01 (nitidez de Crete y brillo medio sobre la región del papel, D39 y D40) y preprocesamiento: papel por color, perspectiva y CLAHE; `tools/inspect_images.py` para calibrar | 4 |
 | 4 (ajustes) | Hecho (PR #19) | `fix/verifier-contract-sharpness` | Contrato a la nitidez de Crete (D40): descripción y techo 100 de `nitidez`, ejemplos, comentario de `calidad_imagen` | — |
-| 5 | En curso | `feat/verifier-transport` | Pipeline, `POST /verify`, worker de Redis Streams, almacenamiento S3 y OCR falso. Destraba la integración con la API | La parte de `POST /verify` del 8 |
+| 5 | Hecho (PR #20) | `feat/verifier-transport` | Pipeline, `POST /verify`, worker de Redis Streams, almacenamiento S3 y OCR falso. Destraba la integración con la API | La parte de `POST /verify` del 8 |
 | 6 | Pendiente | `feat/verifier-ocr` | Adaptador de Google Vision, extracción de campos, QR fiscal (con la especificación de ARCA citada), S02 y S03 | 5 y 6 |
 | 7 | Pendiente | `feat/verifier-duplicates-trip` | S07, dHash y S08, haversine, S09, S10, S11 y S12 | 7 (S12 no está en ningún prompt: viene del plan) |
 | 8 | Pendiente | `feat/verifier-eval` | `eval/run_eval.py` y las métricas de UC-09 | 9 |
