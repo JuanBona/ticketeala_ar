@@ -11,8 +11,8 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 | 2 | Hecho (PR #15) | `feat/verifier-core` | Modelos del contrato, carga de parámetros con RN22, registro de señales (D29), puntaje y decisión (D20, D21, D37), `config/parametros_v1.json`, `GET /health` | 2, y la parte de puntaje y decisión del 8 |
 | 3 | Hecho (PR #17) | `feat/verifier-fiscal-checks` | Importes en formato argentino, dígito verificador del CUIT, S04, S05 y S06. Cumple el hito de la iteración 1 (el motor valida aritmética y CAE, 8/11) | 3 |
 | 4 | Hecho (PR #18) | `feat/verifier-image` | S01 (nitidez de Crete y brillo medio sobre la región del papel, D39 y D40) y preprocesamiento: papel por color, perspectiva y CLAHE; `tools/inspect_images.py` para calibrar | 4 |
-| 4 (ajustes) | En revisión | `fix/verifier-contract-sharpness` | Contrato a la nitidez de Crete (D40): descripción y techo 100 de `nitidez`, ejemplos, comentario de `calidad_imagen` | — |
-| 5 | Pendiente | `feat/verifier-transport` | Pipeline, `POST /verify`, worker de Redis Streams, almacenamiento S3 y OCR falso. Destraba la integración con la API | La parte de `POST /verify` del 8 |
+| 4 (ajustes) | Hecho (PR #19) | `fix/verifier-contract-sharpness` | Contrato a la nitidez de Crete (D40): descripción y techo 100 de `nitidez`, ejemplos, comentario de `calidad_imagen` | — |
+| 5 | En curso | `feat/verifier-transport` | Pipeline, `POST /verify`, worker de Redis Streams, almacenamiento S3 y OCR falso. Destraba la integración con la API | La parte de `POST /verify` del 8 |
 | 6 | Pendiente | `feat/verifier-ocr` | Adaptador de Google Vision, extracción de campos, QR fiscal (con la especificación de ARCA citada), S02 y S03 | 5 y 6 |
 | 7 | Pendiente | `feat/verifier-duplicates-trip` | S07, dHash y S08, haversine, S09, S10, S11 y S12 | 7 (S12 no está en ningún prompt: viene del plan) |
 | 8 | Pendiente | `feat/verifier-eval` | `eval/run_eval.py` y las métricas de UC-09 | 9 |
@@ -42,8 +42,15 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 - **Paso 6:** leer la orientación del texto que devuelve Google Vision. El paso 4 no gira las fotos
   sacadas de costado: nitidez y brillo no cambian con la rotación, y saber si girar 90° o 270°
   requiere leer el texto.
+- **Paso 6:** OCR caído con QR legible (UC-02 5a, D30): seguir con los datos del QR y dejar S02 en
+  falla. En el paso 5 no hay QR, así que un OCR caído siempre se reintenta y tras N entregas da
+  `error`.
+- **Paso 6:** un tiempo máximo para la llamada al OCR real; si se pasa, `OcrUnavailableError`.
 - **Paso 7:** calcular el dHash de S08 sobre la imagen ya orientada: una refoto girada cambia el hash
   y no se detectaría como similar.
+- **Credenciales de S3 de solo lectura para el motor (D23):** hoy usa las mismas que la API
+  (`S3_ACCESS_KEY` de `infra/.env`). El motor solo baja fotos y no debería poder escribirlas ni
+  borrarlas.
 
 **Propuestas a Juan Cruz, sin respuesta todavía:**
 - **Claves fiscales en un hash de Redis.** Hoy `claves_fiscales_previas` manda todas las claves

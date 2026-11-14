@@ -32,6 +32,12 @@ def calibrated_parameters_document() -> dict[str, Any]:
 
 
 @pytest.fixture
+def queue_request_document() -> dict[str, Any]:
+    """pedido-cola.json: imagen por clave, intento 1 de 3 y parámetros de la versión 2."""
+    return read_example_document("pedido-cola.json")
+
+
+@pytest.fixture
 def verified_result_document() -> dict[str, Any]:
     """resultado-verificado.json: el ejemplo de 12.5 (70 puntos, revision)."""
     return read_example_document("resultado-verificado.json")
