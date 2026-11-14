@@ -64,3 +64,11 @@ def test_rejected_image_with_score_is_not_accepted() -> None:
 
     with pytest.raises(ValidationError):
         RESULT_ADAPTER.validate_json(json.dumps(rejected_image))
+
+
+def test_image_sharpness_above_100_is_rejected_by_the_model() -> None:
+    verified = json.loads(read_example("resultado-verificado.json"))
+    verified["calidad_imagen"]["nitidez"] = 100.01
+
+    with pytest.raises(ValidationError):
+        VerifiedResult.model_validate_json(json.dumps(verified))

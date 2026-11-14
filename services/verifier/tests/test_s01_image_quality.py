@@ -1,4 +1,4 @@
-"""S01: nitidez e iluminación sobre el mínimo, antes del OCR (12.5, D24, D29, D30)."""
+"""S01: nitidez e iluminación sobre el mínimo, antes del OCR (12.5, D24, D29, D30, D40)."""
 
 import json
 from collections.abc import Callable
@@ -14,8 +14,8 @@ from verifier.signals.evaluation import evaluate_image_signal, evaluate_signal
 
 BuildSignalInput = Callable[[dict[str, Any]], SignalInput]
 
-# Los mínimos de la versión 2 de los ejemplos: nitidez 100 e iluminación 60.
-GOOD_PHOTO = QualityMeasurement(sharpness=412.7, illumination=138.2)
+# Los mínimos de la versión 2 de los ejemplos: nitidez 77 e iluminación 60.
+GOOD_PHOTO = QualityMeasurement(sharpness=83.2, illumination=138.2)
 
 
 def build_parameters(document: dict[str, Any]) -> Parameters:
@@ -48,7 +48,7 @@ def test_engine_reproduces_s01_of_the_verified_example(
 def test_blurry_and_dark_photo_fails_with_the_detail_of_the_rejected_example(
     calibrated_parameters: Parameters,
 ) -> None:
-    rejected_example = QualityMeasurement(sharpness=38.4, illumination=41.0)
+    rejected_example = QualityMeasurement(sharpness=75.3, illumination=41.0)
 
     outcome = evaluate_image_signal(rejected_example, calibrated_parameters)
 
@@ -60,7 +60,7 @@ def test_blurry_and_dark_photo_fails_with_the_detail_of_the_rejected_example(
 
 
 def test_blurry_photo_fails_as_blurry(calibrated_parameters: Parameters) -> None:
-    blurry = QualityMeasurement(sharpness=99.99, illumination=138.2)
+    blurry = QualityMeasurement(sharpness=76.99, illumination=138.2)
 
     outcome = evaluate_image_signal(blurry, calibrated_parameters)
 
@@ -69,7 +69,7 @@ def test_blurry_photo_fails_as_blurry(calibrated_parameters: Parameters) -> None
 
 
 def test_dark_photo_fails_as_dark(calibrated_parameters: Parameters) -> None:
-    dark = QualityMeasurement(sharpness=412.7, illumination=59.99)
+    dark = QualityMeasurement(sharpness=83.2, illumination=59.99)
 
     outcome = evaluate_image_signal(dark, calibrated_parameters)
 
@@ -78,12 +78,12 @@ def test_dark_photo_fails_as_dark(calibrated_parameters: Parameters) -> None:
 
 
 def test_values_equal_to_the_minimums_pass(calibrated_parameters: Parameters) -> None:
-    on_the_minimums = QualityMeasurement(sharpness=100.0, illumination=60.0)
+    on_the_minimums = QualityMeasurement(sharpness=77.0, illumination=60.0)
 
     outcome = evaluate_image_signal(on_the_minimums, calibrated_parameters)
 
     assert outcome.result is SignalResult.OK
-    assert outcome.observed_value == "nitidez 100 · brillo 60"
+    assert outcome.observed_value == "nitidez 77 · brillo 60"
 
 
 def test_uncalibrated_thresholds_are_not_applicable(

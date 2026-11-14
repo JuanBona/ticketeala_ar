@@ -452,7 +452,7 @@ model ReceiptVerification {
   expenseId        Int                  @unique @map("id_gasto")
   parameterVersion Int                  @map("version_parametros")
   verifiedAt       DateTime             @default(now()) @map("fecha") @db.Timestamptz
-  imageQuality     Decimal              @map("calidad_imagen") @db.Decimal(8, 2) // Laplacian variance
+  imageQuality     Decimal              @map("calidad_imagen") @db.Decimal(8, 2) // Crete sharpness, 0 to 100 (D40)
   score            Int                  @map("puntaje") @db.SmallInt
   decision         VerificationDecision
   reviewStatus     ReviewStatus         @default(NOT_REQUIRED) @map("estado_revision")

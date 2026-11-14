@@ -280,7 +280,7 @@ class Signal(ContractModel):
 
 
 class ImageQuality(ContractModel):
-    sharpness: Annotated[float, Field(ge=0, le=999999.99)] = Field(alias="nitidez")
+    sharpness: Annotated[float, Field(ge=0, le=100)] = Field(alias="nitidez")
     illumination: Annotated[float, Field(ge=0, le=255)] = Field(alias="iluminacion")
     forced: bool = Field(alias="forzada")
 

@@ -252,7 +252,7 @@ CREATE TABLE verificacion_comprobante (
   id_gasto          integer NOT NULL UNIQUE REFERENCES gasto(id),
   version_parametros integer NOT NULL REFERENCES version_parametros(numero),
   fecha             timestamptz NOT NULL DEFAULT now(),
-  calidad_imagen    numeric(8,2) NOT NULL,     -- varianza del Laplaciano
+  calidad_imagen    numeric(8,2) NOT NULL,     -- nitidez de Crete, 0 a 100 (D40)
   puntaje           smallint NOT NULL CHECK (puntaje BETWEEN 0 AND 100),
   decision          decision_verificacion NOT NULL,
   estado_revision   estado_revision NOT NULL DEFAULT 'sin_revision',
