@@ -9,8 +9,9 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 | 1 | Hecho (PR #6) | `feat/verifier-contract` | `docs/contratos/verifier.schema.json`, ejemplos sintéticos, tests del contrato, D27 a D30 | 1 |
 | 1 (ajustes) | Hecho (PR #10) | `fix/verifier-contract-review` | Ajustes al contrato: techo de la nitidez, moneda declarada (D31), código de ARCA del tipo de comprobante (D32) | — |
 | 2 | Hecho (PR #15) | `feat/verifier-core` | Modelos del contrato, carga de parámetros con RN22, registro de señales (D29), puntaje y decisión (D20, D21, D37), `config/parametros_v1.json`, `GET /health` | 2, y la parte de puntaje y decisión del 8 |
-| 3 | En revisión (PR #17) | `feat/verifier-fiscal-checks` | Importes en formato argentino, dígito verificador del CUIT, S04, S05 y S06. Cumple el hito de la iteración 1 (el motor valida aritmética y CAE, 8/11) | 3 |
-| 4 | En curso | `feat/verifier-image` | S01 (nitidez de Crete y brillo medio sobre la región del papel, D39 y D40) y preprocesamiento: papel por color, perspectiva y CLAHE; `tools/inspect_images.py` para calibrar | 4 |
+| 3 | Hecho (PR #17) | `feat/verifier-fiscal-checks` | Importes en formato argentino, dígito verificador del CUIT, S04, S05 y S06. Cumple el hito de la iteración 1 (el motor valida aritmética y CAE, 8/11) | 3 |
+| 4 | Hecho (PR #18) | `feat/verifier-image` | S01 (nitidez de Crete y brillo medio sobre la región del papel, D39 y D40) y preprocesamiento: papel por color, perspectiva y CLAHE; `tools/inspect_images.py` para calibrar | 4 |
+| 4 (ajustes) | En revisión | `fix/verifier-contract-sharpness` | Contrato a la nitidez de Crete (D40): descripción y techo 100 de `nitidez`, ejemplos, comentario de `calidad_imagen` | — |
 | 5 | Pendiente | `feat/verifier-transport` | Pipeline, `POST /verify`, worker de Redis Streams, almacenamiento S3 y OCR falso. Destraba la integración con la API | La parte de `POST /verify` del 8 |
 | 6 | Pendiente | `feat/verifier-ocr` | Adaptador de Google Vision, extracción de campos, QR fiscal (con la especificación de ARCA citada), S02 y S03 | 5 y 6 |
 | 7 | Pendiente | `feat/verifier-duplicates-trip` | S07, dHash y S08, haversine, S09, S10, S11 y S12 | 7 (S12 no está en ningún prompt: viene del plan) |
@@ -26,10 +27,6 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 
 ## Pendientes
 
-- **PR de contrato después del paso 4 (D40):** cambiar la descripción de `calidad_imagen.nitidez` en
-  `verifier.schema.json` (hoy dice "varianza del Laplaciano") a la escala 0–100 de Crete, ajustar
-  los valores de los ejemplos (412,7 y 38,4 no caben en esa escala, ni el umbral 100 de la versión
-  2) y el comentario de `calidad_imagen` en `docs/modelo-datos.sql`. Avisar al equipo.
 - **Calibrar S01:** con `tools/inspect_images.py` sobre fotos reales (salida fuera del repo), elegir
   la nitidez y la iluminación mínimas y cargarlas en una nueva versión de parámetros (D24).
 - **S01 no detecta falta de resolución:** en boleto-lejos el papel ocupa el 17 % de la foto y el

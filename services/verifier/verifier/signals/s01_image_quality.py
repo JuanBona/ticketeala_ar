@@ -43,5 +43,5 @@ def evaluate(measurement: QualityMeasurement, parameters: SignalParameters) -> S
 
 
 def _shown(value: float) -> str:
-    """Con coma decimal y sin ceros de más: 412.70 → "412,7", 100.00 → "100"."""
+    """Con coma decimal y sin ceros de más: 83.20 → "83,2", 100.00 → "100"."""
     return f"{value:.2f}".rstrip("0").rstrip(".").replace(".", ",")

@@ -342,8 +342,8 @@
         "nitidez": {
           "type": "number",
           "minimum": 0,
-          "maximum": 999999.99,
-          "description": "Varianza del Laplaciano (VERIFICACION_COMPROBANTE.calidad_imagen, numeric(8,2))"
+          "maximum": 100,
+          "description": "Nitidez de Crete, 0 (borrosa) a 100 (nítida), la peor dirección (D40) (VERIFICACION_COMPROBANTE.calidad_imagen, numeric(8,2))"
         },
         "iluminacion": { "type": "number", "minimum": 0, "maximum": 255, "description": "Brillo medio" },
         "forzada": {

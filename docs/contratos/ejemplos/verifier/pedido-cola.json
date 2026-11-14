@@ -41,7 +41,7 @@
     "intentos_maximos_imagen": 3,
     "reintentos_maximos_cola": 3,
     "senales": {
-      "S01": { "peso": 0, "umbral": 100.0, "umbral_advertencia": 60.0, "factor": null, "bloqueante": false, "activa": true },
+      "S01": { "peso": 0, "umbral": 77.0, "umbral_advertencia": 60.0, "factor": null, "bloqueante": false, "activa": true },
       "S02": { "peso": 10, "umbral": 0.8, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
       "S03": { "peso": 25, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": false, "activa": true },
       "S04": { "peso": 30, "umbral": null, "umbral_advertencia": null, "factor": null, "bloqueante": true, "activa": true },

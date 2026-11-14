@@ -194,9 +194,9 @@ def test_job_id_that_is_not_uuid_is_invalid() -> None:
     assert errors != []
 
 
-def test_image_sharpness_above_numeric_8_2_is_invalid() -> None:
+def test_image_sharpness_above_100_is_invalid() -> None:
     verified = load_example("resultado-verificado.json")
-    verified["calidad_imagen"]["nitidez"] = 1000000.0
+    verified["calidad_imagen"]["nitidez"] = 100.01
 
     errors = validation_errors(verified, RESULT_DEFINITION)
 

@@ -3,7 +3,7 @@
   "gasto_id": 101,
   "estado": "verificado",
   "version_parametros": 2,
-  "calidad_imagen": { "nitidez": 412.7, "iluminacion": 138.2, "forzada": false },
+  "calidad_imagen": { "nitidez": 83.2, "iluminacion": 138.2, "forzada": false },
   "campos": {
     "fecha": { "valor": "2026-10-25", "confianza": 0.98 },
     "cuit": { "valor": "30111111118", "confianza": 0.91 },
@@ -38,7 +38,7 @@
     "codAut": 76432109876543
   },
   "senales": [
-    { "codigo": "S01", "resultado": "ok", "valor_observado": "nitidez 412,7 · brillo 138,2", "penalizacion": 0, "detalle": "La foto se ve nítida y con buena luz." },
+    { "codigo": "S01", "resultado": "ok", "valor_observado": "nitidez 83,2 · brillo 138,2", "penalizacion": 0, "detalle": "La foto se ve nítida y con buena luz." },
     { "codigo": "S02", "resultado": "ok", "valor_observado": "mínima 0,86 (razón social)", "penalizacion": 0, "detalle": "Todos los datos se leyeron con buena confianza." },
     { "codigo": "S03", "resultado": "ok", "valor_observado": "4 de 4 coinciden", "penalizacion": 0, "detalle": "El QR fiscal coincide con lo leído: CUIT, fecha, número e importe." },
     { "codigo": "S04", "resultado": "ok", "valor_observado": "30-11111111-8", "penalizacion": 0, "detalle": "El CUIT del comercio es válido." },
