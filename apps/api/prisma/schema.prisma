@@ -300,6 +300,8 @@ model TravelRequest {
   endDate                DateTime            @map("fecha_fin") @db.Date
   reason                 String?             @map("motivo") @db.VarChar(255)
   rejectionReason        String?             @map("motivo_rechazo") @db.VarChar(500)
+  advanceJustification   String?             @map("justificacion_anticipacion") @db.VarChar(500) // D41: UC-01 4a
+  overCapJustification   String?             @map("justificacion_exceso") @db.VarChar(500) // D41: UC-01 9a
 
   employee    Employee      @relation("Requester", fields: [employeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
   approver    Employee?     @relation("Approver", fields: [approverEmployeeNumber], references: [employeeNumber], onDelete: NoAction, onUpdate: NoAction)
