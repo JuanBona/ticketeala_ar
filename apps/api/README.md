@@ -152,6 +152,23 @@ async close(@Param('id') id: string): Promise<AuditedChange<PolicyResponse>> {
   escritura, el cambio queda hecho sin su registro. Para lo más delicado (como el segundo factor)
   se usa `AuditService.record(entrada, transacción)`, que escribe en la misma transacción.
 
+## Solicitudes de viaje (UC-01)
+
+Por ahora está la primera parte, pasos 1 a 6 (D41):
+
+- `GET /destinations`: los destinos para el formulario.
+- `POST /travel-requests` (rol `empleado`) con `destinationId`, `startDate`, `endDate` (AAAA-MM-DD),
+  `reason` y, opcional, `originId`. La API:
+  1. busca la política vigente para la categoría del empleado y el destino (RN01) y la deja fija
+     en la solicitud: si mañana cambia, la solicitud conserva la suya (RN02);
+  2. si el viaje empieza antes de la anticipación mínima, responde 422 con
+     `code: "ADVANCE_JUSTIFICATION_REQUIRED"` hasta que llegue `advanceJustification` (4a);
+  3. calcula el viático estimado: viático diario × noches (D11) y lo guarda en `viatico`;
+  4. deja la solicitud `en_cotizacion` para AMR Turismo (D04).
+- `GET /travel-requests/mine`: las solicitudes del empleado, de la más nueva a la más vieja.
+
+Los montos viajan como texto con dos decimales (`"90000.00"`) para no perder centavos.
+
 ## Cambiar el esquema
 
 1. Primero se cambia `docs/modelo-datos.sql` (es la referencia) y después `prisma/schema.prisma`.

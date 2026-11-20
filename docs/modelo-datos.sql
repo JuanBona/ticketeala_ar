@@ -142,6 +142,8 @@ CREATE TABLE solicitud_viaje (
   fecha_fin        date NOT NULL,
   motivo           varchar(255),
   motivo_rechazo   varchar(500),
+  justificacion_anticipacion varchar(500),  -- D41: UC-01 4a, si no cumple la anticipación mínima
+  justificacion_exceso       varchar(500),  -- D41: UC-01 9a, si la cotización supera el tope
   CHECK (fecha_fin >= fecha_inicio)
 );
 
