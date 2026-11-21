@@ -1,0 +1,908 @@
+openapi: 3.0.0
+paths:
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+      tags:
+        - Auth
+      security: []
+  /auth/refresh:
+    post:
+      operationId: AuthController_refresh
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+      tags:
+        - Auth
+      security: []
+  /auth/logout:
+    post:
+      operationId: AuthController_logout
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '204':
+          description: ''
+      tags:
+        - Auth
+      security: []
+  /auth/me:
+    get:
+      operationId: AuthController_me
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeIdentity'
+      tags:
+        - Auth
+  /auth/totp/enroll:
+    post:
+      operationId: SecondFactorController_enroll
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartEnrollmentRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnrollmentStart'
+      tags:
+        - SecondFactor
+      security: []
+  /auth/totp/verify:
+    post:
+      operationId: SecondFactorController_verify
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyTotpRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecondFactorResult'
+      tags:
+        - SecondFactor
+      security: []
+  /auth/totp/recover:
+    post:
+      operationId: SecondFactorController_recover
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoverRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPair'
+      tags:
+        - SecondFactor
+      security: []
+  /auth/totp/enrollment-codes:
+    post:
+      operationId: SecondFactorController_issueEnrollmentCode
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueEnrollmentCodeRequest'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssuedEnrollmentCode'
+      summary: 'D36: only an administrator (who passed TOTP, RN30) can reset someone else''s second factor.'
+      tags:
+        - SecondFactor
+      x-roles:
+        - administrador
+  /travel-requests:
+    post:
+      operationId: TravelRequestsController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTravelRequestRequest'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRequestSummary'
+        '422':
+          description: 'Sin política vigente (RN01), o `code: ADVANCE_JUSTIFICATION_REQUIRED`: falta advanceJustification (UC-01 4a).'
+      tags:
+        - TravelRequests
+      x-roles:
+        - empleado
+  /travel-requests/quoting:
+    get:
+      operationId: TravelRequestsController_listQuoting
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TravelRequestSummary'
+      tags:
+        - TravelRequests
+      x-roles:
+        - agencia
+  /travel-requests/mine:
+    get:
+      operationId: TravelRequestsController_listMine
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TravelRequestSummary'
+      tags:
+        - TravelRequests
+      x-roles:
+        - empleado
+  /destinations:
+    get:
+      operationId: DestinationsController_list
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DestinationSummary'
+      tags:
+        - Destinations
+  /travel-requests/{travelRequestId}/quotes:
+    post:
+      operationId: QuotesController_add
+      parameters:
+        - name: travelRequestId
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddQuoteRequest'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteView'
+      tags:
+        - Quotes
+      x-roles:
+        - agencia
+    get:
+      operationId: QuotesController_compare
+      parameters:
+        - name: travelRequestId
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteComparison'
+      tags:
+        - Quotes
+      x-roles:
+        - empleado
+  /travel-requests/{travelRequestId}/selection:
+    post:
+      operationId: QuotesController_select
+      parameters:
+        - name: travelRequestId
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SelectQuoteRequest'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuoteComparison'
+        '422':
+          description: 'Cotización vencida (RN11), o `code: OVER_CAP_JUSTIFICATION_REQUIRED`: supera el tope y falta overCapJustification (UC-01 9a).'
+      tags:
+        - Quotes
+      x-roles:
+        - empleado
+  /travel-requests/{travelRequestId}/confirmation:
+    post:
+      operationId: ApprovalsController_confirm
+      parameters:
+        - name: travelRequestId
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalView'
+      tags:
+        - Approvals
+      x-roles:
+        - empleado
+  /travel-requests/to-approve:
+    get:
+      operationId: ApprovalsController_listToApprove
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApprovalView'
+      tags:
+        - Approvals
+      x-roles:
+        - aprobador
+  /travel-requests/{travelRequestId}/approval:
+    post:
+      operationId: ApprovalsController_approve
+      parameters:
+        - name: travelRequestId
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalView'
+      tags:
+        - Approvals
+      x-roles:
+        - aprobador
+  /travel-requests/{travelRequestId}/rejection:
+    post:
+      operationId: ApprovalsController_reject
+      parameters:
+        - name: travelRequestId
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectRequest'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalView'
+      tags:
+        - Approvals
+      x-roles:
+        - aprobador
+  /travel-requests/{travelRequestId}/cancellation:
+    post:
+      operationId: ApprovalsController_cancel
+      parameters:
+        - name: travelRequestId
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalView'
+      tags:
+        - Approvals
+      x-roles:
+        - empleado
+info:
+  title: AMR Viajes API
+  description: 'Contrato API ↔ web y móvil. Generado desde el código: no editar a mano.'
+  version: 0.1.0
+  contact: {}
+tags: []
+servers: []
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 150
+          format: email
+        password:
+          type: string
+          maxLength: 256
+      required:
+        - email
+        - password
+    LoginResponse:
+      type: object
+      properties:
+        step:
+          enum:
+            - authenticated
+            - totp_required
+            - totp_enrollment_required
+          type: string
+        accessToken:
+          type: string
+          description: Only with step `authenticated`.
+        refreshToken:
+          type: string
+          description: Only with step `authenticated`.
+        expiresInSeconds:
+          type: number
+          description: Only with step `authenticated`.
+        challengeToken:
+          type: string
+          description: 'Only with the TOTP steps: valid for 5 minutes and only on /auth/totp/*.'
+      required:
+        - step
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          maxLength: 128
+      required:
+        - refreshToken
+    TokenPair:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: 'JWT for `Authorization: Bearer …`; lasts 15 minutes (D34).'
+        refreshToken:
+          type: string
+          description: Renews the pair at POST /auth/refresh; lasts 7 days and works only once (D34).
+        expiresInSeconds:
+          type: number
+      required:
+        - accessToken
+        - refreshToken
+        - expiresInSeconds
+    EmployeeIdentity:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+              - empleado
+              - aprobador
+              - agencia
+              - contaduria
+              - gerencia
+              - administrador
+              - auditor
+        employeeNumber:
+          type: number
+        secondFactorVerified:
+          type: boolean
+          description: 'RN30: true when this session passed the TOTP code.'
+      required:
+        - roles
+        - employeeNumber
+        - secondFactorVerified
+    StartEnrollmentRequest:
+      type: object
+      properties:
+        enrollmentCode:
+          type: string
+        challengeToken:
+          type: string
+          maxLength: 1024
+      required:
+        - enrollmentCode
+        - challengeToken
+    EnrollmentStart:
+      type: object
+      properties:
+        challengeToken:
+          type: string
+          description: New challenge that carries the pending setup; send it with the first code.
+        otpauthUri:
+          type: string
+          description: otpauth:// link; the web or the app draws it as a QR code.
+      required:
+        - challengeToken
+        - otpauthUri
+    VerifyTotpRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^\d{6}$
+        challengeToken:
+          type: string
+          maxLength: 1024
+      required:
+        - code
+        - challengeToken
+    SecondFactorResult:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: 'JWT for `Authorization: Bearer …`; lasts 15 minutes (D34).'
+        refreshToken:
+          type: string
+          description: Renews the pair at POST /auth/refresh; lasts 7 days and works only once (D34).
+        expiresInSeconds:
+          type: number
+        recoveryCodes:
+          description: 'D36: 8 one-time codes, shown only this once, after a setup.'
+          type: array
+          items:
+            type: string
+      required:
+        - accessToken
+        - refreshToken
+        - expiresInSeconds
+    RecoverRequest:
+      type: object
+      properties:
+        recoveryCode:
+          type: string
+        challengeToken:
+          type: string
+          maxLength: 1024
+      required:
+        - recoveryCode
+        - challengeToken
+    IssueEnrollmentCodeRequest:
+      type: object
+      properties:
+        employeeNumber:
+          type: number
+      required:
+        - employeeNumber
+    IssuedEnrollmentCode:
+      type: object
+      properties:
+        enrollmentCode:
+          type: string
+          description: Format ABCD-EFGH-JKLM-NPQR; works once.
+        expiresAt:
+          format: date-time
+          type: string
+          description: 24 hours after it was issued.
+      required:
+        - enrollmentCode
+        - expiresAt
+    CreateTravelRequestRequest:
+      type: object
+      properties:
+        destinationId:
+          type: number
+        originId:
+          type: number
+          description: 'D19: optional; without it S10 measures only against the destination.'
+        startDate:
+          type: string
+        endDate:
+          type: string
+        reason:
+          type: string
+          maxLength: 255
+        advanceJustification:
+          type: string
+          description: 'UC-01 4a: required only when the trip starts sooner than the policy''s minimum advance.'
+          maxLength: 500
+      required:
+        - destinationId
+        - startDate
+        - endDate
+        - reason
+    DestinationSummary:
+      type: object
+      properties:
+        id:
+          type: number
+        city:
+          type: string
+        country:
+          type: string
+      required:
+        - id
+        - city
+        - country
+    PolicySnapshot:
+      type: object
+      properties:
+        id:
+          type: number
+        version:
+          type: number
+        currency:
+          type: string
+          description: ISO 4217, e.g. ARS.
+        amountCap:
+          type: string
+          description: 'RN01: cap of the trip quote, as text with 2 decimals.'
+        minimumAdvanceDays:
+          type: number
+        dailyAllowance:
+          type: string
+      required:
+        - id
+        - version
+        - currency
+        - amountCap
+        - minimumAdvanceDays
+        - dailyAllowance
+    TravelRequestSummary:
+      type: object
+      properties:
+        status:
+          enum:
+            - en_cotizacion
+            - pendiente
+            - aprobada
+            - rechazada
+            - cancelada
+          type: string
+        id:
+          type: number
+        destination:
+          $ref: '#/components/schemas/DestinationSummary'
+        origin:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DestinationSummary'
+        startDate:
+          type: string
+          description: YYYY-MM-DD.
+        endDate:
+          type: string
+          description: YYYY-MM-DD.
+        nights:
+          type: number
+          description: 'D11: nights between both dates.'
+        reason:
+          type: string
+          nullable: true
+        advanceJustification:
+          type: string
+          nullable: true
+          description: 'UC-01 4a: why the minimum advance was not met.'
+        overCapJustification:
+          type: string
+          nullable: true
+          description: 'UC-01 9a: why the chosen quote is over the cap.'
+        approverEmployeeNumber:
+          type: number
+          nullable: true
+          description: 'D15, D41: assigned when the request becomes pendiente (UC-01 step 10).'
+        rejectionReason:
+          type: string
+          nullable: true
+          description: UC-01 12a.
+        policy:
+          $ref: '#/components/schemas/PolicySnapshot'
+        estimatedAllowance:
+          type: string
+          description: 'D03, D11: daily allowance × nights, as text with 2 decimals.'
+      required:
+        - status
+        - id
+        - destination
+        - origin
+        - startDate
+        - endDate
+        - nights
+        - reason
+        - advanceJustification
+        - overCapJustification
+        - approverEmployeeNumber
+        - rejectionReason
+        - policy
+        - estimatedAllowance
+    AddQuoteRequest:
+      type: object
+      properties:
+        origin:
+          type: string
+          enum:
+            - agencia
+            - externa
+        description:
+          type: string
+          description: Flights, lodging and transfers, in the advisor's words.
+          maxLength: 255
+        amount:
+          type: number
+          minimum: 1
+        supplierCuit:
+          type: string
+        source:
+          type: string
+          description: 'UC-03 step 7: where an external reference comes from (site, airline…). Required for "externa".'
+          maxLength: 150
+        validUntil:
+          type: string
+          description: 'UC-03 step 5: until when the fare holds. Required for "agencia".'
+      required:
+        - origin
+        - description
+        - amount
+    QuoteView:
+      type: object
+      properties:
+        origin:
+          enum:
+            - agencia
+            - externa
+          type: string
+        id:
+          type: number
+        description:
+          type: string
+        supplierCuit:
+          type: string
+          nullable: true
+        source:
+          type: string
+          nullable: true
+          description: 'External references only: where the price comes from.'
+        amount:
+          type: string
+          description: Text with 2 decimals, in the currency of the request's policy.
+        validUntil:
+          type: string
+          nullable: true
+          description: YYYY-MM-DD; null when the fare has no expiry.
+        expired:
+          type: boolean
+          description: 'RN11: an expired quote cannot be selected.'
+        exceedsCap:
+          type: boolean
+          description: 'UC-01 9a, UC-03 5a: choosing it needs a justification and a higher approver.'
+        savingsAgainstExternal:
+          type: string
+          nullable: true
+          description: 'Agency quotes only: cheapest external minus this amount; null without an external reference.'
+        selected:
+          type: boolean
+      required:
+        - origin
+        - id
+        - description
+        - supplierCuit
+        - source
+        - amount
+        - validUntil
+        - expired
+        - exceedsCap
+        - savingsAgainstExternal
+        - selected
+    QuoteComparison:
+      type: object
+      properties:
+        travelRequestId:
+          type: number
+        currency:
+          type: string
+        amountCap:
+          type: string
+        lowestExternalAmount:
+          type: string
+          nullable: true
+        quotes:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteView'
+      required:
+        - travelRequestId
+        - currency
+        - amountCap
+        - lowestExternalAmount
+        - quotes
+    SelectQuoteRequest:
+      type: object
+      properties:
+        quoteId:
+          type: number
+        overCapJustification:
+          type: string
+          description: 'UC-01 9a: required only when the chosen quote is above the policy''s cap.'
+          maxLength: 500
+      required:
+        - quoteId
+    ApprovalView:
+      type: object
+      properties:
+        status:
+          enum:
+            - en_cotizacion
+            - pendiente
+            - aprobada
+            - rechazada
+            - cancelada
+          type: string
+        id:
+          type: number
+        destination:
+          $ref: '#/components/schemas/DestinationSummary'
+        origin:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/DestinationSummary'
+        startDate:
+          type: string
+          description: YYYY-MM-DD.
+        endDate:
+          type: string
+          description: YYYY-MM-DD.
+        nights:
+          type: number
+          description: 'D11: nights between both dates.'
+        reason:
+          type: string
+          nullable: true
+        advanceJustification:
+          type: string
+          nullable: true
+          description: 'UC-01 4a: why the minimum advance was not met.'
+        overCapJustification:
+          type: string
+          nullable: true
+          description: 'UC-01 9a: why the chosen quote is over the cap.'
+        approverEmployeeNumber:
+          type: number
+          nullable: true
+          description: 'D15, D41: assigned when the request becomes pendiente (UC-01 step 10).'
+        rejectionReason:
+          type: string
+          nullable: true
+          description: UC-01 12a.
+        policy:
+          $ref: '#/components/schemas/PolicySnapshot'
+        estimatedAllowance:
+          type: string
+          description: 'D03, D11: daily allowance × nights, as text with 2 decimals.'
+        selectedQuote:
+          nullable: true
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/QuoteView'
+      required:
+        - status
+        - id
+        - destination
+        - origin
+        - startDate
+        - endDate
+        - nights
+        - reason
+        - advanceJustification
+        - overCapJustification
+        - approverEmployeeNumber
+        - rejectionReason
+        - policy
+        - estimatedAllowance
+        - selectedQuote
+    RejectRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          maxLength: 500
+      required:
+        - reason
+security:
+  - bearer: []

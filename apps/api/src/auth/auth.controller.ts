@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
 import { TOTP_PER_EMPLOYEE_THROTTLER } from './auth.constants.js';
 import { AuthService, type LoginResult } from './auth.service.js';
@@ -15,7 +16,11 @@ import type { AuthenticatedEmployee } from './authenticated-employee.js';
 import { CurrentEmployee, Public } from './decorators.js';
 import { LoginRequest } from './dto/login.request.js';
 import { RefreshRequest } from './dto/refresh.request.js';
-import type { TokenPair } from './session-issuer.service.js';
+import {
+  EmployeeIdentity,
+  LoginResponse,
+  TokenPair,
+} from './dto/auth.responses.js';
 
 @Controller('auth')
 export class AuthController {
@@ -25,6 +30,8 @@ export class AuthController {
   @Public()
   @UseGuards(ThrottlerGuard)
   @SkipThrottle({ [TOTP_PER_EMPLOYEE_THROTTLER]: true })
+  // LoginResult is a union of three shapes; the contract shows them as one class with optional fields.
+  @ApiOkResponse({ type: LoginResponse })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() request: LoginRequest): Promise<LoginResult> {
@@ -48,9 +55,7 @@ export class AuthController {
 
   // Not @Public: the global guard already checked the token and put the employee on the request.
   @Get('me')
-  me(
-    @CurrentEmployee() employee: AuthenticatedEmployee,
-  ): AuthenticatedEmployee {
+  me(@CurrentEmployee() employee: AuthenticatedEmployee): EmployeeIdentity {
     return employee;
   }
 }

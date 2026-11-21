@@ -21,7 +21,6 @@ import {
   hashSecondFactorCode,
   resetSecondFactor,
   SecondFactorCodeError,
-  type IssuedEnrollmentCode,
 } from './second-factor-codes.js';
 import {
   SecondFactorChallengeService,
@@ -29,16 +28,11 @@ import {
 } from './second-factor-challenge.service.js';
 import { SessionIssuer, type TokenPair } from './session-issuer.service.js';
 import { TotpService } from './totp.service.js';
-
-export interface EnrollmentStart {
-  /** New challenge that carries the pending setup; send it with the first code. */
-  challengeToken: string;
-  /** otpauth:// link for the QR. */
-  otpauthUri: string;
-}
-
-/** At the end of a setup the answer also carries the recovery codes, shown only this once. */
-export type SecondFactorResult = TokenPair & { recoveryCodes?: string[] };
+import type {
+  EnrollmentStart,
+  IssuedEnrollmentCode,
+  SecondFactorResult,
+} from './dto/second-factor.responses.js';
 
 @Injectable()
 export class SecondFactorService {

@@ -10,26 +10,20 @@ import {
   auditedChange,
   type AuditedChange,
 } from '../../auditoria/audited.decorator.js';
-import type { QuoteView } from '../../cotizaciones/quote-comparison.js';
 import { exceedsCap } from '../../cotizaciones/quote-rules.js';
 import { QuotesService } from '../../cotizaciones/quotes.service.js';
 import type { TravelRequestStatus } from '../../generated/prisma/client.js';
 import { TravelRequestStatus as Status } from '../../generated/prisma/enums.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import {
-  STATUS_NAMES,
-  type TravelRequestSummary,
-} from '../travel-request-summary.js';
+import { STATUS_NAMES } from '../travel-request-summary.js';
 import {
   TravelRequestsService,
   type QuotingContext,
 } from '../travel-requests.service.js';
 import { ApproverResolver } from './approver-resolver.service.js';
+import type { ApprovalView } from './dto/approval.responses.js';
 
-/** What the approver reviews (step 12): the request with its justifications and the chosen quote. */
-export type ApprovalView = TravelRequestSummary & {
-  selectedQuote: QuoteView | null;
-};
+export { ApprovalView } from './dto/approval.responses.js';
 
 /** UC-01 9b: the employee may cancel between steps 6 and 12, i.e. before the approver decides. */
 const CANCELLABLE: TravelRequestStatus[] = [Status.QUOTING, Status.PENDING];

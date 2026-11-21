@@ -11,9 +11,11 @@ import {
   Audited,
   type AuditedChange,
 } from '../../auditoria/audited.decorator.js';
+import { ApiCreatedResponse } from '@nestjs/swagger';
 import type { AuthenticatedEmployee } from '../../auth/authenticated-employee.js';
 import { CurrentEmployee, Roles } from '../../auth/decorators.js';
-import { ApprovalsService, type ApprovalView } from './approvals.service.js';
+import { ApprovalsService } from './approvals.service.js';
+import { ApprovalView } from './dto/approval.responses.js';
 import { RejectRequest } from './dto/reject.request.js';
 
 @Controller('travel-requests')
@@ -41,6 +43,8 @@ export class ApprovalsController {
   // @Audited: the interceptor writes registro_auditoria with the status before and after (RNF11).
   @Roles('aprobador')
   @Audited({ entity: 'solicitud_viaje', action: 'aprobar' })
+  // The interceptor answers only the `response` part of AuditedChange: document that body.
+  @ApiCreatedResponse({ type: ApprovalView })
   @Post(':travelRequestId/approval')
   approve(
     @CurrentEmployee() approver: AuthenticatedEmployee,
@@ -51,6 +55,7 @@ export class ApprovalsController {
 
   @Roles('aprobador')
   @Audited({ entity: 'solicitud_viaje', action: 'rechazar' })
+  @ApiCreatedResponse({ type: ApprovalView })
   @Post(':travelRequestId/rejection')
   reject(
     @CurrentEmployee() approver: AuthenticatedEmployee,

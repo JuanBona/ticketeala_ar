@@ -3,13 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { AccessTokenService } from './access-token.service.js';
 import { ACCESS_TOKEN_LIFETIME_SECONDS } from './auth.constants.js';
 import type { AuthenticatedEmployee } from './authenticated-employee.js';
+import type { TokenPair } from './dto/auth.responses.js';
 import { RefreshSessionService } from './refresh-session.service.js';
 
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-  expiresInSeconds: number;
-}
+// Defined with the other response classes so the OpenAPI contract can describe it.
+export { TokenPair } from './dto/auth.responses.js';
 
 @Injectable()
 export class SessionIssuer {

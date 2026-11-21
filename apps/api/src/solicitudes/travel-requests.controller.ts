@@ -1,9 +1,10 @@
 // HTTP endpoints of UC-01 for the employee: create a travel request and list one's own.
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 import type { AuthenticatedEmployee } from '../auth/authenticated-employee.js';
 import { CurrentEmployee, Roles } from '../auth/decorators.js';
 import { CreateTravelRequestRequest } from './dto/create-travel-request.request.js';
-import type { TravelRequestSummary } from './travel-request-summary.js';
+import { TravelRequestSummary } from './dto/travel-request.responses.js';
 import { TravelRequestsService } from './travel-requests.service.js';
 
 @Controller('travel-requests')
@@ -12,6 +13,10 @@ export class TravelRequestsController {
 
   // UC-01's primary actor is the employee; the agency advisor (only 'agencia') cannot ask for trips.
   @Roles('empleado')
+  @ApiUnprocessableEntityResponse({
+    description:
+      'Sin política vigente (RN01), o `code: ADVANCE_JUSTIFICATION_REQUIRED`: falta advanceJustification (UC-01 4a).',
+  })
   @Post()
   create(
     @CurrentEmployee() employee: AuthenticatedEmployee,
