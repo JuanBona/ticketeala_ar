@@ -152,6 +152,52 @@ async close(@Param('id') id: string): Promise<AuditedChange<PolicyResponse>> {
   escritura, el cambio queda hecho sin su registro. Para lo más delicado (como el segundo factor)
   se usa `AuditService.record(entrada, transacción)`, que escribe en la misma transacción.
 
+## Solicitudes de viaje (UC-01)
+
+Por ahora está la primera parte, pasos 1 a 6 (D41):
+
+- `GET /destinations`: los destinos para el formulario.
+- `POST /travel-requests` (rol `empleado`) con `destinationId`, `startDate`, `endDate` (AAAA-MM-DD),
+  `reason` y, opcional, `originId`. La API:
+  1. busca la política vigente para la categoría del empleado y el destino (RN01) y la deja fija
+     en la solicitud: si mañana cambia, la solicitud conserva la suya (RN02);
+  2. si el viaje empieza antes de la anticipación mínima, responde 422 con
+     `code: "ADVANCE_JUSTIFICATION_REQUIRED"` hasta que llegue `advanceJustification` (4a);
+  3. calcula el viático estimado: viático diario × noches (D11) y lo guarda en `viatico`;
+  4. deja la solicitud `en_cotizacion` para AMR Turismo (D04).
+- `GET /travel-requests/mine`: las solicitudes del empleado, de la más nueva a la más vieja.
+
+Los montos viajan como texto con dos decimales (`"90000.00"`) para no perder centavos.
+
+Cotizaciones (pasos 7 a 9 y una versión mínima de UC-03):
+
+- `GET /travel-requests/quoting` (rol `agencia`): la bandeja de solicitudes `en_cotizacion`.
+- `POST /travel-requests/:id/quotes` (rol `agencia`) con `origin` (`agencia` o `externa`),
+  `description`, `amount` y, según el origen, `validUntil` (agencia, obligatoria y no vencida),
+  `source` (externa, obligatoria) y `supplierCuit` (opcional, 11 dígitos, proveedor registrado).
+  Si supera el tope se guarda igual con `exceedsCap: true`, para que el asesor sume otra opción.
+- `GET /travel-requests/:id/quotes` (el solicitante): el comparativo contra el tope, la referencia
+  externa más barata y el ahorro de cada cotización de la agencia.
+- `POST /travel-requests/:id/selection` (el solicitante) con `quoteId`: solo cotizaciones de la
+  agencia (RN10) y no vencidas (RN11). Si supera el tope responde 422 con
+  `code: "OVER_CAP_JUSTIFICATION_REQUIRED"` hasta que llegue `overCapJustification` (9a). Se puede
+  volver a elegir mientras la solicitud siga `en_cotizacion`.
+
+Aprobación (pasos 9 a 13, D41):
+
+- `POST /travel-requests/:id/confirmation` (el solicitante): necesita una cotización elegida (RN09).
+  La solicitud pasa a `pendiente` y se le asigna el aprobador:
+  1. el jefe directo (D15);
+  2. si la cotización supera el tope, un nivel más arriba: el jefe del jefe o, si no tiene, el
+     gerente del área (9a);
+  3. si ese aprobador está dado de baja, su suplente (10a); sin suplente activo, responde 422 (R02).
+- `GET /travel-requests/to-approve` (rol `aprobador`): lo que espera a ese aprobador, con la
+  cotización elegida y las justificaciones.
+- `POST /travel-requests/:id/approval` y `POST /travel-requests/:id/rejection` con `reason`
+  (solo el aprobador asignado): quedan en `registro_auditoria`.
+- `POST /travel-requests/:id/cancellation` (el solicitante): mientras esté `en_cotizacion` o
+  `pendiente` (9b).
+
 ## Cambiar el esquema
 
 1. Primero se cambia `docs/modelo-datos.sql` (es la referencia) y después `prisma/schema.prisma`.
