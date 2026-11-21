@@ -18,6 +18,8 @@ export function setup(): void {
   execFileSync('npx', ['prisma', 'migrate', 'deploy'], {
     env: { ...process.env, DATABASE_URL: testDatabaseUrl },
     stdio: 'inherit',
+    // On Windows `npx` is npx.cmd, which cannot be started without a shell.
+    shell: process.platform === 'win32',
   });
 }
 

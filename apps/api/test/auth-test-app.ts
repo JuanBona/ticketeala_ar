@@ -65,16 +65,28 @@ class ProbeController {
   }
 }
 
+/** A provider swapped for a fake in a test, e.g. the image storage. */
+export interface ProviderOverride {
+  provide: unknown;
+  useValue: unknown;
+}
+
 export async function createAuthTestApp(
   client: PrismaClient,
+  providerOverrides: ProviderOverride[] = [],
 ): Promise<INestApplication> {
-  const testingModule = await Test.createTestingModule({
+  let builder = Test.createTestingModule({
     imports: [AppModule],
     controllers: [ProbeController],
   })
     .overrideProvider(PrismaService)
-    .useValue(client)
-    .compile();
+    .useValue(client);
+  for (const override of providerOverrides) {
+    builder = builder
+      .overrideProvider(override.provide)
+      .useValue(override.useValue);
+  }
+  const testingModule = await builder.compile();
   const app = testingModule.createNestApplication();
   configureApp(app);
   await app.init();
