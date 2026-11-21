@@ -169,6 +169,20 @@ Por ahora está la primera parte, pasos 1 a 6 (D41):
 
 Los montos viajan como texto con dos decimales (`"90000.00"`) para no perder centavos.
 
+Cotizaciones (pasos 7 a 9 y una versión mínima de UC-03):
+
+- `GET /travel-requests/quoting` (rol `agencia`): la bandeja de solicitudes `en_cotizacion`.
+- `POST /travel-requests/:id/quotes` (rol `agencia`) con `origin` (`agencia` o `externa`),
+  `description`, `amount` y, según el origen, `validUntil` (agencia, obligatoria y no vencida),
+  `source` (externa, obligatoria) y `supplierCuit` (opcional, 11 dígitos, proveedor registrado).
+  Si supera el tope se guarda igual con `exceedsCap: true`, para que el asesor sume otra opción.
+- `GET /travel-requests/:id/quotes` (el solicitante): el comparativo contra el tope, la referencia
+  externa más barata y el ahorro de cada cotización de la agencia.
+- `POST /travel-requests/:id/selection` (el solicitante) con `quoteId`: solo cotizaciones de la
+  agencia (RN10) y no vencidas (RN11). Si supera el tope responde 422 con
+  `code: "OVER_CAP_JUSTIFICATION_REQUIRED"` hasta que llegue `overCapJustification` (9a). Se puede
+  volver a elegir mientras la solicitud siga `en_cotizacion`.
+
 ## Cambiar el esquema
 
 1. Primero se cambia `docs/modelo-datos.sql` (es la referencia) y después `prisma/schema.prisma`.

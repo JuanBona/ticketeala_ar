@@ -11,5 +11,7 @@ import { TravelRequestsService } from './travel-requests.service.js';
   imports: [AdministrationModule, PoliciesModule, ExpenseReportsModule],
   controllers: [TravelRequestsController],
   providers: [TravelRequestsService],
+  // Quotes (cotizaciones) read the request and record the 9a justification through this service.
+  exports: [TravelRequestsService],
 })
 export class TravelRequestsModule {}
