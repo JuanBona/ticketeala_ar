@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBadGatewayResponse,
   ApiConflictResponse,
   ApiConsumes,
   ApiForbiddenResponse,
@@ -43,6 +44,10 @@ export class ReceiptsController {
     description: 'El archivo no es una foto JPEG o PNG.',
   })
   @ApiPayloadTooLargeResponse({ description: 'La foto pesa más de 10 MB.' })
+  @ApiBadGatewayResponse({
+    description:
+      'No se pudo encolar la verificación: el gasto queda pendiente para reintentar.',
+  })
   @UseInterceptors(
     FileInterceptor(IMAGE_PART_NAME, {
       limits: { fileSize: MAXIMUM_IMAGE_BYTES },

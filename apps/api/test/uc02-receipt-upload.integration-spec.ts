@@ -1,4 +1,4 @@
-// UC-02 steps 1 to 3 (API side): upload a receipt photo, store it and create the pending expense (D25, D27, D31, 2a).
+// UC-02 steps 1 to 4 (API side): upload a receipt photo, store it, create the pending expense and queue the job (D23, D25, D27, D31, 2a).
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { Role } from '../src/auth/role.js';
@@ -9,12 +9,19 @@ import {
 } from '../src/generated/prisma/enums.js';
 import { MAXIMUM_IMAGE_BYTES } from '../src/rendiciones/receipt-image-rules.js';
 import { ReceiptImageStore } from '../src/rendiciones/receipt-image-store.js';
+import { VerifyQueue } from '../src/rendiciones/verify-queue.js';
+import type { VerifyRequest } from '../src/rendiciones/verify-request-rules.js';
 import {
   createAuthTestApp,
   createSyntheticEmployee,
   SYNTHETIC_PASSWORD,
 } from './auth-test-app.js';
-import { createTestClient, truncateAllTables } from './test-database.js';
+import {
+  createSignalParameters,
+  createTestClient,
+  truncateAllTables,
+} from './test-database.js';
+import { requestContractErrors } from './verifier-contract.js';
 
 const OWNER_NUMBER = 3001;
 const OTHER_EMPLOYEE_NUMBER = 3002;
@@ -31,10 +38,25 @@ class InMemoryImageStore {
   }
 }
 
+/** Stands in for Redis: keeps the published jobs, or fails like a queue that is down. */
+class FakeVerifyQueue {
+  readonly published: VerifyRequest[] = [];
+  failure: Error | undefined;
+
+  async publish(request: VerifyRequest): Promise<string> {
+    if (this.failure) {
+      throw this.failure;
+    }
+    this.published.push(request);
+    return `${this.published.length}-0`;
+  }
+}
+
 describe('UC-02 receipt upload', () => {
   let client: PrismaClient;
   let app: INestApplication;
   let imageStore: InMemoryImageStore;
+  let verifyQueue: FakeVerifyQueue;
   let ownerToken: string;
   let travelRequestId: number;
 
@@ -45,10 +67,13 @@ describe('UC-02 receipt upload', () => {
   beforeEach(async () => {
     await truncateAllTables(client);
     imageStore = new InMemoryImageStore();
+    verifyQueue = new FakeVerifyQueue();
     app = await createAuthTestApp(client, [
       { provide: ReceiptImageStore, useValue: imageStore },
+      { provide: VerifyQueue, useValue: verifyQueue },
     ]);
     ownerToken = await loginAs(OWNER_NUMBER, ['empleado']);
+    await createParameterVersionOne();
     travelRequestId = await createTravelRequest(TravelRequestStatus.APPROVED);
   });
 
@@ -72,6 +97,22 @@ describe('UC-02 receipt upload', () => {
       .post('/auth/login')
       .send({ email: employee.email, password: SYNTHETIC_PASSWORD });
     return login.body.accessToken;
+  }
+
+  /** D24: the engine parameters in force, version 1, approved by the owner. */
+  async function createParameterVersionOne(): Promise<void> {
+    await client.parameterVersion.create({
+      data: {
+        number: 1,
+        reason: 'Versión sintética',
+        approvedByEmployeeNumber: OWNER_NUMBER,
+        acceptanceThreshold: 80,
+        alertThreshold: 50,
+        maximumImageAttempts: 3,
+        maximumQueueRetries: 3,
+      },
+    });
+    await createSignalParameters(client, 1);
   }
 
   /** A synthetic request of the owner, written directly: UC-01 has its own tests. */
@@ -304,5 +345,185 @@ describe('UC-02 receipt upload', () => {
       .attach('image', JPEG_BYTES, 'comprobante.jpg');
 
     expect(response.status).toBe(401);
+  });
+
+  describe('UC-02 step 4: the job for the engine (D23)', () => {
+    async function createCap(unit: 'PER_DAY' | 'PER_RECEIPT') {
+      const travelRequest = await client.travelRequest.findUniqueOrThrow({
+        where: { id: travelRequestId },
+      });
+      await client.expenseCap.create({
+        data: {
+          policyId: travelRequest.policyId,
+          category: 'MEALS',
+          amount: '15000.00',
+          unit,
+        },
+      });
+    }
+
+    async function createEarlierExpense(
+      data: Record<string, unknown>,
+    ): Promise<number> {
+      const report = await client.expenseReport.findFirstOrThrow();
+      const created = await client.expense.create({
+        data: {
+          expenseReportId: report.id,
+          issuedOn: new Date(),
+          amount: '1000.00',
+          category: 'MEALS',
+          ...data,
+        },
+      });
+      return created.id;
+    }
+
+    it('queues one job that follows the contract, for the new expense', async () => {
+      const response = await upload();
+
+      expect(verifyQueue.published).toHaveLength(1);
+      const job = verifyQueue.published[0];
+      expect(requestContractErrors(job)).toEqual([]);
+      expect(job.gasto_id).toBe(response.body.expenseId);
+      expect(job.intento).toBe(1);
+      expect(job.contexto.tipo_gasto).toBe('comida');
+      expect(job.contexto.viaje).toMatchObject({
+        fecha_inicio: '2026-11-10',
+        fecha_fin: '2026-11-12',
+        destino: null,
+        origen: null,
+      });
+      expect(job.parametros.version).toBe(1);
+    });
+
+    it('points the job at the stored photo, never at the bytes', async () => {
+      const response = await upload();
+
+      const expense = await client.expense.findUniqueOrThrow({
+        where: { id: response.body.expenseId },
+      });
+      expect(verifyQueue.published[0].imagen).toEqual({
+        origen: 'almacenamiento',
+        clave: expense.receiptUrl,
+      });
+    });
+
+    it('D26: sends the cap of the expense type with the quantity of days (nights plus one)', async () => {
+      await createCap('PER_DAY');
+
+      await upload();
+
+      expect(verifyQueue.published[0].contexto.tope).toEqual({
+        monto: '15000.00',
+        unidad: 'por_dia',
+        cantidad: 3,
+        moneda: 'ARS',
+      });
+    });
+
+    it('S11: sends no cap when the policy has none for the expense type', async () => {
+      await upload();
+
+      expect(verifyQueue.published[0].contexto.tope).toBeNull();
+    });
+
+    it('UC-02 2a: sends no capture location without the employee consent', async () => {
+      await upload();
+
+      expect(verifyQueue.published[0].contexto.ubicacion_captura).toBeNull();
+    });
+
+    it('sends the capture location when the employee allowed it', async () => {
+      await upload({ latitude: '-31.4201', longitude: '-64.1888' });
+
+      expect(verifyQueue.published[0].contexto.ubicacion_captura).toEqual({
+        latitud: -31.4201,
+        longitud: -64.1888,
+      });
+    });
+
+    it('S08: sends the image hashes of earlier active expenses, never the new one', async () => {
+      await upload();
+      const earlierId = await createEarlierExpense({
+        dhash: 'a1b2c3d4e5f60718',
+      });
+
+      const response = await upload();
+
+      const job = verifyQueue.published[1];
+      expect(requestContractErrors(job)).toEqual([]);
+      expect(job.contexto.dhash_previos).toEqual([
+        { gasto_id: earlierId, dhash: 'a1b2c3d4e5f60718' },
+      ]);
+      expect(job.gasto_id).toBe(response.body.expenseId);
+    });
+
+    it('S07: sends the complete fiscal keys of active expenses and skips the inactive ones', async () => {
+      await upload();
+      await client.supplier.create({
+        data: { cuit: '30712345678', legalName: 'Proveedor sintético' },
+      });
+      const keptId = await createEarlierExpense({
+        supplierCuit: '30712345678',
+        receiptType: '6',
+        pointOfSale: 1,
+        receiptNumber: 1234,
+      });
+      await createEarlierExpense({
+        supplierCuit: '30712345678',
+        receiptType: '6',
+        pointOfSale: 1,
+        receiptNumber: 1235,
+        active: false,
+      });
+
+      await upload();
+
+      const job = verifyQueue.published[1];
+      expect(requestContractErrors(job)).toEqual([]);
+      expect(job.contexto.claves_fiscales_previas).toEqual([
+        {
+          gasto_id: keptId,
+          cuit: '30712345678',
+          tipo_comprobante: '6',
+          punto_venta: 1,
+          numero_comprobante: 1234,
+        },
+      ]);
+    });
+
+    it('S12: sends only accepted amounts of the same expense type, as text with two decimals', async () => {
+      await upload();
+      const acceptedId = await createEarlierExpense({ amount: '2500.5' });
+      await client.receiptVerification.create({
+        data: {
+          expenseId: acceptedId,
+          parameterVersion: 1,
+          imageQuality: '80.00',
+          score: 90,
+          decision: 'ACCEPTED',
+        },
+      });
+      await createEarlierExpense({ amount: '9999.00' });
+
+      await upload();
+
+      const job = verifyQueue.published[1];
+      expect(requestContractErrors(job)).toEqual([]);
+      expect(job.contexto.historial_montos).toEqual([
+        { monto: '2500.50', moneda: 'ARS' },
+      ]);
+    });
+
+    it('answers 502 and leaves the expense pendiente when the queue is down', async () => {
+      verifyQueue.failure = new Error('connect ECONNREFUSED 127.0.0.1:6379');
+
+      const response = await upload();
+
+      expect(response.status).toBe(502);
+      const expenses = await client.expense.findMany();
+      expect(expenses).toHaveLength(1);
+      expect(expenses[0].verificationStatus).toBe('PENDING');
+    });
   });
 });
