@@ -102,9 +102,21 @@ export class QuotesService {
       today,
     );
     const justification = requireOverCapJustification(quote, context, request);
-    // One transaction: unmark the old choice, mark the new one, save the 9a justification.
+    // One transaction: save the 9a justification, unmark the old choice, mark the new one.
     await this.prisma.$transaction(async (transaction) => {
-      // First clear: the partial unique index allows only one selected quote per request.
+      // First, and only if still en_cotizacion: this locks the request, so a confirmation running
+      // now waits for this choice, and a choice arriving after a confirmation fails here.
+      const stillQuoting = await this.travelRequests.recordOverCapJustification(
+        transaction,
+        travelRequestId,
+        justification,
+      );
+      if (!stillQuoting) {
+        throw new ConflictException(
+          `La solicitud ${travelRequestId} ya no está en cotización: no se puede cambiar la elección`,
+        );
+      }
+      // Clear first: the partial unique index allows only one selected quote per request.
       await transaction.quote.updateMany({
         where: { travelRequestId, selected: true },
         data: { selected: false },
@@ -113,17 +125,36 @@ export class QuotesService {
         where: { id: quote.id },
         data: { selected: true },
       });
-      await this.travelRequests.recordOverCapJustification(
-        transaction,
-        travelRequestId,
-        justification,
-      );
     });
     return toQuoteComparison(
       context,
       await this.quotesOf(travelRequestId),
       today,
     );
+  }
+
+  /** UC-01 steps 10 and 12: the quote the requester chose, or null if none yet (RN09). */
+  findSelected(
+    travelRequestId: number,
+    reader: Pick<PrismaService, 'quote'> = this.prisma,
+  ): Promise<Quote | null> {
+    // `reader` lets the confirmation read inside its own transaction, after locking the request.
+    return reader.quote.findFirst({
+      where: { travelRequestId, selected: true },
+    });
+  }
+
+  /** UC-01 step 12: the selected quote as the approver sees it, against the request's cap. */
+  async selectedView(context: QuotingContext): Promise<QuoteView | null> {
+    const quote = await this.findSelected(context.id);
+    if (!quote) {
+      return null;
+    }
+    return toQuoteView(quote, {
+      context,
+      lowestExternal: null,
+      today: todayInArgentina(new Date()),
+    });
   }
 
   private quotesOf(travelRequestId: number): Promise<Quote[]> {

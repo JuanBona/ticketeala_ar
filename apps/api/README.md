@@ -183,6 +183,21 @@ Cotizaciones (pasos 7 a 9 y una versión mínima de UC-03):
   `code: "OVER_CAP_JUSTIFICATION_REQUIRED"` hasta que llegue `overCapJustification` (9a). Se puede
   volver a elegir mientras la solicitud siga `en_cotizacion`.
 
+Aprobación (pasos 9 a 13, D41):
+
+- `POST /travel-requests/:id/confirmation` (el solicitante): necesita una cotización elegida (RN09).
+  La solicitud pasa a `pendiente` y se le asigna el aprobador:
+  1. el jefe directo (D15);
+  2. si la cotización supera el tope, un nivel más arriba: el jefe del jefe o, si no tiene, el
+     gerente del área (9a);
+  3. si ese aprobador está dado de baja, su suplente (10a); sin suplente activo, responde 422 (R02).
+- `GET /travel-requests/to-approve` (rol `aprobador`): lo que espera a ese aprobador, con la
+  cotización elegida y las justificaciones.
+- `POST /travel-requests/:id/approval` y `POST /travel-requests/:id/rejection` con `reason`
+  (solo el aprobador asignado): quedan en `registro_auditoria`.
+- `POST /travel-requests/:id/cancellation` (el solicitante): mientras esté `en_cotizacion` o
+  `pendiente` (9b).
+
 ## Cambiar el esquema
 
 1. Primero se cambia `docs/modelo-datos.sql` (es la referencia) y después `prisma/schema.prisma`.

@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { AuditModule } from './auditoria/audit.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { QuotesModule } from './cotizaciones/quotes.module.js';
+import { ApprovalsModule } from './solicitudes/aprobacion/approvals.module.js';
 import { TravelRequestsModule } from './solicitudes/travel-requests.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
@@ -13,6 +14,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     AuthModule,
     TravelRequestsModule,
     QuotesModule,
+    ApprovalsModule,
   ],
 })
 export class AppModule {}
