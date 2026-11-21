@@ -103,7 +103,7 @@ la declarada. Así el resultado siempre trae moneda y `GASTO.moneda` nunca queda
 
 | Estado | Qué trae |
 |---|---|
-| `verificado` | Campos extraídos con confianza, QR decodificado, señales, puntaje, decisión, calidad de imagen, respuesta cruda del OCR |
+| `verificado` | Campos extraídos con confianza, QR decodificado, señales, puntaje, decisión, calidad de imagen, dHash de la imagen (la API lo guarda para S08), respuesta cruda del OCR |
 | `imagen_rechazada` | Solo las métricas de calidad y un detalle para el empleado; sin puntaje ni decisión |
 | `duplicado_rechazado` | S07 con su detalle y el gasto original; opcionales, los campos leídos y la respuesta cruda del OCR (D28); sin puntaje ni decisión |
 | `error` | El trabajo falló N veces; sin resultado del motor |

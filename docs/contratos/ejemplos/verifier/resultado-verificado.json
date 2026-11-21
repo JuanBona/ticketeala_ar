@@ -4,6 +4,7 @@
   "estado": "verificado",
   "version_parametros": 2,
   "calidad_imagen": { "nitidez": 83.2, "iluminacion": 138.2, "forzada": false },
+  "dhash": "a1b2c3d4e5f60718",
   "campos": {
     "fecha": { "valor": "2026-10-25", "confianza": 0.98 },
     "cuit": { "valor": "30111111118", "confianza": 0.91 },
