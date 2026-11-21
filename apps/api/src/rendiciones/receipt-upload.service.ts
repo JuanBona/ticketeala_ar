@@ -1,5 +1,6 @@
-// UC-02 steps 1 to 3 (API side): checks the request, stores the photo and creates the pending expense.
+// UC-02 steps 1 to 4 (API side): checks the request, stores the photo, creates the pending expense and queues it.
 import {
+  BadGatewayException,
   BadRequestException,
   ForbiddenException,
   Injectable,
@@ -23,6 +24,9 @@ import {
   type ImageFormat,
 } from './receipt-image-rules.js';
 import { ReceiptImageStore } from './receipt-image-store.js';
+import { VerifyQueue } from './verify-queue.js';
+import { VerifyRequestBuilder } from './verify-request-builder.js';
+import type { VerifyRequest } from './verify-request-rules.js';
 
 const DEFAULT_CURRENCY = 'ARS';
 
@@ -33,6 +37,8 @@ export class ReceiptUploadService {
     private readonly reports: ExpenseReportService,
     private readonly expenses: ExpenseService,
     private readonly imageStore: ReceiptImageStore,
+    private readonly requestBuilder: VerifyRequestBuilder,
+    private readonly verifyQueue: VerifyQueue,
   ) {}
 
   /**
@@ -57,12 +63,29 @@ export class ReceiptUploadService {
     const expense = await this.expenses.createPending(
       toPendingExpense(report.id, imageKey, request),
     );
+    // UC-02 step 4: hand the job to the engine. If the queue is down the expense stays "pendiente" (502).
+    const verifyRequest = await this.requestBuilder.build(expense, {
+      employeeNumber,
+      travelRequestId: request.travelRequestId,
+    });
+    await this.publishOrFail(verifyRequest);
     return {
       expenseId: expense.id,
       expenseReportId: report.id,
       verificationStatus: 'pendiente',
       imageAttempts: expense.imageAttempts,
     };
+  }
+
+  /** A queue failure is the gateway's problem, not the employee's: 502, and the expense stays "pendiente". */
+  private async publishOrFail(verifyRequest: VerifyRequest): Promise<void> {
+    try {
+      await this.verifyQueue.publish(verifyRequest);
+    } catch (error) {
+      throw new BadGatewayException(
+        `No se pudo encolar la verificación del gasto ${verifyRequest.gasto_id} (job ${verifyRequest.job_id}): ${String(error)}`,
+      );
+    }
   }
 
   /** UC-02 business precondition: the trip was approved (UC-01) and belongs to the caller. */

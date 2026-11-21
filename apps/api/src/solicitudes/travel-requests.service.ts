@@ -50,6 +50,16 @@ export interface ReceiptContext {
   status: TravelRequestStatus;
 }
 
+/** The trip facts the verification engine needs (UC-02 step 4, contract `viaje`). */
+export interface VerificationTrip {
+  /** YYYY-MM-DD. */
+  startDate: string;
+  endDate: string;
+  destinationId: number;
+  originId: number | null;
+  policyId: number;
+}
+
 @Injectable()
 export class TravelRequestsService {
   constructor(
@@ -176,6 +186,24 @@ export class TravelRequestsService {
       id: travelRequest.id,
       employeeNumber: travelRequest.employeeNumber,
       status: travelRequest.status,
+    };
+  }
+
+  /** What the receipts module sends to the engine about the trip: dates, places and the policy it was born with (RN02). */
+  async findVerificationTrip(id: number): Promise<VerificationTrip> {
+    const travelRequest = await this.prisma.travelRequest.findUnique({
+      where: { id },
+    });
+    if (!travelRequest) {
+      throw new NotFoundException(`Solicitud ${id} inexistente`);
+    }
+    return {
+      // Date columns come back at UTC midnight, so the first 10 characters are the calendar date.
+      startDate: travelRequest.startDate.toISOString().slice(0, 10),
+      endDate: travelRequest.endDate.toISOString().slice(0, 10),
+      destinationId: travelRequest.destinationId,
+      originId: travelRequest.originId,
+      policyId: travelRequest.policyId,
     };
   }
 

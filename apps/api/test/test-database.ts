@@ -115,3 +115,19 @@ export function createParameterVersion(
     },
   });
 }
+
+/** The twelve signals of the engine (S01 to S12) for a parameter version, with neutral synthetic values. */
+export async function createSignalParameters(
+  client: PrismaClient,
+  version: number,
+): Promise<void> {
+  const rows = Array.from({ length: 12 }, (_, index) => ({
+    version,
+    code: `S${String(index + 1).padStart(2, '0')}`,
+    description: 'Señal sintética',
+    weight: 5,
+    blocking: false,
+    enabled: true,
+  }));
+  await client.signalParameter.createMany({ data: rows });
+}

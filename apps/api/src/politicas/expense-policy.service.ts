@@ -1,6 +1,7 @@
 // Expense policies (D01, RN01): finds the version in force for a category and destination.
 import { Injectable } from '@nestjs/common';
-import type { ExpensePolicy } from '../generated/prisma/client.js';
+import type { ExpenseCap, ExpensePolicy } from '../generated/prisma/client.js';
+import type { ExpenseCategory } from '../generated/prisma/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
@@ -17,6 +18,16 @@ export class ExpensePolicyService {
   ): Promise<ExpensePolicy | null> {
     return this.prisma.expensePolicy.findFirst({
       where: { categoryId, destinationId, validUntil: null },
+    });
+  }
+
+  /** D26 (S11): the cap row of one expense type in a policy version; null if the policy sets none. */
+  findCap(
+    policyId: number,
+    category: ExpenseCategory,
+  ): Promise<ExpenseCap | null> {
+    return this.prisma.expenseCap.findUnique({
+      where: { policyId_category: { policyId, category } },
     });
   }
 
