@@ -128,6 +128,15 @@ def upright_quad(top: int, left: int) -> Quad:
     )
 
 
+def receipt_photo_png() -> bytes:
+    """Un comprobante derecho sobre un fondo oscuro parejo, codificado en PNG."""
+    photo = place(receipt(), uniform(DARK_GRAY), upright_quad(top=150, left=350))
+    encoded, buffer = cv2.imencode(".png", photo)
+    if not encoded:
+        raise ValueError("OpenCV no pudo codificar la foto sintética en PNG")
+    return buffer.tobytes()
+
+
 def place(image: Image, background: Image, corners: Quad) -> Image:
     """Pega la imagen sobre el fondo deformándola para que sus esquinas caigan en corners."""
     height, width = image.shape[:2]

@@ -9,6 +9,10 @@ dependencies = [
     "pydantic>=2.12",
     "numpy>=2.5",
     "opencv-python-headless>=5.0",
+    "python-multipart>=0.0.20",
+    "uvicorn>=0.34",
+    "redis>=5.2",
+    "boto3>=1.36",
 ]
 
 [dependency-groups]
@@ -16,6 +20,8 @@ dev = [
     "pytest>=8.3",
     "jsonschema>=4.23",
     "httpx2>=2.15",
+    "fakeredis>=2.27",
+    "moto[s3]>=5.1",
 ]
 
 [build-system]

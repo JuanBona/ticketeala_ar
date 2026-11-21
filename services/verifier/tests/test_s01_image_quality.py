@@ -11,6 +11,7 @@ from verifier.image.quality import QualityMeasurement
 from verifier.scoring import penalty
 from verifier.signals.base import SignalInput
 from verifier.signals.evaluation import evaluate_image_signal, evaluate_signal
+from verifier.signals.s01_image_quality import processed_anyway
 
 BuildSignalInput = Callable[[dict[str, Any]], SignalInput]
 
@@ -103,6 +104,35 @@ def test_inactive_s01_is_not_applicable(calibrated_parameters_document: dict[str
     outcome = evaluate_image_signal(GOOD_PHOTO, parameters)
 
     assert outcome.result is SignalResult.NOT_APPLICABLE
+
+
+@pytest.mark.parametrize(
+    ("measurement", "problem"),
+    [
+        (QualityMeasurement(sharpness=76.99, illumination=138.2), "La foto está borrosa."),
+        (QualityMeasurement(sharpness=83.2, illumination=59.99), "La foto está oscura."),
+        (QualityMeasurement(sharpness=75.3, illumination=41.0), "La foto está borrosa y oscura."),
+    ],
+)
+def test_photo_processed_anyway_keeps_the_problem_without_asking_for_another_photo(
+    calibrated_parameters: Parameters, measurement: QualityMeasurement, problem: str
+) -> None:
+    outcome = evaluate_image_signal(measurement, calibrated_parameters)
+
+    forced = processed_anyway(outcome)
+
+    assert forced.result is SignalResult.FAIL
+    assert forced.observed_value == outcome.observed_value
+    assert forced.detail == (
+        f"{problem} Se procesó igual porque es el último intento permitido; la revisa Contaduría."
+    )
+
+
+def test_passing_photo_cannot_be_processed_anyway(calibrated_parameters: Parameters) -> None:
+    outcome = evaluate_image_signal(GOOD_PHOTO, calibrated_parameters)
+
+    with pytest.raises(ValueError, match="ok"):
+        processed_anyway(outcome)
 
 
 def test_s01_is_not_evaluated_with_the_read_fields(

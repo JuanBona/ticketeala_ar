@@ -5,7 +5,7 @@ Si una decisión contradice al PDF, **gana esta lista**. Cada decisión aceptada
 llevarla al documento antes de la entrega.
 
 Estado: **Propuesta** (falta acordar entre los tres) · **Aceptada** · **En el documento**.
-D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con los ajustes de D25 y D26. D27–D30 propuestas el 27/10/2026 con el contrato del motor; D31–D33 el 28/10/2026; D34–D36 el 29/10/2026 con la autenticación; D37 y D38 el 29/10/2026; D39 y D40 el 29/10/2026 con el preprocesamiento de imagen. Falta pasarlas al documento antes de la entrega final.
+D01–D17 aceptadas por el equipo el 27/10/2026; D18–D26 el 27/10/2026, con los ajustes de D25 y D26. D27–D30 propuestas el 27/10/2026 con el contrato del motor; D31–D33 el 28/10/2026; D34–D36 el 29/10/2026 con la autenticación; D37 y D38 el 29/10/2026; D39 y D40 el 29/10/2026 con el preprocesamiento de imagen; D41 la propuso Manuel Coccoz el 14/11/2026 con el worker del motor. Falta pasarlas al documento antes de la entrega final.
 
 ## Afectan al código
 
