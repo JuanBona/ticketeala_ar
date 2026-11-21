@@ -137,6 +137,26 @@ export class TravelRequestsService {
     return this.summarize(travelRequests);
   }
 
+  /** UC-01 step 12: requests waiting for this approver, oldest first (no notifications yet, D41). */
+  async listPendingFor(
+    approverEmployeeNumber: number,
+  ): Promise<TravelRequestSummary[]> {
+    const travelRequests = await this.prisma.travelRequest.findMany({
+      where: { status: Status.PENDING, approverEmployeeNumber },
+      orderBy: { requestedAt: 'asc' },
+    });
+    return this.summarize(travelRequests);
+  }
+
+  /** One request, as summary, after a change of status. */
+  async summaryOf(id: number): Promise<TravelRequestSummary> {
+    const travelRequest = await this.prisma.travelRequest.findUniqueOrThrow({
+      where: { id },
+    });
+    const [summary] = await this.summarize([travelRequest]);
+    return summary;
+  }
+
   /** What the quotes module needs about a request: owner, status and the cap of its policy (RN02). */
   async findQuotingContext(id: number): Promise<QuotingContext> {
     const travelRequest = await this.prisma.travelRequest.findUnique({

@@ -28,6 +28,9 @@ export interface TravelRequestSummary {
   reason: string | null;
   advanceJustification: string | null;
   overCapJustification: string | null;
+  /** D15, D41: assigned when the request becomes pendiente (UC-01 step 10). */
+  approverEmployeeNumber: number | null;
+  rejectionReason: string | null;
   /** RN02: the policy version the request was born with, even if a newer one exists today. */
   policy: {
     id: number;
@@ -66,6 +69,8 @@ export function toTravelRequestSummary(
     reason: travelRequest.reason,
     advanceJustification: travelRequest.advanceJustification,
     overCapJustification: travelRequest.overCapJustification,
+    approverEmployeeNumber: travelRequest.approverEmployeeNumber,
+    rejectionReason: travelRequest.rejectionReason,
     policy: {
       id: policy.id,
       version: policy.version,

@@ -126,6 +126,26 @@ export class QuotesService {
     );
   }
 
+  /** UC-01 steps 10 and 12: the quote the requester chose, or null if none yet (RN09). */
+  findSelected(travelRequestId: number): Promise<Quote | null> {
+    return this.prisma.quote.findFirst({
+      where: { travelRequestId, selected: true },
+    });
+  }
+
+  /** UC-01 step 12: the selected quote as the approver sees it, against the request's cap. */
+  async selectedView(context: QuotingContext): Promise<QuoteView | null> {
+    const quote = await this.findSelected(context.id);
+    if (!quote) {
+      return null;
+    }
+    return toQuoteView(quote, {
+      context,
+      lowestExternal: null,
+      today: todayInArgentina(new Date()),
+    });
+  }
+
   private quotesOf(travelRequestId: number): Promise<Quote[]> {
     return this.prisma.quote.findMany({
       where: { travelRequestId },

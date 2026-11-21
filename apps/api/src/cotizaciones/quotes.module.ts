@@ -9,5 +9,7 @@ import { QuotesService } from './quotes.service.js';
   imports: [AdministrationModule, TravelRequestsModule],
   controllers: [QuotesController],
   providers: [QuotesService],
+  // Approval (solicitudes/aprobacion) reads the selected quote through this service.
+  exports: [QuotesService],
 })
 export class QuotesModule {}
