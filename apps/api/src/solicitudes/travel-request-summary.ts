@@ -9,7 +9,7 @@ import type {
 import { daysBetween } from './travel-request-rules.js';
 
 /** The status names of the documents and screens (D04), instead of the code's English ones. */
-const STATUS_NAMES: Record<TravelRequestStatus, string> = {
+export const STATUS_NAMES: Record<TravelRequestStatus, string> = {
   QUOTING: 'en_cotizacion',
   PENDING: 'pendiente',
   APPROVED: 'aprobada',
@@ -27,6 +27,7 @@ export interface TravelRequestSummary {
   nights: number;
   reason: string | null;
   advanceJustification: string | null;
+  overCapJustification: string | null;
   /** RN02: the policy version the request was born with, even if a newer one exists today. */
   policy: {
     id: number;
@@ -64,6 +65,7 @@ export function toTravelRequestSummary(
     nights: daysBetween(startDate, endDate),
     reason: travelRequest.reason,
     advanceJustification: travelRequest.advanceJustification,
+    overCapJustification: travelRequest.overCapJustification,
     policy: {
       id: policy.id,
       version: policy.version,

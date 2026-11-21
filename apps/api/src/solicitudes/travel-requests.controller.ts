@@ -21,6 +21,13 @@ export class TravelRequestsController {
     return this.travelRequests.create(employee.employeeNumber, request);
   }
 
+  // UC-03 steps 1 and 2: the agency's tray of requests waiting for quotes.
+  @Roles('agencia')
+  @Get('quoting')
+  listQuoting(): Promise<TravelRequestSummary[]> {
+    return this.travelRequests.listQuoting();
+  }
+
   @Roles('empleado')
   @Get('mine')
   listMine(

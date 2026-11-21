@@ -3,6 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import {
@@ -12,8 +13,11 @@ import {
 import { EmployeeDirectory } from '../administracion/employee-directory.service.js';
 import type {
   ExpensePolicy,
+  Prisma,
   TravelRequest,
+  TravelRequestStatus,
 } from '../generated/prisma/client.js';
+import { TravelRequestStatus as Status } from '../generated/prisma/enums.js';
 import { ExpensePolicyService } from '../politicas/expense-policy.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { TravelAllowanceService } from '../rendiciones/travel-allowance.service.js';
@@ -28,6 +32,16 @@ import {
   toTravelRequestSummary,
   type TravelRequestSummary,
 } from './travel-request-summary.js';
+
+/** A request as the quotes module sees it (UC-01 steps 7 to 9). */
+export interface QuotingContext {
+  id: number;
+  employeeNumber: number;
+  status: TravelRequestStatus;
+  currency: string;
+  /** RN01: the cap of the policy the request was born with (RN02). */
+  amountCap: Prisma.Decimal;
+}
 
 @Injectable()
 export class TravelRequestsService {
@@ -112,6 +126,46 @@ export class TravelRequestsService {
       orderBy: { requestedAt: 'desc' },
     });
     return this.summarize(travelRequests);
+  }
+
+  /** UC-03 steps 1 and 2: requests waiting for AMR Turismo's quotes, oldest first. */
+  async listQuoting(): Promise<TravelRequestSummary[]> {
+    const travelRequests = await this.prisma.travelRequest.findMany({
+      where: { status: Status.QUOTING },
+      orderBy: { requestedAt: 'asc' },
+    });
+    return this.summarize(travelRequests);
+  }
+
+  /** What the quotes module needs about a request: owner, status and the cap of its policy (RN02). */
+  async findQuotingContext(id: number): Promise<QuotingContext> {
+    const travelRequest = await this.prisma.travelRequest.findUnique({
+      where: { id },
+    });
+    if (!travelRequest) {
+      throw new NotFoundException(`Solicitud ${id} inexistente`);
+    }
+    const policies = await this.policies.findByIds([travelRequest.policyId]);
+    const policy = requireFromMap(policies, travelRequest.policyId);
+    return {
+      id: travelRequest.id,
+      employeeNumber: travelRequest.employeeNumber,
+      status: travelRequest.status,
+      currency: policy.currency,
+      amountCap: policy.amountCap,
+    };
+  }
+
+  /** UC-01 9a: stores (or clears) the justification inside the transaction that selects the quote. */
+  async recordOverCapJustification(
+    transaction: Prisma.TransactionClient,
+    id: number,
+    justification: string | null,
+  ): Promise<void> {
+    await transaction.travelRequest.update({
+      where: { id },
+      data: { overCapJustification: justification },
+    });
   }
 
   /** Joins each request with its destination, policy and allowance, asking each owner module once. */
