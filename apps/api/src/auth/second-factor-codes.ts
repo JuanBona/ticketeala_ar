@@ -10,6 +10,7 @@ import {
   SECOND_FACTOR_CODE_BYTES,
   SECOND_FACTOR_CODE_GROUP_LENGTH,
 } from './auth.constants.js';
+import type { IssuedEnrollmentCode } from './dto/second-factor.responses.js';
 import { isRole, requiresSecondFactor } from './role.js';
 
 type Transaction = Prisma.TransactionClient;
@@ -20,10 +21,7 @@ export interface EnrollmentCodeRequest {
   issuedByEmployeeNumber: number | null;
 }
 
-export interface IssuedEnrollmentCode {
-  enrollmentCode: string;
-  expiresAt: Date;
-}
+export type { IssuedEnrollmentCode } from './dto/second-factor.responses.js';
 
 /** Random code like `ABCD-EFGH-JKLM-NPQR`: 80 bits, so its SHA-256 hash cannot be reversed by brute force. */
 export function generateSecondFactorCode(): string {

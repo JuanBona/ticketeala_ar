@@ -25,15 +25,15 @@ import {
   StartEnrollmentRequest,
   VerifyTotpRequest,
 } from './dto/second-factor.requests.js';
-import type { IssuedEnrollmentCode } from './second-factor-codes.js';
 import { SecondFactorChallengeGuard } from './second-factor-challenge.guard.js';
 import type { SecondFactorChallenge } from './second-factor-challenge.service.js';
+import { SecondFactorService } from './second-factor.service.js';
 import {
-  SecondFactorService,
-  type EnrollmentStart,
-  type SecondFactorResult,
-} from './second-factor.service.js';
-import type { TokenPair } from './session-issuer.service.js';
+  EnrollmentStart,
+  IssuedEnrollmentCode,
+  SecondFactorResult,
+} from './dto/second-factor.responses.js';
+import { TokenPair } from './dto/auth.responses.js';
 
 /**
  * The three step-2 endpoints share their guards: first the challenge is checked (who is it),

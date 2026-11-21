@@ -2,6 +2,7 @@
 import type { Prisma, Quote, QuoteOrigin } from '../generated/prisma/client.js';
 import type { QuotingContext } from '../solicitudes/travel-requests.service.js';
 import type { QuoteOriginName } from './dto/add-quote.request.js';
+import type { QuoteComparison, QuoteView } from './dto/quote.responses.js';
 import { exceedsCap, isExpired, savingsAgainst } from './quote-rules.js';
 
 export const ORIGIN_NAMES: Record<QuoteOrigin, QuoteOriginName> = {
@@ -9,30 +10,7 @@ export const ORIGIN_NAMES: Record<QuoteOrigin, QuoteOriginName> = {
   EXTERNAL: 'externa',
 };
 
-export interface QuoteView {
-  id: number;
-  origin: QuoteOriginName;
-  description: string;
-  supplierCuit: string | null;
-  source: string | null;
-  amount: string;
-  validUntil: string | null;
-  /** RN11: an expired quote cannot be selected. */
-  expired: boolean;
-  /** UC-01 9a, UC-03 5a: choosing it needs a justification and a higher approver. */
-  exceedsCap: boolean;
-  /** Agency quotes only: cheapest external minus this amount; null without an external reference. */
-  savingsAgainstExternal: string | null;
-  selected: boolean;
-}
-
-export interface QuoteComparison {
-  travelRequestId: number;
-  currency: string;
-  amountCap: string;
-  lowestExternalAmount: string | null;
-  quotes: QuoteView[];
-}
+export type { QuoteComparison, QuoteView } from './dto/quote.responses.js';
 
 /** UC-01 step 8: the comparison the employee sees before choosing. */
 export function toQuoteComparison(

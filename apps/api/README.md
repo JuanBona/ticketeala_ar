@@ -45,6 +45,8 @@ Monolito modular con NestJS, Prisma y PostgreSQL 17. Reglas del módulo en `CLAU
 | Revisar estilo y errores comunes | `npm run lint` |
 | Formatear el código | `npm run format` |
 | Ver la base con una interfaz web | `npx prisma studio` |
+| Regenerar el contrato `docs/contratos/api.openapi.yaml` | `npm run contract:api` |
+| Revisar que el contrato esté al día | `npm run contract:api:check` |
 
 Los tests de integración usan otra base (`TEST_DATABASE_URL`, por defecto `amr_viajes_test`) que se
 crea sola y **se vacía en cada test**. Por eso se niegan a correr si apunta a la misma base que
@@ -197,6 +199,20 @@ Aprobación (pasos 9 a 13, D41):
   (solo el aprobador asignado): quedan en `registro_auditoria`.
 - `POST /travel-requests/:id/cancellation` (el solicitante): mientras esté `en_cotizacion` o
   `pendiente` (9b).
+
+## Contrato de la API
+
+`docs/contratos/api.openapi.yaml` describe todos los endpoints para la web y el móvil. Se genera
+desde el código, así que **cada PR que cambie un endpoint corre `npm run contract:api` y commitea el
+archivo**. Si se olvida, el test `api-contract` falla.
+
+- El plugin de `@nestjs/swagger` (configurado en `nest-cli.json`) lee los DTO de los archivos
+  `*.request.ts`, `*.requests.ts` y `*.responses.ts`, y usa sus comentarios como descripciones.
+- Las respuestas tienen que ser **clases** en `dto/*.responses.ts`: una `interface` no llega al
+  contrato.
+- `@Public()` y `@Roles()` también marcan el contrato (`security: []` y `x-roles`).
+- Lo que el plugin no puede deducir se anota a mano: por ejemplo, `@ApiOkResponse({ type: … })`
+  cuando el método devuelve una unión o un `AuditedChange`.
 
 ## Cambiar el esquema
 

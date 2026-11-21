@@ -1,9 +1,11 @@
 // Endpoint decorators for authentication (D12, RN30): @Public, @Roles, @CurrentEmployee and @CurrentChallenge.
 import {
+  applyDecorators,
   createParamDecorator,
   ExecutionContext,
   SetMetadata,
 } from '@nestjs/common';
+import { ApiExtension } from '@nestjs/swagger';
 import type {
   AuthenticatedEmployee,
   AuthenticatedRequest,
@@ -12,13 +14,27 @@ import type { Role } from './role.js';
 import type { SecondFactorChallenge } from './second-factor-challenge.service.js';
 
 export const IS_PUBLIC_KEY = 'auth:isPublic';
+export const PUBLIC_EXTENSION = 'x-public';
+export const ROLES_EXTENSION = 'x-roles';
 export const ROLES_KEY = 'auth:roles';
 
-/** Opens an endpoint without an access token. Every other endpoint requires one. */
-export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
+/**
+ * Opens an endpoint without an access token. Every other endpoint requires one.
+ * The `x-public` mark lets the contract generator show it without the Bearer requirement.
+ */
+export const Public = () =>
+  applyDecorators(
+    SetMetadata(IS_PUBLIC_KEY, true),
+    ApiExtension(PUBLIC_EXTENSION, true),
+  );
 
 /** Restricts an endpoint to employees holding at least one of these roles (D07, RN29). */
-export const Roles = (...roles: Role[]) => SetMetadata(ROLES_KEY, roles);
+export const Roles = (...roles: Role[]) =>
+  applyDecorators(
+    SetMetadata(ROLES_KEY, roles),
+    // Also shown in the API contract, so the apps know who may call each endpoint.
+    ApiExtension(ROLES_EXTENSION, roles),
+  );
 
 /** Injects the employee proven by the access token. */
 export const CurrentEmployee = createParamDecorator(

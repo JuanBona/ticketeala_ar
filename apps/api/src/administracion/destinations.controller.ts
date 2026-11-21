@@ -1,9 +1,7 @@
 // GET /destinations: the destination list the travel request form shows (UC-01 step 2).
 import { Controller, Get } from '@nestjs/common';
-import {
-  DestinationCatalog,
-  type DestinationSummary,
-} from './destination-catalog.service.js';
+import { DestinationCatalog } from './destination-catalog.service.js';
+import { DestinationSummary } from './dto/destination.responses.js';
 
 @Controller('destinations')
 export class DestinationsController {

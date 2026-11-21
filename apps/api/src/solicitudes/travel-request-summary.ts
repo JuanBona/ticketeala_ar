@@ -6,10 +6,14 @@ import type {
   TravelRequest,
   TravelRequestStatus,
 } from '../generated/prisma/client.js';
+import type { TravelRequestSummary } from './dto/travel-request.responses.js';
 import { daysBetween } from './travel-request-rules.js';
 
 /** The status names of the documents and screens (D04), instead of the code's English ones. */
-export const STATUS_NAMES: Record<TravelRequestStatus, string> = {
+export const STATUS_NAMES: Record<
+  TravelRequestStatus,
+  TravelRequestSummary['status']
+> = {
   QUOTING: 'en_cotizacion',
   PENDING: 'pendiente',
   APPROVED: 'aprobada',
@@ -17,31 +21,7 @@ export const STATUS_NAMES: Record<TravelRequestStatus, string> = {
   CANCELLED: 'cancelada',
 };
 
-export interface TravelRequestSummary {
-  id: number;
-  status: string;
-  destination: DestinationSummary;
-  origin: DestinationSummary | null;
-  startDate: string;
-  endDate: string;
-  nights: number;
-  reason: string | null;
-  advanceJustification: string | null;
-  overCapJustification: string | null;
-  /** D15, D41: assigned when the request becomes pendiente (UC-01 step 10). */
-  approverEmployeeNumber: number | null;
-  rejectionReason: string | null;
-  /** RN02: the policy version the request was born with, even if a newer one exists today. */
-  policy: {
-    id: number;
-    version: number;
-    currency: string;
-    amountCap: string;
-    minimumAdvanceDays: number;
-    dailyAllowance: string;
-  };
-  estimatedAllowance: string;
-}
+export { TravelRequestSummary } from './dto/travel-request.responses.js';
 
 export interface TravelRequestParts {
   travelRequest: TravelRequest;

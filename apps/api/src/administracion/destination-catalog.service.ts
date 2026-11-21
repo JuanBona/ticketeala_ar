@@ -1,12 +1,9 @@
 // Destination catalog (UC-10): the cities a trip can go to or start from.
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import type { DestinationSummary } from './dto/destination.responses.js';
 
-export interface DestinationSummary {
-  id: number;
-  city: string;
-  country: string;
-}
+export type { DestinationSummary } from './dto/destination.responses.js';
 
 @Injectable()
 export class DestinationCatalog {

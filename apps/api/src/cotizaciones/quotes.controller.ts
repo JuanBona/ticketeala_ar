@@ -7,11 +7,12 @@ import {
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
+import { ApiUnprocessableEntityResponse } from '@nestjs/swagger';
 import type { AuthenticatedEmployee } from '../auth/authenticated-employee.js';
 import { CurrentEmployee, Roles } from '../auth/decorators.js';
 import { AddQuoteRequest } from './dto/add-quote.request.js';
 import { SelectQuoteRequest } from './dto/select-quote.request.js';
-import type { QuoteComparison, QuoteView } from './quote-comparison.js';
+import { QuoteComparison, QuoteView } from './dto/quote.responses.js';
 import { QuotesService } from './quotes.service.js';
 
 @Controller('travel-requests/:travelRequestId')
@@ -39,6 +40,10 @@ export class QuotesController {
   }
 
   @Roles('empleado')
+  @ApiUnprocessableEntityResponse({
+    description:
+      'Cotización vencida (RN11), o `code: OVER_CAP_JUSTIFICATION_REQUIRED`: supera el tope y falta overCapJustification (UC-01 9a).',
+  })
   @Post('selection')
   select(
     @CurrentEmployee() employee: AuthenticatedEmployee,
