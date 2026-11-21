@@ -11,6 +11,8 @@ describe('API contract', () => {
       const run = () =>
         execFileSync('npm', ['run', '-s', 'contract:api:check'], {
           stdio: 'pipe',
+          // On Windows `npm` is npm.cmd, which cannot be started without a shell.
+          shell: process.platform === 'win32',
         });
 
       expect(run).not.toThrow();

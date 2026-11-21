@@ -43,6 +43,13 @@ export interface QuotingContext {
   amountCap: Prisma.Decimal;
 }
 
+/** A request as the receipts module sees it (UC-02). */
+export interface ReceiptContext {
+  id: number;
+  employeeNumber: number;
+  status: TravelRequestStatus;
+}
+
 @Injectable()
 export class TravelRequestsService {
   constructor(
@@ -155,6 +162,21 @@ export class TravelRequestsService {
     });
     const [summary] = await this.summarize([travelRequest]);
     return summary;
+  }
+
+  /** UC-02 precondition: whose request a receipt is loaded against and whether the trip was approved. */
+  async findReceiptContext(id: number): Promise<ReceiptContext> {
+    const travelRequest = await this.prisma.travelRequest.findUnique({
+      where: { id },
+    });
+    if (!travelRequest) {
+      throw new NotFoundException(`Solicitud ${id} inexistente`);
+    }
+    return {
+      id: travelRequest.id,
+      employeeNumber: travelRequest.employeeNumber,
+      status: travelRequest.status,
+    };
   }
 
   /** What the quotes module needs about a request: owner, status and the cap of its policy (RN02). */
