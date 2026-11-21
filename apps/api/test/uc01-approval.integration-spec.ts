@@ -232,6 +232,40 @@ describe('UC-01 approval', () => {
     expect(response.body.approverEmployeeNumber).toBe(SUBSTITUTE);
   });
 
+  it('9a: a selection racing a confirmation can never leave an over-cap quote with the direct supervisor', async () => {
+    await chooseQuote(180000);
+    const expensive = await post(
+      `/travel-requests/${travelRequestId}/quotes`,
+      advisorToken,
+      {
+        origin: 'agencia',
+        description: 'Vuelo directo (sintético)',
+        amount: 300000,
+        validUntil: daysFromToday(5),
+      },
+    );
+
+    // Both at once: whichever wins, the result must respect 9a.
+    await Promise.all([
+      confirm(),
+      post(`/travel-requests/${travelRequestId}/selection`, requesterToken, {
+        quoteId: expensive.body.id,
+        overCapJustification: 'Vuelo directo (sintético)',
+      }),
+    ]);
+
+    const stored = await client.travelRequest.findUniqueOrThrow({
+      where: { id: travelRequestId },
+    });
+    const selected = await client.quote.findFirstOrThrow({
+      where: { travelRequestId, selected: true },
+    });
+    const expectedApprover =
+      selected.id === expensive.body.id ? MANAGER : SUPERVISOR;
+    expect(stored.status).toBe('PENDING');
+    expect(stored.approverEmployeeNumber).toBe(expectedApprover);
+  });
+
   it('R02: a deactivated approver without substitute leaves the request unconfirmed', async () => {
     await client.employee.update({
       where: { employeeNumber: SUPERVISOR },

@@ -53,23 +53,38 @@ export class ApprovalsService {
     travelRequestId: number,
   ): Promise<ApprovalView> {
     const context = await this.ownRequest(employeeNumber, travelRequestId);
-    const selected = await this.quotes.findSelected(travelRequestId);
-    if (!selected) {
-      throw new UnprocessableEntityException(
-        `La solicitud ${travelRequestId} no tiene una cotización de la agencia elegida (RN09)`,
-      );
-    }
     const requester = await this.employees.findActive(employeeNumber);
     if (!requester) {
       throw new ForbiddenException(`Empleado ${employeeNumber} dado de baja`);
     }
-    const approverEmployeeNumber = await this.approvers.resolve(
-      requester,
-      exceedsCap(selected.amount, context.amountCap),
-    );
-    await this.transition(context, {
-      from: [Status.QUOTING],
-      data: { status: Status.PENDING, approverEmployeeNumber },
+    await this.prisma.$transaction(async (transaction) => {
+      // Lock the request first: a selection sent at the same time waits, so the approver below
+      // is always chosen from the final quote (otherwise an over-cap quote could skip 9a).
+      if (
+        !(await this.travelRequests.lockWhileQuoting(
+          transaction,
+          travelRequestId,
+        ))
+      ) {
+        throw await this.conflict(travelRequestId, Status.PENDING);
+      }
+      const selected = await this.quotes.findSelected(
+        travelRequestId,
+        transaction,
+      );
+      if (!selected) {
+        throw new UnprocessableEntityException(
+          `La solicitud ${travelRequestId} no tiene una cotización de la agencia elegida (RN09)`,
+        );
+      }
+      const approverEmployeeNumber = await this.approvers.resolve(
+        requester,
+        exceedsCap(selected.amount, context.amountCap),
+      );
+      await transaction.travelRequest.update({
+        where: { id: travelRequestId },
+        data: { status: Status.PENDING, approverEmployeeNumber },
+      });
     });
     return this.view(travelRequestId);
   }
@@ -144,11 +159,20 @@ export class ApprovalsService {
       data: change.data,
     });
     if (updated.count === 0) {
-      const current = await this.travelRequests.findQuotingContext(context.id);
-      throw new ConflictException(
-        `La solicitud ${context.id} está ${STATUS_NAMES[current.status]}: no se puede pasar a ${STATUS_NAMES[change.data.status]}`,
-      );
+      throw await this.conflict(context.id, change.data.status);
     }
+  }
+
+  /** 409 that says where the request is now and where it could not go. */
+  private async conflict(
+    travelRequestId: number,
+    target: TravelRequestStatus,
+  ): Promise<ConflictException> {
+    const current =
+      await this.travelRequests.findQuotingContext(travelRequestId);
+    return new ConflictException(
+      `La solicitud ${travelRequestId} está ${STATUS_NAMES[current.status]}: no se puede pasar a ${STATUS_NAMES[target]}`,
+    );
   }
 
   /** RNF11: approvals and rejections are audited with the status before and after. */

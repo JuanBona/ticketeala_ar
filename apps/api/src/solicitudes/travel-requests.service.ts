@@ -176,16 +176,36 @@ export class TravelRequestsService {
     };
   }
 
-  /** UC-01 9a: stores (or clears) the justification inside the transaction that selects the quote. */
+  /**
+   * UC-01 9a: stores (or clears) the justification inside the transaction that selects the quote,
+   * only while the request is still en_cotizacion. The UPDATE also locks the row until that
+   * transaction ends, so a confirmation cannot slip in between (see lockWhileQuoting).
+   * Returns false when the request already moved on.
+   */
   async recordOverCapJustification(
     transaction: Prisma.TransactionClient,
     id: number,
     justification: string | null,
-  ): Promise<void> {
-    await transaction.travelRequest.update({
-      where: { id },
+  ): Promise<boolean> {
+    const updated = await transaction.travelRequest.updateMany({
+      where: { id, status: Status.QUOTING },
       data: { overCapJustification: justification },
     });
+    return updated.count === 1;
+  }
+
+  /**
+   * Locks the request row for the rest of the transaction, if it is still en_cotizacion
+   * (SELECT … FOR UPDATE). A selection running at the same time waits for it, so the
+   * confirmation always sees the final choice. Returns false when it is no longer en_cotizacion.
+   */
+  async lockWhileQuoting(
+    transaction: Prisma.TransactionClient,
+    id: number,
+  ): Promise<boolean> {
+    const rows = await transaction.$queryRaw<{ id: number }[]>`
+      SELECT id FROM solicitud_viaje WHERE id = ${id} AND estado = 'en_cotizacion' FOR UPDATE`;
+    return rows.length === 1;
   }
 
   /** Joins each request with its destination, policy and allowance, asking each owner module once. */
