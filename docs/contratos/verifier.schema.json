@@ -363,6 +363,10 @@
         "estado": { "$ref": "#/$defs/EstadoVerificacion" },
         "version_parametros": { "type": "integer", "minimum": 1 },
         "calidad_imagen": { "$ref": "#/$defs/CalidadImagen" },
+        "dhash": {
+          "$ref": "#/$defs/Dhash",
+          "description": "dHash de la imagen procesada. La API lo guarda en GASTO.dhash (D06) y lo reenvía en dhash_previos de los pedidos siguientes (S08)"
+        },
         "campos": { "$ref": "#/$defs/Campos" },
         "qr": {
           "type": ["object", "null"],
@@ -393,6 +397,7 @@
             "required": [
               "version_parametros",
               "calidad_imagen",
+              "dhash",
               "campos",
               "qr",
               "senales",

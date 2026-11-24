@@ -75,6 +75,13 @@ def blue_fabric() -> Image:
     return np.dstack([blue, (blue * 0.4).astype(np.uint8), (blue * 0.1).astype(np.uint8)])
 
 
+def blue_gradient() -> Image:
+    """Fondo azul que se oscurece de izquierda a derecha: con el fondo adentro, el dHash cambia."""
+    height, width = BACKGROUND_SHAPE
+    blue = np.tile(np.linspace(230, 30, width), (height, 1)).astype(np.uint8)
+    return np.dstack([blue, (blue * 0.4).astype(np.uint8), (blue * 0.1).astype(np.uint8)])
+
+
 def with_jagged_top(photo: Image, corners: Quad) -> Image:
     """Muerde el borde de arriba del papel en dientes, como un boleto cortado de un rollo.
 

@@ -1,6 +1,7 @@
 """Pipeline del motor: S01, preprocesamiento, OCR, señales y puntaje en el orden de D20."""
 
 import json
+import re
 from typing import Any
 
 import pytest
@@ -112,6 +113,27 @@ def test_failed_s01_on_the_last_attempt_is_processed_and_marked_forced(
     assert document["calidad_imagen"]["forzada"] is True
     # Sin la foto forzada daría 100 puntos y aceptado; D21 lo baja a revision.
     assert document["decision"] == "revision"
+
+
+def test_verified_result_brings_a_dhash_valid_against_the_schema(
+    queue_request_document: dict[str, Any],
+) -> None:
+    request = build_request(queue_request_document, PASSING_MINIMUM)
+
+    document = as_document(verify(request, receipt_photo_png(), CountingOcr()))
+
+    assert re.fullmatch(r"[0-9a-f]{16}", document["dhash"])
+    assert validation_errors(document, RESULT_DEFINITION) == []
+
+
+def test_forced_photo_result_also_brings_a_dhash(queue_request_document: dict[str, Any]) -> None:
+    queue_request_document["intento"] = LAST_ATTEMPT
+    request = build_request(queue_request_document, FAILING_MINIMUM)
+
+    document = as_document(verify(request, receipt_photo_png(), CountingOcr()))
+
+    assert document["calidad_imagen"]["forzada"] is True
+    assert re.fullmatch(r"[0-9a-f]{16}", document["dhash"])
 
 
 def test_forced_photo_detail_does_not_ask_for_another_photo(

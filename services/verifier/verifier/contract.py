@@ -296,6 +296,7 @@ class VerifiedResult(ContractModel):
     status: Literal["verificado"] = Field(alias="estado")
     parameters_version: ParametersVersion = Field(alias="version_parametros")
     image_quality: ImageQuality = Field(alias="calidad_imagen")
+    dhash: Dhash  # D06, D42: la API lo guarda en GASTO.dhash para el S08 de los pedidos siguientes
     read_fields: ReadFields = Field(alias="campos")
     qr: dict[str, Any] | None
     signals: Annotated[list[Signal], Field(min_length=12, max_length=12)] = Field(alias="senales")
