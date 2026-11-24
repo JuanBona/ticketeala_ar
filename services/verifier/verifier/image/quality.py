@@ -6,7 +6,13 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 
-from verifier.image.base import Image, fill_polygon, scale_to_long_side, to_grayscale
+from verifier.image.base import (
+    Image,
+    crop_to_polygon,
+    fill_polygon,
+    scale_to_long_side,
+    to_grayscale,
+)
 from verifier.image.paper import PaperRegion
 
 # D39: se mide siempre a este tamaño, así un mismo umbral sirve para cualquier celular y distancia.
@@ -47,11 +53,9 @@ def _paper_crop(grayscale: Image, paper: PaperRegion | None) -> tuple[Image, Boo
     if paper is None:
         scaled, _ = scale_to_long_side(grayscale, QUALITY_LONG_SIDE)
         return scaled, np.ones(scaled.shape, bool)
-    left, top, width, height = cv2.boundingRect(np.round(paper.hull).astype(np.int32))
-    scaled, factor = scale_to_long_side(
-        grayscale[top : top + height, left : left + width], QUALITY_LONG_SIDE
-    )
-    paper_mask = fill_polygon((paper.hull - (left, top)) * factor, scaled.shape)
+    paper_crop, origin = crop_to_polygon(grayscale, paper.hull)
+    scaled, factor = scale_to_long_side(paper_crop, QUALITY_LONG_SIDE)
+    paper_mask = fill_polygon((paper.hull - origin) * factor, scaled.shape)
     inside = cv2.erode(paper_mask.astype(np.uint8), PAPER_EDGE_MARGIN).astype(bool)
     return scaled, inside
 

@@ -37,6 +37,12 @@ def scale_to_long_side(image: Image, long_side: int) -> tuple[Image, float]:
     return scaled, factor
 
 
+def crop_to_polygon(image: Image, polygon: Polygon) -> tuple[Image, tuple[int, int]]:
+    """El rectángulo de la imagen que contiene al polígono, y su esquina (izquierda, arriba)."""
+    left, top, width, height = cv2.boundingRect(np.round(polygon).astype(np.int32))
+    return image[top : top + height, left : left + width], (left, top)
+
+
 def fill_polygon(polygon: Polygon, shape: tuple[int, ...]) -> npt.NDArray[np.bool_]:
     """Máscara del tamaño dado con el polígono relleno."""
     mask = np.zeros(shape[:2], np.uint8)

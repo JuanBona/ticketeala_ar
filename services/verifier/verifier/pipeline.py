@@ -21,6 +21,7 @@ from verifier.contract import (
     VerifiedResult,
 )
 from verifier.image.base import Image
+from verifier.image.dhash import compute_dhash, hash_region
 from verifier.image.paper import PaperRegion, find_paper
 from verifier.image.preprocess import enhance_contrast, straighten_receipt
 from verifier.image.quality import QualityMeasurement, measure_quality
@@ -46,6 +47,14 @@ class ImageCheck:
     s01: SignalOutcome
 
 
+@dataclass(frozen=True)
+class ImageAnalysis:
+    """Lo que sale de la imagen ya procesada: la lectura del OCR y el dHash (12.5, D42)."""
+
+    reading: OcrReading
+    dhash: str
+
+
 def verify(request: Request, image_bytes: bytes, ocr: OcrProvider) -> Result:
     """D20: con S01 en falla antes del intento N se pide otra foto sin llamar al OCR (D21, D39).
 
@@ -60,8 +69,7 @@ def verify(request: Request, image_bytes: bytes, ocr: OcrProvider) -> Result:
         return _rejected_image(request, ImageCheck(measurement, s01))
     if s01.result is SignalResult.FAIL:
         s01 = processed_anyway(s01)
-    reading = ocr.read(_ocr_image(image, paper))
-    return _verified(request, ImageCheck(measurement, s01), reading)
+    return _verified(request, ImageCheck(measurement, s01), _analyze(image, paper, ocr))
 
 
 def decode_image(image_bytes: bytes) -> Image:
@@ -77,9 +85,11 @@ def decode_image(image_bytes: bytes) -> Image:
     return image
 
 
-def _ocr_image(image: Image, paper: PaperRegion | None) -> Image:
-    """12.5, etapa 1: enderezar si el cuadrilátero es confiable y CLAHE, solo para el OCR (D39)."""
-    return enhance_contrast(straighten_receipt(image, paper).image)
+def _analyze(image: Image, paper: PaperRegion | None, ocr: OcrProvider) -> ImageAnalysis:
+    """12.5: se endereza una vez; CLAHE solo para el OCR (D39) y el dHash antes de CLAHE (D42)."""
+    straightened = straighten_receipt(image, paper)
+    reading = ocr.read(enhance_contrast(straightened.image))
+    return ImageAnalysis(reading, compute_dhash(hash_region(image, paper, straightened)))
 
 
 def _rejected_image(request: Request, image_check: ImageCheck) -> RejectedImageResult:
@@ -94,9 +104,11 @@ def _rejected_image(request: Request, image_check: ImageCheck) -> RejectedImageR
     )
 
 
-def _verified(request: Request, image_check: ImageCheck, reading: OcrReading) -> VerifiedResult:
+def _verified(
+    request: Request, image_check: ImageCheck, analysis: ImageAnalysis
+) -> VerifiedResult:
     """D20: las 12 señales, puntaje y decisión; con la foto forzada, mínimo revision (D21)."""
-    read_fields = _with_declared_currency(reading.read_fields, request.context)
+    read_fields = _with_declared_currency(analysis.reading.read_fields, request.context)
     # Sin QR hasta el paso 6: S03 todavía no está implementada.
     signal_input = SignalInput(read_fields=read_fields, qr=None, context=request.context)
     outcomes = _signal_outcomes(image_check.s01, signal_input, request.parameters)
@@ -113,12 +125,13 @@ def _verified(request: Request, image_check: ImageCheck, reading: OcrReading) ->
         status=VerificationStatus.VERIFIED.value,
         parameters_version=request.parameters.version,
         image_quality=_image_quality(image_check.measurement, forced=verdict.image_forced),
+        dhash=analysis.dhash,
         read_fields=read_fields,
         qr=None,
         signals=_signals(outcomes, request.parameters),
         score=verdict.score,
         decision=verdict.decision,
-        ocr_response=reading.raw_response,
+        ocr_response=analysis.reading.raw_response,
     )
 
 

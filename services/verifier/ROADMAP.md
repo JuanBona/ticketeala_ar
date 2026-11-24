@@ -14,7 +14,7 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 | 4 (ajustes) | Hecho (PR #19) | `fix/verifier-contract-sharpness` | Contrato a la nitidez de Crete (D40): descripción y techo 100 de `nitidez`, ejemplos, comentario de `calidad_imagen` | — |
 | 5 | Hecho (PR #20) | `feat/verifier-transport` | Pipeline, `POST /verify`, worker de Redis Streams, almacenamiento S3 y OCR falso. Destraba la integración con la API | La parte de `POST /verify` del 8 |
 | 6 | Pendiente | `feat/verifier-ocr` | Adaptador de Google Vision, extracción de campos, QR fiscal (con la especificación de ARCA citada), S02 y S03 | 5 y 6 |
-| 7 | Pendiente | `feat/verifier-duplicates-trip` | S07, dHash y S08, haversine, S09, S10, S11 y S12 | 7 (S12 no está en ningún prompt: viene del plan) |
+| 7 | Pendiente | `feat/verifier-duplicates-trip` | S07, S08 (el dHash ya se calcula, PR #28, D42), haversine, S09, S10, S11 y S12 | 7 (S12 no está en ningún prompt: viene del plan) |
 | 8 | Pendiente | `feat/verifier-eval` | `eval/run_eval.py` y las métricas de UC-09 | 9 |
 
 **Consecuencias del orden:**
@@ -46,8 +46,13 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
   falla. En el paso 5 no hay QR, así que un OCR caído siempre se reintenta y tras N entregas da
   `error`.
 - **Paso 6:** un tiempo máximo para la llamada al OCR real; si se pasa, `OcrUnavailableError`.
-- **Paso 7:** calcular el dHash de S08 sobre la imagen ya orientada: una refoto girada cambia el hash
-  y no se detectaría como similar.
+- **Paso 6:** girar la imagen del dHash según la orientación que lee Google Vision: hoy se calcula
+  (PR #28, D42) sin orientar, y una refoto girada cambia el hash y no se detectaría como similar.
+- **Paso 7:** la comparación del dHash con `dhash_previos` (S08). El paso 7 solo compara: el hash
+  ya viene en el resultado.
+- **Paso 7/8:** medir con fotos reales la distancia del dHash entre comprobantes distintos del mismo
+  comercio (mismo formato), porque con 9×8 pueden dar hashes cercanos y S08 marcaría una
+  refotografía que no es; si pasa, calibrar el umbral de S08 o combinar con la clave fiscal.
 - **Credenciales de S3 de solo lectura para el motor (D23):** hoy usa las mismas que la API
   (`S3_ACCESS_KEY` de `infra/.env`). El motor solo baja fotos y no debería poder escribirlas ni
   borrarlas.
