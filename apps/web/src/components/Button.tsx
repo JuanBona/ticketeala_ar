@@ -10,12 +10,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   busy?: boolean;
 }
 
-export function Button({ variant, busy = false, disabled, children, type = 'button', ...rest }: ButtonProps) {
+export function Button({ variant, busy = false, disabled, children, type = 'button', className, ...rest }: ButtonProps) {
   return (
     <button
       {...rest}
       type={type}
-      className={`${styles.button} ${styles[variant]}`}
+      className={[styles.button, styles[variant], className].filter(Boolean).join(' ')}
       disabled={disabled === true || busy}
       aria-busy={busy}
     >

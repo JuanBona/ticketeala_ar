@@ -1,4 +1,5 @@
 // Shares who is signed in with every screen and restores the session after a page reload.
+import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { fetchCurrentEmployee, logout, type EmployeeIdentity, type TokenPair } from './auth-api.js';
 import type { Session } from './session.js';
@@ -23,6 +24,7 @@ async function loadEmployee(session: Session): Promise<AuthState> {
 }
 
 export function AuthProvider({ session, children }: { session: Session; children: ReactNode }) {
+  const queryClient = useQueryClient();
   const [state, setState] = useState<AuthState>(() =>
     session.hasStoredSession() ? { status: 'checking' } : { status: 'signedOut' },
   );
@@ -37,26 +39,30 @@ export function AuthProvider({ session, children }: { session: Session; children
       .catch((error: unknown) => {
         console.warn('No se pudo recuperar la sesión guardada', error);
         session.clear();
+        queryClient.clear();
         setState({ status: 'signedOut' });
       });
-  }, [session, state.status]);
+  }, [session, state.status, queryClient]);
 
+  // Cached server data belongs to whoever was signed in: a new person never sees the previous one's.
   const signIn = useCallback(
     async (tokens: TokenPair) => {
+      queryClient.clear();
       session.start(tokens);
       setState(await loadEmployee(session));
     },
-    [session],
+    [session, queryClient],
   );
 
   // The screen signs out at once; closing the refresh token in the API (D34) happens behind.
   const signOut = useCallback(async () => {
     const refreshToken = session.clear();
+    queryClient.clear();
     setState({ status: 'signedOut' });
     if (refreshToken !== null) {
       await logout(refreshToken).catch((error: unknown) => console.warn('No se pudo cerrar la sesión en la API', error));
     }
-  }, [session]);
+  }, [session, queryClient]);
 
   const value = useMemo(() => ({ state, session, signIn, signOut }), [state, session, signIn, signOut]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -9,12 +9,12 @@ import {
   currentEmployeeIs,
   fakeApi,
   recordingPost,
-  SYNTHETIC_APPROVER,
+  signedInApprover,
+  SYNTHETIC_EMPLOYEE,
   SYNTHETIC_TOKENS,
 } from '../../test/fake-api.js';
 import { renderApp } from '../../test/render-app.js';
 
-const SYNTHETIC_EMPLOYEE = { employeeNumber: 1003, roles: ['empleado' as const], secondFactorVerified: false };
 const OTPAUTH_URI = 'otpauth://totp/AMR%20Viajes:sintetico%40example.com?secret=JBSWY3DPEHPK3PXP&issuer=AMR%20Viajes';
 const RECOVERY_CODES = ['ABCD-EFGH-JKLM-NPQR', '7KQ2-MX4R-P9TW-ZB3N'];
 
@@ -37,7 +37,7 @@ describe('Login', () => {
 
     await enterCredentials();
 
-    expect(await screen.findByRole('heading', { name: 'Hola, legajo 1003.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Hola, Pablo Sosa (sintético).' })).toBeInTheDocument();
     expect(login.bodies).toEqual([{ email: 'sintetico@example.com', password: 'clave-sintetica' }]);
   });
 
@@ -56,7 +56,7 @@ describe('Login', () => {
     fakeApi.use(
       http.post(apiPath('/auth/login'), () => Response.json({ step: 'totp_required', challengeToken: 'desafio' })),
       verify.handler,
-      currentEmployeeIs(SYNTHETIC_APPROVER),
+      ...signedInApprover,
     );
     renderApp('/login');
 
@@ -65,7 +65,7 @@ describe('Login', () => {
     await typeAppCode('481920');
     await userEvent.click(screen.getByRole('button', { name: 'Verificar e ingresar' }));
 
-    expect(await screen.findByRole('heading', { name: 'Hola, legajo 1002.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Aprobaciones.' })).toBeInTheDocument();
     expect(verify.bodies).toEqual([{ challengeToken: 'desafio', code: '481920' }]);
   });
 
@@ -88,7 +88,7 @@ describe('Login', () => {
       ),
       enroll.handler,
       http.post(apiPath('/auth/totp/verify'), () => Response.json({ ...SYNTHETIC_TOKENS, recoveryCodes: RECOVERY_CODES })),
-      currentEmployeeIs(SYNTHETIC_APPROVER),
+      ...signedInApprover,
     );
     renderApp('/login');
 
@@ -111,7 +111,7 @@ describe('Login', () => {
       ),
       http.post(apiPath('/auth/totp/enroll'), () => Response.json({ challengeToken: 'desafio-alta', otpauthUri: OTPAUTH_URI })),
       http.post(apiPath('/auth/totp/verify'), () => Response.json({ ...SYNTHETIC_TOKENS, recoveryCodes: RECOVERY_CODES })),
-      currentEmployeeIs(SYNTHETIC_APPROVER),
+      ...signedInApprover,
     );
     renderApp('/login');
     await enterCredentials();
@@ -126,7 +126,7 @@ describe('Login', () => {
     await userEvent.click(screen.getByLabelText('Los guardé en un lugar seguro'));
     await userEvent.click(enter);
 
-    expect(await screen.findByRole('heading', { name: 'Hola, legajo 1002.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Aprobaciones.' })).toBeInTheDocument();
   });
 
   it('lets a person without their phone in with a recovery code (D36)', async () => {
@@ -134,7 +134,7 @@ describe('Login', () => {
     fakeApi.use(
       http.post(apiPath('/auth/login'), () => Response.json({ step: 'totp_required', challengeToken: 'desafio' })),
       recover.handler,
-      currentEmployeeIs(SYNTHETIC_APPROVER),
+      ...signedInApprover,
     );
     renderApp('/login');
 
@@ -143,7 +143,7 @@ describe('Login', () => {
     await userEvent.type(screen.getByLabelText('Código de recuperación'), 'ABCD-EFGH-JKLM-NPQR');
     await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }));
 
-    expect(await screen.findByRole('heading', { name: 'Hola, legajo 1002.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Aprobaciones.' })).toBeInTheDocument();
     expect(recover.bodies).toEqual([{ challengeToken: 'desafio', recoveryCode: 'ABCD-EFGH-JKLM-NPQR' }]);
   });
 
@@ -173,10 +173,10 @@ describe('Session in the app', () => {
 
   it('restores the session after a page reload with the stored refresh token', async () => {
     window.sessionStorage.setItem('amr-viajes.refresh-token', 'refresh-guardado');
-    fakeApi.use(http.post(apiPath('/auth/refresh'), () => Response.json(SYNTHETIC_TOKENS)), currentEmployeeIs(SYNTHETIC_APPROVER));
+    fakeApi.use(http.post(apiPath('/auth/refresh'), () => Response.json(SYNTHETIC_TOKENS)), ...signedInApprover);
     renderApp('/');
 
-    expect(await screen.findByRole('heading', { name: 'Hola, legajo 1002.' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Aprobaciones.' })).toBeInTheDocument();
   });
 
   it('closes the session in the API and returns to the login on sign out (D34)', async () => {
@@ -184,7 +184,7 @@ describe('Session in the app', () => {
     const logout = recordingPost('/auth/logout', () => new Response(null, { status: 204 }));
     fakeApi.use(
       http.post(apiPath('/auth/refresh'), () => Response.json(SYNTHETIC_TOKENS)),
-      currentEmployeeIs(SYNTHETIC_APPROVER),
+      ...signedInApprover,
       logout.handler,
     );
     renderApp('/');

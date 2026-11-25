@@ -8,7 +8,12 @@ React + TypeScript + Vite. Estilo alto-contraste con los tokens de `design/token
   el segundo paso con el código de la app de autenticación (D35). Incluye el **primer ingreso**
   (código de habilitación → QR → códigos de recuperación, D36) y **"Perdí mi celular"** (código de
   recuperación).
-- **Inicio provisorio** (`/`): legajo, roles y "Cerrar sesión". Lo reemplaza el Panel (Main).
+- **Bandeja de aprobación** (`/aprobaciones`, rol aprobador, UC-01 pasos 12, 13 y 12a): quién pide,
+  el viaje, la cotización elegida contra el tope, las justificaciones de 4a y 9a, y aprobar o
+  rechazar con motivo.
+- **Marco del panel**: barra lateral con las pantallas que el rol puede abrir (las demás no se
+  muestran), la persona que entró y "Cerrar sesión". En `/` cada rol va a su primera pantalla; el
+  Panel de UC-08 llega en la iteración 3.
 
 ## Primera vez
 
@@ -38,6 +43,12 @@ la app y la API calculan el mismo código a partir de la clave del QR y la hora.
 | Compilar para producción | `npm run build` |
 | Regenerar los tipos de la API desde `docs/contratos/api.openapi.yaml` | `npm run api:types` |
 
+## Datos del servidor
+
+Las pantallas leen y cambian datos con **TanStack Query**: guarda las respuestas en memoria, muestra
+carga y error, y vuelve a pedir la lista después de cada decisión. El contador del menú y la
+bandeja usan la misma clave, así que comparten un solo pedido.
+
 ## Sesión (D34)
 
 - El **JWT** (15 minutos) vive solo en memoria: ningún script puede leerlo de un almacenamiento.
@@ -52,6 +63,6 @@ la app y la API calculan el mismo código a partir de la clave del QR y la hora.
 src/api/          cliente HTTP y tipos generados del contrato (schema.d.ts, no se edita a mano)
 src/auth/         llamadas a /auth, la sesión, el contexto y la guarda de rutas
 src/components/   componentes base: Button, TextField, CodeInput, Alert, QrCode, PageSkeleton
-src/features/     una carpeta por pantalla (login, home)
+src/features/     una carpeta por pantalla (login, approvals, home) y el marco (shell)
 src/test/         API simulada con MSW (datos sintéticos) y ayudas para los tests
 ```
