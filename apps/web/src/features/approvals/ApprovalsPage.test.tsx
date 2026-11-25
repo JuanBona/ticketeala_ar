@@ -1,7 +1,7 @@
 // The approval tray against a fake API: UC-01 steps 12, 13 and 12a, and what happens when it fails.
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 import {
   apiError,
@@ -135,6 +135,34 @@ describe('Approval tray', () => {
     const menu = await screen.findByRole('navigation', { name: 'Principal' });
 
     expect(await within(menu).findByLabelText('2 pendientes')).toBeInTheDocument();
+  });
+});
+
+describe('Cached data and sign out', () => {
+  it("never shows the previous person's tray to whoever signs in next in the same tab", async () => {
+    restoreSessionOf(SYNTHETIC_APPROVER);
+    let trayOwner = 'lucas';
+    fakeApi.use(
+      http.get(apiPath('/travel-requests/to-approve'), async () => {
+        if (trayOwner === 'lucas') return HttpResponse.json([WITHIN_POLICY]);
+        await delay('infinite');
+        return HttpResponse.json([]);
+      }),
+      http.post(apiPath('/auth/logout'), () => new HttpResponse(null, { status: 204 })),
+      http.post(apiPath('/auth/login'), () => HttpResponse.json({ step: 'authenticated', ...SYNTHETIC_TOKENS })),
+    );
+    renderApp('/aprobaciones');
+    await cardOf('Camila Acosta (sintético)');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
+    trayOwner = 'valeria';
+    fakeApi.use(currentEmployeeIs({ ...SYNTHETIC_APPROVER, employeeNumber: 1007, fullName: 'Valeria Romero (sintético)' }));
+    await userEvent.type(await screen.findByLabelText('Correo institucional'), 'valeria@example.com');
+    await userEvent.type(screen.getByLabelText('Contraseña'), 'clave-sintetica');
+    await userEvent.click(screen.getByRole('button', { name: 'Continuar' }));
+
+    expect(await screen.findByRole('status', { name: 'Cargando solicitudes' })).toBeInTheDocument();
+    expect(screen.queryByRole('article', { name: /Camila Acosta/ })).not.toBeInTheDocument();
   });
 });
 
