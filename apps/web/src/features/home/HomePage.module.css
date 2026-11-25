@@ -1,57 +1,12 @@
-.page {
-  min-height: 100vh;
-  padding: clamp(28px, 5vw, 64px);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-7);
-  animation: enter-rise var(--duration-slow) var(--easing-enter);
-}
-
-.eyebrow {
-  font-family: var(--text-eyebrow-family);
-  font-size: var(--text-eyebrow-size);
-  letter-spacing: var(--text-eyebrow-letter-spacing);
-  text-transform: var(--text-eyebrow-transform);
-  color: var(--color-ink-muted);
-}
-
-.title {
-  margin: 0;
-  font-family: var(--text-display-family);
-  font-weight: var(--text-display-weight);
-  font-size: var(--text-display-size);
-  line-height: var(--text-display-line-height);
-  letter-spacing: var(--text-display-letter-spacing);
-}
-
 .card {
   max-width: 560px;
   padding: var(--space-7);
   border-radius: var(--radius-panel);
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
 }
 
-.roles {
+.card p {
   margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.role {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-pill);
-  border: var(--border-control) solid var(--color-ink);
-  font-family: var(--text-code-family);
-  font-size: var(--text-code-size);
-}
-
-.signOut {
-  max-width: 220px;
+  color: var(--color-ink-soft);
 }

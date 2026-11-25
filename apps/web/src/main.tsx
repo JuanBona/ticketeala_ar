@@ -1,4 +1,5 @@
 // Web entry point: one session for the whole page, the auth context and the router.
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
@@ -14,13 +15,16 @@ if (rootElement === null) {
 
 // Created once, outside React, so StrictMode's double effects share the same single-flight refresh.
 const session = new Session(window.sessionStorage);
+const queryClient = new QueryClient();
 
 createRoot(rootElement).render(
   <StrictMode>
-    <AuthProvider session={session}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider session={session}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   </StrictMode>,
 );

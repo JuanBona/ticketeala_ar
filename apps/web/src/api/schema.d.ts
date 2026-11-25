@@ -133,6 +133,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/destinations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["DestinationsController_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/travel-requests": {
         parameters: {
             query?: never;
@@ -173,22 +189,6 @@ export interface paths {
             cookie?: never;
         };
         get: operations["TravelRequestsController_listMine"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/destinations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["DestinationsController_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -359,6 +359,9 @@ export interface components {
         EmployeeIdentity: {
             roles: ("empleado" | "aprobador" | "agencia" | "contaduria" | "gerencia" | "administrador" | "auditor")[];
             employeeNumber: number;
+            fullName: string;
+            /** @description Name of the employee's area (D15). */
+            areaName: string;
             /** @description RN30: true when this session passed the TOTP code. */
             secondFactorVerified: boolean;
         };
@@ -401,6 +404,11 @@ export interface components {
              */
             expiresAt: string;
         };
+        DestinationSummary: {
+            id: number;
+            city: string;
+            country: string;
+        };
         CreateTravelRequestRequest: {
             destinationId: number;
             /** @description D19: optional; without it S10 measures only against the destination. */
@@ -410,11 +418,6 @@ export interface components {
             reason: string;
             /** @description UC-01 4a: required only when the trip starts sooner than the policy's minimum advance. */
             advanceJustification?: string;
-        };
-        DestinationSummary: {
-            id: number;
-            city: string;
-            country: string;
         };
         PolicySnapshot: {
             id: number;
@@ -495,6 +498,12 @@ export interface components {
             /** @description UC-01 9a: required only when the chosen quote is above the policy's cap. */
             overCapJustification?: string;
         };
+        EmployeeCard: {
+            employeeNumber: number;
+            fullName: string;
+            /** @description Name of the area the employee belongs to (D15). */
+            areaName: string;
+        };
         ApprovalView: {
             /** @enum {string} */
             status: "en_cotizacion" | "pendiente" | "aprobada" | "rechazada" | "cancelada";
@@ -519,6 +528,8 @@ export interface components {
             policy: components["schemas"]["PolicySnapshot"];
             /** @description D03, D11: daily allowance × nights, as text with 2 decimals. */
             estimatedAllowance: string;
+            /** @description Who asks for the trip: the approver needs to know whose request they decide on. */
+            requester: components["schemas"]["EmployeeCard"];
             selectedQuote: components["schemas"]["QuoteView"] | null;
         };
         RejectRequest: {
@@ -740,6 +751,25 @@ export interface operations {
             };
         };
     };
+    DestinationsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DestinationSummary"][];
+                };
+            };
+        };
+    };
     TravelRequestsController_create: {
         parameters: {
             query?: never;
@@ -804,25 +834,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TravelRequestSummary"][];
-                };
-            };
-        };
-    };
-    DestinationsController_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DestinationSummary"][];
                 };
             };
         };

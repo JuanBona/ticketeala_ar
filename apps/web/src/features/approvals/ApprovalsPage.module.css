@@ -1,0 +1,157 @@
+.panel {
+  padding: var(--space-7);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3-5);
+}
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+.panelTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--font-size-title);
+  letter-spacing: -0.03em;
+}
+
+.pending {
+  font-family: var(--text-eyebrow-family);
+  font-size: var(--text-eyebrow-size);
+  letter-spacing: var(--text-eyebrow-letter-spacing);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3-5);
+}
+
+/* Confirmation of a decision: the lime one pops in with the hard shadow, as the primary button. */
+.confirmation {
+  padding: var(--space-4-5) var(--space-5);
+  border-radius: var(--radius-card);
+  border: var(--border-control) solid var(--color-ink);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3-5);
+  animation: pop-in var(--duration-emphasis) var(--easing-enter);
+}
+
+.approved {
+  background: var(--color-accent);
+  box-shadow: var(--shadow-hard);
+}
+
+.rejected {
+  background: var(--color-surface-sunken);
+}
+
+.tick {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-title-small);
+}
+
+.rejected .tick {
+  color: var(--color-on-ink);
+}
+
+.confirmationTitle {
+  display: block;
+  font-weight: 600;
+  font-size: var(--font-size-body-large);
+}
+
+.confirmationBody {
+  font-size: var(--font-size-body-small);
+}
+
+.empty {
+  padding: var(--space-10) var(--space-7);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2-5);
+}
+
+.emptyIcon {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-card);
+  border: var(--border-control) solid var(--color-ink);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-hard);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-title-large);
+}
+
+.emptyTitle {
+  margin: var(--space-2-5) 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--font-size-title);
+  letter-spacing: -0.03em;
+}
+
+.emptyText {
+  margin: 0;
+  max-width: 380px;
+  color: var(--color-ink-soft);
+}
+
+.skeleton {
+  height: 160px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface-sunken);
+  animation: skeleton-pulse calc(var(--duration-emphasis) * 3) var(--easing-standard) infinite;
+}
+
+.retry {
+  width: auto;
+  align-self: flex-start;
+  padding: 0 var(--space-5);
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .panel {
+    padding: var(--space-4);
+    border-radius: var(--radius-card);
+  }
+}

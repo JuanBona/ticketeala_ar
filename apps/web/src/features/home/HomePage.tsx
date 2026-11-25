@@ -1,44 +1,29 @@
-// Temporary start page after login: who is signed in and how to leave. The real Panel (Main) comes next.
-import { Button } from '../../components/Button.js';
+// Start of the panel (/): opens the first screen the role may use, or explains there is none yet.
+import { Navigate } from 'react-router';
 import { useAuth } from '../../auth/AuthProvider.js';
+import { PageHeader } from '../../components/PageHeader.js';
+import { visibleNavigation } from '../shell/navigation.js';
 import styles from './HomePage.module.css';
 
-const ROLE_NAMES = {
-  empleado: 'Empleado',
-  aprobador: 'Aprobador',
-  agencia: 'Asesor AMR Turismo',
-  contaduria: 'Contaduría',
-  gerencia: 'Gerencia',
-  administrador: 'Administrador',
-  auditor: 'Auditor',
-} as const;
-
 export function HomePage() {
-  const { state, signOut } = useAuth();
+  const { state } = useAuth();
   if (state.status !== 'signedIn') {
     return null;
   }
-  const { employee } = state;
+  // Until the Panel of UC-08 exists, the first screen of the role is the start page.
+  const [firstScreen] = visibleNavigation(state.employee.roles);
+  if (firstScreen !== undefined) {
+    return <Navigate to={firstScreen.path} replace />;
+  }
   return (
-    <main className={styles.page}>
-      <span className={styles.eyebrow}>AMR Viajes · Panel</span>
-      <h1 className={styles.title}>Hola, legajo {employee.employeeNumber}.</h1>
-      <section className={styles.card} aria-label="Tu sesión">
-        <span className={styles.eyebrow}>Tus roles</span>
-        <ul className={styles.roles}>
-          {employee.roles.map((role) => (
-            <li key={role} className={styles.role}>
-              {ROLE_NAMES[role]}
-            </li>
-          ))}
-        </ul>
-        <p>{employee.secondFactorVerified ? 'Ingresaste con segundo factor.' : 'Ingresaste sin segundo factor.'}</p>
-        <div className={styles.signOut}>
-          <Button variant="dark" onClick={() => void signOut()}>
-            Cerrar sesión
-          </Button>
-        </div>
-      </section>
-    </main>
+    <>
+      <PageHeader eyebrow="Panel" title={`Hola, ${state.employee.fullName}.`} />
+      <div className={styles.card}>
+        <p>
+          Todavía no hay pantallas del panel web para tu rol. Las solicitudes de viaje y las rendiciones se hacen desde
+          la app móvil.
+        </p>
+      </div>
+    </>
   );
 }
