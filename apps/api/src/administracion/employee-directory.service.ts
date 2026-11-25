@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { isRole, type Role } from '../auth/role.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import type { EmployeeCard } from './dto/employee.responses.js';
 
 /** What other modules may know about an employee. */
 export interface EmployeeProfile {
@@ -45,6 +46,26 @@ export class EmployeeDirectory {
   async findActive(employeeNumber: number): Promise<EmployeeProfile | null> {
     const employee = await this.find(employeeNumber);
     return employee?.active ? employee : null;
+  }
+
+  /**
+   * Name and area of any employee, active or not: a request keeps showing who asked for it even
+   * after that person is deactivated (RN28).
+   */
+  async describe(employeeNumber: number): Promise<EmployeeCard | null> {
+    // One query with the area joined, so the name of the area comes with the employee.
+    const employee = await this.prisma.employee.findUnique({
+      where: { employeeNumber },
+      include: { area: true },
+    });
+    if (!employee) {
+      return null;
+    }
+    return {
+      employeeNumber: employee.employeeNumber,
+      fullName: employee.fullName,
+      areaName: employee.area.name,
+    };
   }
 
   /** D15: the manager of an area, the last step of the hierarchy (D41). */

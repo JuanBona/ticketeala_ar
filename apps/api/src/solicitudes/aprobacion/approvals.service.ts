@@ -5,6 +5,7 @@ import {
   Injectable,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import type { EmployeeCard } from '../../administracion/dto/employee.responses.js';
 import { EmployeeDirectory } from '../../administracion/employee-directory.service.js';
 import {
   auditedChange,
@@ -188,8 +189,21 @@ export class ApprovalsService {
       await this.travelRequests.findQuotingContext(travelRequestId);
     return {
       ...summary,
+      requester: await this.requesterOf(context),
       selectedQuote: await this.quotes.selectedView(context),
     };
+  }
+
+  /** Name and area of whoever asked for the trip, read through the administration module. */
+  private async requesterOf(context: QuotingContext): Promise<EmployeeCard> {
+    const requester = await this.employees.describe(context.employeeNumber);
+    // The foreign key makes this impossible; if it happens, the data is broken and must not be hidden.
+    if (!requester) {
+      throw new Error(
+        `La solicitud ${context.id} es del empleado ${context.employeeNumber}, que no existe`,
+      );
+    }
+    return requester;
   }
 
   private async ownRequest(
