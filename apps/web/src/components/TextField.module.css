@@ -1,0 +1,44 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+}
+
+.label {
+  font-family: var(--text-label-family);
+  font-size: var(--text-label-size);
+  font-weight: var(--text-label-weight);
+  letter-spacing: var(--text-label-letter-spacing);
+  text-transform: var(--text-label-transform);
+  color: var(--color-ink-soft);
+}
+
+.input {
+  min-height: var(--size-input);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-field);
+  border: var(--border-control) solid var(--color-ink);
+  background: var(--color-surface);
+  font-size: var(--font-size-body-large);
+  transition: box-shadow var(--duration-fast) var(--easing-standard);
+}
+.input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-accent);
+}
+
+/* Not only color: the border doubles and the message below names the problem. */
+.input[aria-invalid='true'] {
+  border-width: 2px;
+}
+
+.code {
+  font-family: var(--font-mono);
+  letter-spacing: var(--text-code-letter-spacing);
+  text-transform: uppercase;
+}
+
+.hint {
+  font-size: var(--font-size-footnote);
+  color: var(--color-ink-muted);
+}

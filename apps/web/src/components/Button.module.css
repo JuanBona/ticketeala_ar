@@ -1,0 +1,97 @@
+.button {
+  min-height: var(--size-button);
+  width: 100%;
+  padding: 0 var(--space-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2-5);
+  border-radius: var(--radius-button);
+  border: var(--border-control) solid var(--color-ink);
+  font-weight: var(--text-button-weight);
+  font-size: var(--text-button-size);
+  cursor: pointer;
+  transition:
+    transform var(--duration-instant) var(--easing-standard),
+    box-shadow var(--duration-instant) var(--easing-standard),
+    background-color var(--duration-fast) var(--easing-standard);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+/* Lime with the hard shadow: pressing sinks the button onto its shadow. */
+.primary {
+  background: var(--color-accent);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-hard);
+}
+.primary:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+}
+.primary:active:not(:disabled) {
+  /* Same offset as --shadow-hard, so the button lands exactly on its shadow. */
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.dark {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+.dark:hover:not(:disabled) {
+  background: var(--color-ink-raised);
+}
+.dark:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.secondary {
+  min-height: var(--size-touch-target);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--font-size-body-small);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--color-surface-sunken);
+}
+
+.link {
+  width: auto;
+  min-height: var(--size-touch-target);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  font-weight: 400;
+  font-size: var(--font-size-body-small);
+  text-decoration: underline;
+}
+.link:hover:not(:disabled) {
+  color: var(--color-ink-soft);
+}
+
+.primary:disabled,
+.dark:disabled,
+.secondary:disabled {
+  background: var(--color-surface-strong);
+  border-color: var(--color-surface-strong);
+  color: var(--color-ink-muted);
+  box-shadow: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin calc(var(--duration-emphasis) * 2) linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
