@@ -1,0 +1,23 @@
+{
+  "name": "@amr-viajes/design-tokens",
+  "version": "0.0.1",
+  "description": "Design tokens of the alto-contraste style, shared by apps/web and apps/mobile",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./tokens.css"
+  },
+  "scripts": {
+    "build:css": "tsx scripts/write-css.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.7",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
