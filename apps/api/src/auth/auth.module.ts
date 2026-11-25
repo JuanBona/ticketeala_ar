@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AdministrationModule } from '../administracion/administration.module.js';
 import { AuditModule } from '../auditoria/audit.module.js';
 import { AccessTokenService } from './access-token.service.js';
 import { ActiveEmployeeReader } from './active-employee.reader.js';
@@ -38,6 +39,8 @@ import { TotpService } from './totp.service.js';
 
 @Module({
   imports: [
+    // /auth/me reads the name and area of the employee through EmployeeDirectory.
+    AdministrationModule,
     AuditModule,
     JwtModule.registerAsync({
       useFactory: () => ({

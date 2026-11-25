@@ -293,6 +293,34 @@ describe('UC-01 approval', () => {
     expect(managerTray.body).toHaveLength(0);
   });
 
+  it('UC-01 step 12: the tray says who asks for each trip, with name and area', async () => {
+    await chooseQuote(180000);
+    await confirm();
+
+    const supervisorTray = await tray(SUPERVISOR);
+
+    expect(supervisorTray.body[0].requester).toEqual({
+      employeeNumber: REQUESTER,
+      fullName: `Empleado ${REQUESTER} (sintético)`,
+      areaName: 'Área sintética',
+    });
+  });
+
+  it('RN28: the tray keeps showing the requester after they are deactivated', async () => {
+    await chooseQuote(180000);
+    await confirm();
+    await client.employee.update({
+      where: { employeeNumber: REQUESTER },
+      data: { active: false },
+    });
+
+    const supervisorTray = await tray(SUPERVISOR);
+
+    expect(supervisorTray.body[0].requester.fullName).toBe(
+      `Empleado ${REQUESTER} (sintético)`,
+    );
+  });
+
   it('UC-01 step 13: the assigned approver approves and the approval is audited (RNF11)', async () => {
     await chooseQuote(180000);
     await confirm();

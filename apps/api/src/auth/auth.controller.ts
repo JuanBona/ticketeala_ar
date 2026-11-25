@@ -6,10 +6,12 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { EmployeeDirectory } from '../administracion/employee-directory.service.js';
 import { TOTP_PER_EMPLOYEE_THROTTLER } from './auth.constants.js';
 import { AuthService, type LoginResult } from './auth.service.js';
 import type { AuthenticatedEmployee } from './authenticated-employee.js';
@@ -24,7 +26,10 @@ import {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly employees: EmployeeDirectory,
+  ) {}
 
   // @Public: there is no token yet. ThrottlerGuard: 10 attempts per email and 30 per IP each minute.
   @Public()
@@ -55,7 +60,20 @@ export class AuthController {
 
   // Not @Public: the global guard already checked the token and put the employee on the request.
   @Get('me')
-  me(@CurrentEmployee() employee: AuthenticatedEmployee): EmployeeIdentity {
-    return employee;
+  async me(
+    @CurrentEmployee() employee: AuthenticatedEmployee,
+  ): Promise<EmployeeIdentity> {
+    // The token proves who is calling; name and area come from the administration module.
+    const card = await this.employees.describe(employee.employeeNumber);
+    if (!card) {
+      throw new UnauthorizedException(
+        `Empleado ${employee.employeeNumber} no encontrado`,
+      );
+    }
+    return {
+      ...employee,
+      fullName: card.fullName,
+      areaName: card.areaName,
+    };
   }
 }

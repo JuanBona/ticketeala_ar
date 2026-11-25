@@ -35,9 +35,12 @@ export class LoginResponse {
   challengeToken?: string;
 }
 
-/** GET /auth/me: who the access token belongs to. */
+/** GET /auth/me: who the access token belongs to, with the name and area the screens show. */
 export class EmployeeIdentity {
   employeeNumber: number;
+  fullName: string;
+  /** Name of the employee's area (D15). */
+  areaName: string;
   // Explicit: the plugin cannot read the values of the Role union type on its own.
   @ApiProperty({ enum: ROLES, isArray: true })
   roles: Role[];
