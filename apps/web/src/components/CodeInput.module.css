@@ -1,0 +1,32 @@
+.digits {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.digit {
+  min-width: 0;
+  height: 64px;
+  text-align: center;
+  border-radius: var(--radius-large);
+  border: var(--border-control) solid var(--color-ink);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-title);
+  caret-color: transparent;
+  transition:
+    background-color var(--duration-fast) var(--easing-standard),
+    transform var(--duration-fast) var(--easing-enter);
+}
+
+/* The box being typed in turns lime, as in the reference design. */
+.digit:focus-visible {
+  outline: none;
+  border-width: 2px;
+  background: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.digits[aria-invalid='true'] .digit {
+  border-width: 2px;
+}

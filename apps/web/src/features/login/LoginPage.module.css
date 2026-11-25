@@ -1,0 +1,301 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.brand {
+  flex: 1 1 460px;
+  min-height: 420px;
+  padding: clamp(28px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.badge {
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  border-radius: var(--radius-large);
+  background: var(--color-accent);
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--font-size-body);
+}
+
+.wordmark {
+  font-family: var(--text-title-small-family);
+  font-weight: var(--text-title-small-weight);
+  font-size: var(--text-title-small-size);
+  letter-spacing: var(--text-title-small-letter-spacing);
+}
+
+.hero {
+  margin: auto 0 0;
+  font-family: var(--text-hero-family);
+  font-weight: var(--text-hero-weight);
+  font-size: var(--text-hero-size);
+  line-height: var(--text-hero-line-height);
+  letter-spacing: var(--text-hero-letter-spacing);
+  animation: enter-rise var(--duration-slow) var(--easing-enter);
+}
+
+.highlight {
+  color: var(--color-accent);
+}
+
+.points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3-5);
+}
+
+.point {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  padding-bottom: var(--space-3-5);
+  border-bottom: 1px solid var(--color-ink-divider);
+  transition: color var(--duration-base) var(--easing-standard);
+}
+.point:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.pointNumber {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-small);
+  color: var(--color-accent);
+}
+
+/* Setup progress: done steps are crossed out, pending ones dimmed; the text says it too (sr-only). */
+.done,
+.pending {
+  color: var(--color-on-ink-muted);
+}
+.done .pointNumber,
+.pending .pointNumber {
+  color: var(--color-on-ink-muted);
+}
+.done .pointText {
+  text-decoration: line-through;
+}
+
+.place {
+  font-family: var(--text-label-family);
+  font-size: var(--text-label-size);
+  letter-spacing: var(--text-label-letter-spacing);
+  color: var(--color-on-ink-muted);
+}
+
+.side {
+  flex: 1 1 420px;
+  padding: clamp(28px, 5vw, 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Each step enters rising; the key on the step makes React mount it again, which replays this. */
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  animation: enter-rise var(--duration-slow) var(--easing-enter);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+}
+
+.eyebrow {
+  font-family: var(--text-eyebrow-family);
+  font-size: var(--text-eyebrow-size);
+  font-weight: var(--text-eyebrow-weight);
+  letter-spacing: var(--text-eyebrow-letter-spacing);
+  text-transform: var(--text-eyebrow-transform);
+  color: var(--color-ink-muted);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--text-headline-family);
+  font-weight: var(--text-headline-weight);
+  font-size: var(--text-headline-size);
+  line-height: 1;
+  letter-spacing: var(--text-headline-letter-spacing);
+}
+.title:focus {
+  outline: none;
+}
+
+.lead {
+  margin: var(--space-1-5) 0 0;
+  color: var(--color-ink-soft);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.footnote {
+  margin: 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-surface-strong);
+  font-size: var(--font-size-footnote);
+  color: var(--color-ink-soft);
+}
+
+.qrCard {
+  display: flex;
+  gap: var(--space-4-5);
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card-small);
+}
+
+.qrSteps {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--font-size-body-small);
+}
+
+.manualKey {
+  font-size: var(--font-size-footnote);
+  color: var(--color-ink-soft);
+}
+.manualKey summary {
+  min-height: var(--size-touch-target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.secret {
+  margin: 0;
+  padding: var(--space-2-5) var(--space-3);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-footnote);
+  letter-spacing: var(--text-code-letter-spacing);
+  color: var(--color-ink);
+  word-break: break-all;
+}
+
+.notice {
+  padding: var(--space-3) var(--space-3-5);
+  border-radius: var(--radius-medium);
+  background: var(--color-alert);
+  font-size: var(--font-size-body-small);
+  font-weight: 600;
+}
+
+.codes {
+  margin: 0;
+  padding: var(--space-4);
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  border-radius: var(--radius-card);
+  background: var(--color-ink);
+}
+
+.code {
+  padding: var(--space-2-5) var(--space-2);
+  border-radius: var(--radius-medium);
+  background: var(--color-ink-raised);
+  color: var(--color-on-ink);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-footnote);
+  text-align: center;
+  white-space: nowrap;
+  animation: enter-rise var(--duration-base) var(--easing-enter) backwards;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-2-5);
+}
+
+.check {
+  min-height: var(--size-touch-target);
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  font-size: var(--font-size-body-small);
+  cursor: pointer;
+}
+.check input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--color-ink);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Phones: the form is what matters, so the dark half keeps only logo and title. 720 px = two columns no longer fit. */
+@media (max-width: 720px) {
+  .brand {
+    min-height: auto;
+    gap: var(--space-6);
+  }
+
+  .points,
+  .place {
+    display: none;
+  }
+}
