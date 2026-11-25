@@ -64,6 +64,11 @@ La última columna es el paso de la sección "Motor" de `PROMPTS.md` que cubre c
 - **Paso 6:** QR que no es de ARCA (las facturas sintéticas apuntan a surus.lat): ignorarlo para los
   campos y decidir si S03 da `no_aplica` o `advertencia`. Hoy D30 solo permite `advertencia` en S06
   y S10, así que elegir `advertencia` requiere cambiar D30.
+- **Paso 6:** hoy una foto ilegible puede salir aceptada, porque S01 y S02 están sin umbral (D24)
+  y, si el OCR no lee los campos, S04 a S06 dan `no_aplica`, así que nada resta puntos. Cerrarlo de
+  dos formas: calibrar S01 y S02 con Vision, y además una regla que no dependa de umbrales: si
+  faltan campos clave (total, fecha o CUIT del emisor), la decisión es como mínimo revisión. Esa
+  regla necesita una decisión nueva.
 - **Paso 7:** calcular el dHash de S08 sobre la imagen ya orientada: una refoto girada cambia el hash
   y no se detectaría como similar.
 - **Credenciales de S3 de solo lectura para el motor (D23):** hoy usa las mismas que la API
