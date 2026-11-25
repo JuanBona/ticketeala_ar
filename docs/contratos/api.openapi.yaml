@@ -151,6 +151,21 @@ paths:
         - SecondFactor
       x-roles:
         - administrador
+  /destinations:
+    get:
+      operationId: DestinationsController_list
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DestinationSummary'
+      tags:
+        - Destinations
   /travel-requests:
     post:
       operationId: TravelRequestsController_create
@@ -208,21 +223,6 @@ paths:
         - TravelRequests
       x-roles:
         - empleado
-  /destinations:
-    get:
-      operationId: DestinationsController_list
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DestinationSummary'
-      tags:
-        - Destinations
   /travel-requests/{travelRequestId}/quotes:
     post:
       operationId: QuotesController_add
@@ -522,12 +522,19 @@ components:
               - auditor
         employeeNumber:
           type: number
+        fullName:
+          type: string
+        areaName:
+          type: string
+          description: Name of the employee's area (D15).
         secondFactorVerified:
           type: boolean
           description: 'RN30: true when this session passed the TOTP code.'
       required:
         - roles
         - employeeNumber
+        - fullName
+        - areaName
         - secondFactorVerified
     StartEnrollmentRequest:
       type: object
@@ -615,6 +622,19 @@ components:
       required:
         - enrollmentCode
         - expiresAt
+    DestinationSummary:
+      type: object
+      properties:
+        id:
+          type: number
+        city:
+          type: string
+        country:
+          type: string
+      required:
+        - id
+        - city
+        - country
     CreateTravelRequestRequest:
       type: object
       properties:
@@ -639,19 +659,6 @@ components:
         - startDate
         - endDate
         - reason
-    DestinationSummary:
-      type: object
-      properties:
-        id:
-          type: number
-        city:
-          type: string
-        country:
-          type: string
-      required:
-        - id
-        - city
-        - country
     PolicySnapshot:
       type: object
       properties:
@@ -855,6 +862,20 @@ components:
           maxLength: 500
       required:
         - quoteId
+    EmployeeCard:
+      type: object
+      properties:
+        employeeNumber:
+          type: number
+        fullName:
+          type: string
+        areaName:
+          type: string
+          description: Name of the area the employee belongs to (D15).
+      required:
+        - employeeNumber
+        - fullName
+        - areaName
     ApprovalView:
       type: object
       properties:
@@ -908,6 +929,10 @@ components:
         estimatedAllowance:
           type: string
           description: 'D03, D11: daily allowance × nights, as text with 2 decimals.'
+        requester:
+          description: 'Who asks for the trip: the approver needs to know whose request they decide on.'
+          allOf:
+            - $ref: '#/components/schemas/EmployeeCard'
         selectedQuote:
           nullable: true
           type: object
@@ -928,6 +953,7 @@ components:
         - rejectionReason
         - policy
         - estimatedAllowance
+        - requester
         - selectedQuote
     RejectRequest:
       type: object

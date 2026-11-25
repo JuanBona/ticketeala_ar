@@ -69,13 +69,15 @@ describe('global authentication and role guards', () => {
     expect(response.status).toBe(200);
   });
 
-  it('D12: /auth/me returns the employee number and roles of the token', async () => {
+  it('D12: /auth/me returns the employee number and roles of the token, with name and area', async () => {
     const accessToken = await accessTokenFor(2001, ['empleado', 'gerencia']);
 
     const response = await getWithToken('/auth/me', accessToken);
 
     expect(response.body).toEqual({
       employeeNumber: 2001,
+      fullName: 'Empleado 2001 (sintético)',
+      areaName: 'Área sintética',
       roles: expect.arrayContaining(['empleado', 'gerencia']),
       secondFactorVerified: false,
     });
